@@ -864,6 +864,29 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   -webkit-transform-origin:top left; transform-origin:top left;
 }
 
+/* ── 텍스트 줄바꿈 방지 & 반응형 처리 ── */
+.k-header { flex-wrap:nowrap; overflow:hidden; gap:8px; }
+.k-header-left { flex-shrink:1; min-width:0; overflow:hidden; }
+.k-header-right { flex-shrink:0; }
+.k-header-title { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:min(17px, 4.2vw); }
+.k-header-time { white-space:nowrap; }
+.k-badge { white-space:nowrap; font-size:min(12px, 3vw); padding:4px 10px; }
+.home-greeting { overflow:hidden; }
+.home-greeting strong { font-size:min(32px, 8.5vw); white-space:nowrap; }
+.home-greeting .sub { font-size:min(14px, 3.7vw); white-space:nowrap; }
+.home-register-btn { max-width:min(320px, 85vw); }
+.home-register-btn .btn-label { white-space:nowrap; font-size:min(22px, 5.8vw); }
+.home-status-btn { max-width:min(320px, 85vw); }
+.home-status-btn .btn-label { white-space:nowrap; font-size:min(17px, 4.5vw); }
+.home-help-btn .btn-label { white-space:nowrap; }
+.home-footer { white-space:nowrap; }
+.reg-submit-btn { white-space:nowrap; font-size:min(18px, 4.8vw); }
+.status-top-bar { flex-wrap:nowrap; }
+.date-nav-label { white-space:nowrap; min-width:auto; font-size:min(15px, 3.8vw); padding:10px 12px; }
+.status-info-bar { flex-wrap:nowrap; gap:8px; }
+.status-summary-inline { gap:var(--space-md); }
+.phone-card h2 { font-size:min(22px, 5.8vw); white-space:nowrap; }
+
 /* 홈 화면: 스크롤 금지 + 세로 가운데 */
 #homeScreen { overflow:hidden!important; }
 #homeScreen .home-body {
