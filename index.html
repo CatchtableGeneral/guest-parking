@@ -822,12 +822,10 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
 }
 
 /* ============================================================
-   ★ GUEST 전용: 2× 확대 (iOS + Android 완전 호환)
+   ★ GUEST 전용: 환경별 자동 스케일링
    ─────────────────────────────────────────────────
-   기본: transform:scale(2) — 모든 브라우저에서 작동
-   보강: @supports(zoom:2) — Chrome/최신Safari에서 zoom 우선
-   컨테이너를 50vw × 50vh 로 줄여놓고 2배 확대
-   → 50×2 = 100 → 화면에 딱 맞음, 스크롤 없음
+   GitHub Pages (직접 호스팅): viewport가 정상 → 스케일 불필요
+   GAS iframe: viewport 무시됨 → JS가 .gas-mode 클래스 추가 → 2x
    ============================================================ */
 
 * { touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
@@ -840,7 +838,7 @@ html, body {
   overflow:hidden!important;
 }
 
-/* ── GAS 배너 강제 숨김 (body 직계 자식 중 #app 아닌 것 전부) ── */
+/* ── GAS 배너 강제 숨김 (GAS에서 열릴 경우 대비) ── */
 body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   display:none!important;
   height:0!important; width:0!important;
@@ -850,16 +848,20 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   position:absolute!important;
 }
 
-/* ── 2× 확대: transform:scale(2) 단일 방식 (iOS + Android 공통) ── */
-/* zoom은 iOS GAS iframe에서 오작동하므로 사용하지 않음              */
+/* ── 기본: GitHub Pages / 직접 호스팅 (스케일 없음, 풀스크린) ── */
 #app {
-  width:50vw; height:50vh; height:50dvh;
-  -webkit-transform:scale(2); transform:scale(2);
-  -webkit-transform-origin:top left; transform-origin:top left;
+  width:100vw; height:100vh; height:100dvh;
   -webkit-text-size-adjust:100%; text-size-adjust:100%;
   display:flex; flex-direction:column;
   overflow:hidden; position:relative;
   padding-top:var(--sat);
+}
+
+/* ── GAS iframe 모드: JS가 감지 시 .gas-mode 추가 → 2x 확대 ── */
+#app.gas-mode {
+  width:50vw; height:50vh; height:50dvh;
+  -webkit-transform:scale(2); transform:scale(2);
+  -webkit-transform-origin:top left; transform-origin:top left;
 }
 
 /* 홈 화면: 스크롤 금지 + 세로 가운데 */
@@ -946,6 +948,28 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
 
   window.google = { script: { run: new Runner() } };
   console.log('[GAS Bridge] 외부 호스팅 모드 활성화');
+})();
+</script>
+
+<script>
+/* ── 환경 자동 감지: GAS iframe ↔ GitHub Pages ── */
+(function detectEnvironment() {
+  var isInsideIframe = false;
+  try { isInsideIframe = window.self !== window.top; } catch(e) { isInsideIframe = true; }
+
+  // 전역 플래그 설정 (protectScale 등에서 참조)
+  window.__GAS_MODE = isInsideIframe;
+
+  if (isInsideIframe) {
+    // GAS iframe → 2x 확대 필요
+    document.addEventListener('DOMContentLoaded', function() {
+      var app = document.getElementById('app');
+      if (app) app.classList.add('gas-mode');
+    });
+    console.log('[Env] GAS iframe 모드 (2x 확대 적용)');
+  } else {
+    console.log('[Env] GitHub Pages 직접 호스팅 모드 (1x, 풀스크린)');
+  }
 })();
 </script>
 
@@ -2753,6 +2777,12 @@ function esc(s) {
     만약 발생해도 이 코드가 원복.)
    ============================================================ */
 (function protectScale() {
+  // GitHub Pages 직접 호스팅 시에는 스케일 보호 불필요 (1x이므로)
+  if (!window.__GAS_MODE) {
+    console.log('[protectScale] 직접 호스팅 모드 → 스케일 보호 비활성화');
+    return;
+  }
+
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   if (!isIOS) return;
@@ -2760,7 +2790,7 @@ function esc(s) {
   var appEl = document.getElementById('app');
   if (!appEl) return;
 
-  // 항상 transform:scale(2) 방식으로 복원 (zoom은 GAS iframe에서 불안정)
+  // GAS iframe 모드에서만: transform:scale(2) 복원
   function restoreScale() {
     appEl.style.transform = 'scale(2)';
     appEl.style.webkitTransform = 'scale(2)';
@@ -2771,17 +2801,14 @@ function esc(s) {
     appEl.style.overflow = 'hidden';
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
-    // 스크롤 위치 리셋 (iOS가 input 포커스 시 스크롤 이동하는 것 방지)
     window.scrollTo(0, 0);
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
   }
 
-  // ★ input 포커스 시: iOS 자동확대/스크롤 즉시 차단
   document.addEventListener('focusin', function(e) {
     var t = (e.target.tagName || '').toUpperCase();
     if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') {
-      // 포커스 직후 스크롤 리셋 (iOS가 input 위치로 이동하려는 것 차단)
       setTimeout(function() {
         window.scrollTo(0, 0);
         document.body.scrollTop = 0;
@@ -2797,7 +2824,6 @@ function esc(s) {
     }
   });
 
-  // input 블러 시 스케일 복원
   document.addEventListener('focusout', function(e) {
     var t = (e.target.tagName || '').toUpperCase();
     if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') {
@@ -2805,20 +2831,17 @@ function esc(s) {
     }
   });
 
-  // VisualViewport로 iOS 자동확대 감지 → 원복
   if (window.visualViewport) {
     var vpTimeout;
     window.visualViewport.addEventListener('resize', function() {
       clearTimeout(vpTimeout);
       vpTimeout = setTimeout(function() {
         if (window.visualViewport.scale > 1.02) {
-          // iOS가 자동확대함 → 강제 원복
           restoreScale();
         }
       }, 100);
     });
     window.visualViewport.addEventListener('scroll', function() {
-      // viewport 스크롤도 리셋
       window.scrollTo(0, 0);
     });
   }
