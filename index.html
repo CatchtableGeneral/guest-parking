@@ -1,0 +1,3069 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="손님주차">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FF3D00">
+<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,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">
+<link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,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">
+<title>손님 주차할인</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@20..48,100..700,0..1&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN SYSTEM — same as employee version
+   ============================================================ */
+:root {
+  /* Surface */
+  --bg-base: #0a0a0a;
+  --bg-elevated: #141414;
+  --bg-card: #1c1c1e;
+  --bg-card-hover: #252528;
+  --bg-input: #1c1c1e;
+  --bg-input-focus: #222225;
+  --border-subtle: rgba(255,255,255,.06);
+  --border-default: rgba(255,255,255,.1);
+  --border-focus: rgba(255,61,0,.5);
+
+  /* Brand */
+  --accent: #ff3d00;
+  --accent-hover: #ff5722;
+  --accent-soft: rgba(255,61,0,.12);
+  --accent-glow: rgba(255,61,0,.25);
+
+  /* Semantic */
+  --green: #34d399;
+  --green-soft: rgba(52,211,153,.12);
+  --red: #f87171;
+  --red-soft: rgba(248,113,113,.12);
+  --blue: #60a5fa;
+  --blue-soft: rgba(96,165,250,.12);
+  --yellow: #fbbf24;
+  --yellow-soft: rgba(251,191,36,.12);
+  --purple: #a78bfa;
+  --purple-soft: rgba(167,139,250,.12);
+
+  /* Text */
+  --text-primary: #f5f5f7;
+  --text-secondary: rgba(255,255,255,.55);
+  --text-tertiary: rgba(255,255,255,.3);
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.5);
+  --shadow-glow: 0 0 24px var(--accent-glow);
+
+  /* Transition */
+  --ease-out: cubic-bezier(.16,1,.3,1);
+  --ease-spring: cubic-bezier(.34,1.56,.64,1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+
+  /* Safe area */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+html,body {
+  width:100%; height:100%; overflow:hidden;
+  font-family:'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg-base); color:var(--text-primary);
+  -webkit-text-size-adjust:100%;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none; -webkit-user-select:none;
+  line-height:1.5;
+}
+input,select,textarea,button { font-family:inherit; }
+input,select,textarea { font-size:16px!important; }
+button { cursor:pointer; border:none; background:none; color:inherit; }
+
+/* Material Symbols */
+.material-symbols-rounded {
+  font-family:'Material Symbols Rounded';
+  font-weight:normal; font-style:normal; font-size:24px;
+  display:inline-block; line-height:1; text-transform:none;
+  letter-spacing:normal; word-wrap:normal; white-space:nowrap;
+  direction:ltr;
+  -webkit-font-smoothing:antialiased;
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'opsz' 24;
+}
+
+/* ============================================================
+   LAYOUT SHELL
+   ============================================================ */
+#app {
+  width:100%; height:100%;
+  display:flex; flex-direction:column;
+  overflow:hidden; position:relative;
+  padding-top:var(--sat);
+}
+.screen {
+  display:none; flex-direction:column; flex:1;
+  overflow:hidden; position:relative;
+}
+.screen.active {
+  display:flex;
+  animation:screenIn var(--duration-normal) var(--ease-out);
+}
+@keyframes screenIn {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(100%); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* ============================================================
+   HEADER BAR
+   ============================================================ */
+.k-header {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:var(--space-md) var(--space-xl);
+  background:linear-gradient(180deg,rgba(10,10,10,.95) 0%,rgba(10,10,10,.85) 100%);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border-subtle);
+  flex-shrink:0; z-index:10;
+}
+.k-header-left { display:flex; align-items:center; gap:10px; }
+.k-logo {
+  width:36px; height:36px; border-radius:10px;
+  background:linear-gradient(135deg,#ff3d00 0%,#ff6e40 100%);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:18px; color:#fff;
+  box-shadow:0 2px 10px rgba(255,61,0,.3);
+}
+.k-header-title {
+  font-size:17px; font-weight:700; letter-spacing:-.3px;
+  color:var(--text-primary);
+}
+.k-header-right { display:flex; align-items:center; gap:var(--space-sm); }
+.k-header-time {
+  font-size:14px; font-weight:500; color:var(--text-secondary);
+  font-variant-numeric:tabular-nums;
+}
+.k-badge {
+  padding:5px 12px; border-radius:var(--radius-full);
+  font-size:12px; font-weight:600; letter-spacing:-.2px;
+  background:var(--green-soft); color:var(--green);
+}
+
+/* ============================================================
+   SESSION BANNER
+   ============================================================ */
+.session-banner {
+  display:none; padding:8px 20px; text-align:center;
+  font-size:12px; font-weight:600; flex-shrink:0;
+  animation:fadeIn .3s;
+}
+.session-banner.warn { background:var(--yellow-soft); color:var(--yellow); }
+.session-banner.ok   { background:var(--green-soft); color:var(--green); }
+.session-banner.show { display:block; }
+
+/* ============================================================
+   PHONE VERIFICATION SCREEN
+   ============================================================ */
+#phoneScreen .phone-body {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:var(--space-xl); padding:var(--space-3xl) var(--space-xl);
+}
+.phone-card {
+  background:var(--bg-elevated); border:1px solid var(--border-subtle);
+  border-radius:var(--radius-xl); padding:var(--space-2xl) var(--space-xl);
+  width:100%; max-width:400px;
+  display:flex; flex-direction:column; gap:var(--space-lg);
+  position:relative; overflow:hidden;
+}
+.phone-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,var(--accent),#ff6e40,var(--blue));
+}
+.phone-card h2 {
+  font-size:22px; font-weight:800; text-align:center;
+  letter-spacing:-.3px; margin-top:var(--space-sm);
+}
+.phone-card p {
+  font-size:14px; color:var(--text-secondary);
+  text-align:center; line-height:1.6;
+}
+.phone-status {
+  font-size:12px; font-weight:500; text-align:center; min-height:18px;
+}
+.phone-status.ok { color:var(--green); }
+.phone-status.err { color:var(--red); }
+
+#codeSection {
+  display:none; flex-direction:column; gap:var(--space-lg);
+  animation:fadeIn .3s;
+}
+#codeSection.show { display:flex; }
+
+/* ============================================================
+   HOME SCREEN
+   ============================================================ */
+#homeScreen .home-body {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:var(--space-2xl); padding:var(--space-2xl) var(--space-xl);
+  position:relative; overflow:hidden;
+}
+#homeScreen .home-body::before {
+  content:''; position:absolute;
+  top:-30%; right:-20%; width:400px; height:400px;
+  background:radial-gradient(circle,rgba(255,61,0,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+#homeScreen .home-body::after {
+  content:''; position:absolute;
+  bottom:-20%; left:-15%; width:350px; height:350px;
+  background:radial-gradient(circle,rgba(96,165,250,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.home-hero { text-align:center; position:relative; z-index:1; }
+.home-greeting {
+  font-size:26px; font-weight:300;
+  color:var(--text-secondary); letter-spacing:-.5px; line-height:1.5;
+}
+.home-greeting strong {
+  font-weight:800; display:block; font-size:32px;
+  color:var(--text-primary); margin-top:4px;
+}
+.home-greeting .sub {
+  display:block; font-size:14px; font-weight:500;
+  color:var(--text-tertiary); margin-top:8px; letter-spacing:0;
+}
+
+.home-register-btn {
+  width:100%; max-width:320px;
+  padding:28px; border-radius:var(--radius-2xl);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:var(--space-lg);
+  background:linear-gradient(145deg,#ff3d00 0%,#ff5722 50%,#ff6e40 100%);
+  color:#fff; box-shadow:0 8px 32px rgba(255,61,0,.3);
+  border:1px solid rgba(255,110,64,.2);
+  position:relative; overflow:hidden;
+  transition:transform var(--duration-fast) var(--ease-spring);
+}
+.home-register-btn::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.08) 0%,transparent 50%);
+  pointer-events:none;
+}
+.home-register-btn:active { transform:scale(.95); }
+.home-register-btn .material-symbols-rounded { font-size:64px; opacity:.95; }
+.home-register-btn .btn-label { font-size:22px; font-weight:800; letter-spacing:-.3px; }
+
+.home-footer {
+  text-align:center; padding:var(--space-lg);
+  padding-bottom:calc(var(--space-lg) + var(--sab));
+  font-size:12px; color:var(--text-tertiary); letter-spacing:-.2px;
+}
+
+/* ============================================================
+   SHARED: BACK BUTTON & INPUT
+   ============================================================ */
+.back-btn {
+  display:inline-flex; align-items:center; gap:var(--space-xs);
+  padding:10px 16px 10px 12px;
+  border-radius:var(--radius-full);
+  background:var(--bg-card); color:var(--text-secondary);
+  font-size:15px; font-weight:600;
+  border:1px solid var(--border-subtle);
+  transition:all var(--duration-fast);
+  margin-bottom:var(--space-xl);
+}
+.back-btn:active { background:var(--bg-card-hover); transform:scale(.97); }
+.back-btn .material-symbols-rounded { font-size:20px; }
+
+.step-container {
+  flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:var(--space-xl) var(--space-xl) calc(var(--space-xl) + var(--sab));
+}
+
+.k-input {
+  width:100%; padding:14px 16px;
+  border-radius:var(--radius-md); border:1.5px solid var(--border-default);
+  background:var(--bg-input); color:var(--text-primary);
+  font-size:16px!important; font-weight:500; outline:none;
+  transition:border-color var(--duration-fast), background var(--duration-fast),
+             box-shadow var(--duration-fast);
+}
+.k-input:focus {
+  border-color:var(--accent);
+  background:var(--bg-input-focus);
+  box-shadow:0 0 0 3px var(--accent-soft);
+}
+.k-input::placeholder { color:var(--text-tertiary); font-weight:400; }
+
+.k-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:var(--space-sm); padding:14px 24px;
+  border-radius:var(--radius-md); border:none;
+  font-size:15px; font-weight:700; letter-spacing:-.2px;
+  transition:all var(--duration-fast) var(--ease-out);
+  position:relative; overflow:hidden;
+}
+.k-btn:active { transform:scale(.97); }
+.k-btn:disabled { opacity:.35; cursor:default; pointer-events:none; }
+.k-btn-primary {
+  background:var(--accent); color:#fff;
+  box-shadow:0 2px 8px rgba(255,61,0,.25);
+}
+.k-btn-primary:active { background:var(--accent-hover); }
+.k-btn-secondary {
+  background:var(--bg-card); color:var(--text-secondary);
+  border:1px solid var(--border-default);
+}
+.k-btn-block { width:100%; }
+
+/* ============================================================
+   REGISTER SCREEN
+   ============================================================ */
+.reg-info-bar {
+  display:flex; gap:var(--space-sm); align-items:center; flex-wrap:wrap;
+  padding:var(--space-md) var(--space-lg);
+  background:var(--bg-card); border-radius:var(--radius-md);
+  margin-bottom:var(--space-xl);
+  border:1px solid var(--border-subtle);
+}
+.reg-info-tag {
+  padding:5px 12px; border-radius:var(--radius-full);
+  font-size:13px; font-weight:600;
+}
+.reg-info-tag.dept { background:var(--purple-soft); color:var(--purple); }
+.reg-info-tag.guest { background:var(--blue-soft); color:var(--blue); }
+
+.car-input-row {
+  display:flex; gap:var(--space-md); margin-bottom:var(--space-xl);
+}
+.car-input {
+  flex:1; padding:20px 16px; border-radius:var(--radius-lg);
+  border:2px solid var(--border-default);
+  background:var(--bg-input); color:var(--text-primary);
+  font-size:32px!important; font-weight:800;
+  text-align:center; letter-spacing:4px; outline:none;
+  transition:border-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+.car-input:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px var(--accent-soft);
+}
+.car-search-btn {
+  width:72px; border-radius:var(--radius-lg);
+  background:var(--accent); color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  transition:transform var(--duration-fast) var(--ease-spring);
+  box-shadow:0 2px 8px rgba(255,61,0,.25);
+}
+.car-search-btn:active { transform:scale(.92); }
+.car-search-btn .material-symbols-rounded { font-size:30px; }
+
+/* Car cards */
+.car-results {
+  display:none; flex-direction:column; gap:var(--space-md);
+  padding:var(--space-sm) 0 var(--space-xl);
+}
+.car-results.multi {
+  flex-direction:row; overflow-x:auto;
+  scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+}
+.car-results.multi::-webkit-scrollbar { display:none; }
+
+.car-card {
+  width:100%; background:var(--bg-card);
+  border-radius:var(--radius-xl); cursor:pointer;
+  border:2px solid transparent;
+  transition:all var(--duration-normal) var(--ease-out);
+  overflow:hidden; box-shadow:var(--shadow-sm);
+}
+.car-results.multi .car-card {
+  min-width:75%; max-width:85%; flex-shrink:0;
+  scroll-snap-align:center;
+}
+.car-card:active { transform:scale(.98); }
+.car-card.selected {
+  border-color:var(--accent);
+  box-shadow:var(--shadow-glow);
+}
+.car-card.used { opacity:.4; filter:grayscale(.3); }
+
+.car-card-photo {
+  width:100%; display:block;
+  object-fit:contain; background:var(--bg-elevated);
+}
+.car-card-photo.loading {
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text-tertiary); font-size:12px; min-height:200px;
+  background:linear-gradient(90deg,var(--bg-elevated) 25%,var(--bg-card-hover) 50%,var(--bg-elevated) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite;
+}
+.car-card-body {
+  padding:var(--space-lg) var(--space-xl);
+  display:flex; align-items:center; justify-content:space-between;
+  gap:var(--space-md);
+}
+.car-card-left { flex:1; min-width:0; }
+.car-card-plate {
+  font-size:26px; font-weight:800; letter-spacing:1px; margin-bottom:4px;
+}
+.car-card-info {
+  font-size:14px; color:var(--text-secondary); line-height:1.6; font-weight:500;
+}
+.car-card-info .entry-time { color:var(--green); font-weight:600; }
+.car-card-badges { display:flex; gap:var(--space-sm); flex-wrap:wrap; flex-shrink:0; }
+.badge {
+  display:inline-flex; align-items:center; gap:3px;
+  padding:6px 14px; border-radius:var(--radius-full);
+  font-size:13px; font-weight:600;
+}
+.badge-parking { background:var(--green-soft); color:var(--green); }
+.badge-discount { background:var(--yellow-soft); color:var(--yellow); }
+
+.car-card:not(:has(.car-card-photo)) .car-card-body { padding:var(--space-xl); }
+
+/* Memo + Submit */
+.reg-memo {
+  width:100%; padding:var(--space-lg);
+  border-radius:var(--radius-md); border:1.5px solid var(--border-default);
+  background:var(--bg-input); color:var(--text-primary);
+  font-size:16px!important; font-weight:500;
+  outline:none; resize:none; margin-bottom:var(--space-lg);
+  transition:border-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+.reg-memo:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-soft);
+}
+.reg-bottom-bar {
+  flex-shrink:0;
+  padding:var(--space-md) var(--space-xl) calc(var(--space-md) + var(--sab));
+  background:var(--bg-base);
+  border-top:1px solid var(--border-subtle);
+}
+.reg-bottom-bar .reg-memo { margin-bottom:var(--space-sm); }
+.reg-submit-btn {
+  width:100%; padding:20px;
+  border-radius:var(--radius-lg);
+  background:var(--accent); color:#fff;
+  font-size:18px; font-weight:800; letter-spacing:-.3px;
+  transition:all var(--duration-fast) var(--ease-spring);
+  box-shadow:0 4px 16px rgba(255,61,0,.3);
+}
+.reg-submit-btn:active { transform:scale(.97); }
+.reg-submit-btn:disabled {
+  opacity:.25; cursor:default;
+  box-shadow:none; transform:none;
+}
+
+/* ============================================================
+   MODAL — Bottom Sheet
+   ============================================================ */
+.modal-overlay {
+  display:none; position:fixed; inset:0; z-index:20000;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+  align-items:flex-end; justify-content:center; padding:0;
+}
+.modal-overlay.show { display:flex; animation:fadeIn .15s; }
+.modal-box {
+  background:var(--bg-elevated);
+  border-radius:var(--radius-2xl) var(--radius-2xl) 0 0;
+  padding:var(--space-sm) var(--space-xl) calc(var(--space-xl) + var(--sab));
+  width:100%; max-width:500px;
+  animation:slideUp var(--duration-normal) var(--ease-out);
+}
+.modal-handle {
+  width:36px; height:4px; border-radius:2px;
+  background:var(--text-tertiary);
+  margin:var(--space-sm) auto var(--space-xl);
+}
+.modal-icon-wrap {
+  width:56px; height:56px; border-radius:var(--radius-full);
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto var(--space-lg);
+}
+.modal-icon-wrap.success { background:var(--green-soft); color:var(--green); }
+.modal-icon-wrap.error   { background:var(--red-soft); color:var(--red); }
+.modal-icon-wrap.warn    { background:var(--yellow-soft); color:var(--yellow); }
+.modal-icon-wrap.info    { background:var(--blue-soft); color:var(--blue); }
+.modal-icon-wrap .material-symbols-rounded { font-size:28px; }
+.modal-title {
+  font-size:20px; font-weight:800; letter-spacing:-.3px;
+  text-align:center; margin-bottom:var(--space-sm);
+}
+.modal-body {
+  font-size:15px; color:var(--text-secondary); line-height:1.7;
+  text-align:center; margin-bottom:var(--space-xl); font-weight:500;
+}
+.modal-actions {
+  display:flex; flex-direction:column; gap:var(--space-sm);
+}
+.modal-actions .modal-btn {
+  width:100%; padding:16px; border-radius:var(--radius-md);
+  font-size:16px; font-weight:700; letter-spacing:-.2px;
+  transition:all var(--duration-fast) var(--ease-spring);
+}
+.modal-actions .modal-btn:active { transform:scale(.98); }
+.modal-actions .modal-btn.primary {
+  background:var(--accent); color:#fff;
+  box-shadow:0 2px 8px rgba(255,61,0,.2);
+}
+.modal-actions .modal-btn.secondary {
+  background:var(--bg-card); color:var(--text-secondary);
+  border:1px solid var(--border-default);
+}
+.modal-actions.two-buttons { flex-direction:row; }
+.modal-actions.two-buttons .modal-btn { flex:1; }
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.toast-container {
+  position:fixed; top:calc(60px + var(--sat));
+  left:50%; transform:translateX(-50%);
+  z-index:300000; pointer-events:none;
+  display:flex; flex-direction:column;
+  align-items:center; gap:var(--space-sm);
+  width:calc(100% - 32px); max-width:400px;
+}
+.toast {
+  width:100%; padding:var(--space-md) var(--space-lg);
+  border-radius:var(--radius-md);
+  font-size:14px; font-weight:600;
+  opacity:0; transform:translateY(-8px);
+  transition:all var(--duration-normal) var(--ease-out);
+  pointer-events:auto;
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--border-subtle);
+  display:flex; align-items:center; gap:var(--space-sm);
+}
+.toast.show { opacity:1; transform:translateY(0); }
+.toast.success { background:rgba(52,211,153,.1); color:var(--green); border-color:rgba(52,211,153,.15); }
+.toast.error   { background:rgba(248,113,113,.1); color:var(--red); border-color:rgba(248,113,113,.15); }
+.toast.info    { background:rgba(96,165,250,.1); color:var(--blue); border-color:rgba(96,165,250,.15); }
+
+/* ============================================================
+   LOADING SPINNER
+   ============================================================ */
+.loading-overlay {
+  display:none; position:fixed; inset:0; z-index:50000;
+  background:rgba(0,0,0,.5);
+  backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+  align-items:center; justify-content:center;
+}
+.loading-overlay.show { display:flex; }
+.spinner-wrap {
+  width:80px; height:80px;
+  background:var(--bg-elevated); border-radius:var(--radius-lg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:var(--space-sm); box-shadow:var(--shadow-lg);
+}
+.spinner {
+  width:32px; height:32px;
+  border:3px solid var(--border-default);
+  border-top-color:var(--accent);
+  border-radius:50%; animation:spin .7s linear infinite;
+}
+
+/* ============================================================
+   AUTH EXPIRED INDICATOR
+   ============================================================ */
+.auth-timer {
+  font-size:12px; font-weight:500; color:var(--text-tertiary);
+  text-align:center; padding:8px 0;
+}
+
+/* ============================================================
+   STATUS DASHBOARD
+   ============================================================ */
+.status-top-bar {
+  display:flex; align-items:center; gap:var(--space-sm);
+  padding:var(--space-md) var(--space-xl);
+  flex-shrink:0;
+}
+.status-icon-btn {
+  width:40px; height:40px; border-radius:var(--radius-md);
+  background:var(--bg-card); color:var(--text-secondary);
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--border-subtle);
+  transition:all var(--duration-fast);
+  flex-shrink:0;
+}
+.status-icon-btn:active { background:var(--bg-card-hover); transform:scale(.95); }
+.status-icon-btn .material-symbols-rounded { font-size:20px; }
+
+.date-nav {
+  display:flex; align-items:center; gap:2px;
+  margin-left:auto; flex-shrink:0;
+}
+.date-nav-arrow {
+  width:36px; height:36px; border-radius:var(--radius-md);
+  background:var(--bg-card); color:var(--text-secondary);
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--border-subtle);
+  transition:all var(--duration-fast);
+}
+.date-nav-arrow:active { background:var(--bg-card-hover); transform:scale(.93); }
+.date-nav-arrow .material-symbols-rounded { font-size:20px; }
+.date-nav-label {
+  position:relative; padding:10px 18px;
+  background:var(--bg-card); color:var(--text-primary);
+  border:1px solid var(--border-default); border-radius:var(--radius-md);
+  font-size:15px; font-weight:700; white-space:nowrap;
+  cursor:pointer; transition:all var(--duration-fast);
+  min-width:130px; text-align:center;
+}
+.date-nav-label:active { background:var(--bg-card-hover); }
+.date-nav-label .today-dot {
+  display:inline-block; width:6px; height:6px;
+  border-radius:50%; background:var(--accent); margin-left:6px; vertical-align:middle;
+}
+.date-nav-picker {
+  height:36px; padding:0 10px;
+  background:var(--bg-card); color:var(--text-primary);
+  border:1px solid var(--border-subtle); border-radius:var(--radius-md);
+  font-size:13px; font-weight:600;
+  -webkit-appearance:none; appearance:none;
+  color-scheme:dark;
+  margin-left:2px;
+}
+
+.status-info-bar {
+  display:flex; align-items:center; gap:var(--space-md);
+  padding:0 var(--space-xl) var(--space-md);
+  flex-shrink:0;
+}
+.status-search {
+  flex:1; min-width:100px; padding:12px 16px;
+  border-radius:var(--radius-md);
+  border:1px solid var(--border-default);
+  background:var(--bg-input); color:var(--text-primary);
+  font-size:16px!important; font-weight:500;
+  outline:none; transition:border-color var(--duration-fast);
+}
+.status-search:focus { border-color:var(--blue); box-shadow:0 0 0 3px var(--blue-soft); }
+.status-summary-inline {
+  display:flex; gap:var(--space-xl); flex-shrink:0;
+}
+.status-stat {
+  display:flex; align-items:baseline; gap:4px;
+}
+.status-stat .stat-num {
+  font-size:22px; font-weight:900;
+  font-variant-numeric:tabular-nums;
+}
+.status-stat .stat-num.total { color:var(--blue); }
+.status-stat .stat-num.parking { color:var(--green); }
+.status-stat .stat-label {
+  font-size:12px; font-weight:600; color:var(--text-tertiary);
+}
+
+.status-list {
+  flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:0 var(--space-xl) calc(var(--space-xl) + var(--sab));
+  display:flex; flex-direction:column; gap:var(--space-md);
+}
+.sv-card {
+  background:var(--bg-card); border-radius:var(--radius-lg);
+  border:1px solid var(--border-subtle);
+  border-left:3px solid var(--border-subtle);
+  padding:var(--space-xl);
+  transition:border-color var(--duration-fast);
+}
+.sv-card.parking-card { border-left-color:var(--green); }
+.sv-card.exited-card  { border-left-color:rgba(255,255,255,.12); }
+.sv-card-top {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  margin-bottom:var(--space-md);
+}
+.sv-plate {
+  font-size:22px; font-weight:800; letter-spacing:1px;
+}
+.sv-badge {
+  padding:6px 14px; border-radius:var(--radius-full);
+  font-size:13px; font-weight:700;
+  flex-shrink:0;
+}
+.sv-badge.parking { background:var(--green-soft); color:var(--green); }
+.sv-badge.exited { background:rgba(255,255,255,.06); color:var(--text-tertiary); }
+.sv-paytype {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:3px 10px; border-radius:var(--radius-full);
+  font-size:11px; font-weight:700; letter-spacing:0.3px;
+  margin-left:8px; vertical-align:middle;
+}
+.sv-paytype.type-ticket { background:var(--blue-soft); color:var(--blue); }
+.sv-paytype.type-night { background:var(--purple-soft); color:var(--purple); }
+.sv-paytype.type-guest { background:rgba(255,255,255,.06); color:var(--text-secondary); }
+.sv-paytype.type-corp { background:rgba(255,255,255,.06); color:var(--text-secondary); }
+.sv-paytype.type-weekend { background:var(--green-soft); color:var(--green); }
+.sv-times {
+  display:flex; gap:var(--space-xl); margin-bottom:var(--space-md);
+  font-size:14px; color:var(--text-secondary); font-weight:500;
+}
+.sv-times .time-label { color:var(--text-tertiary); margin-right:4px; }
+.sv-times .time-value { font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
+.sv-times .time-duration { color:var(--text-secondary); font-weight:700; }
+.sv-discount-toggle {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:var(--space-sm) 0;
+  border-top:1px solid var(--border-subtle);
+  cursor:pointer; -webkit-tap-highlight-color:transparent;
+  user-select:none;
+}
+.sv-discount-toggle .toggle-label {
+  font-size:14px; font-weight:600; color:var(--text-secondary);
+  display:flex; align-items:center; gap:6px;
+}
+.sv-discount-toggle .toggle-label .cnt {
+  background:var(--blue-soft); color:var(--blue);
+  padding:2px 10px; border-radius:var(--radius-full); font-size:12px; font-weight:700;
+}
+.sv-discount-toggle .toggle-arrow {
+  font-size:18px; color:var(--text-tertiary);
+  transition:transform var(--duration-fast) var(--ease-out);
+}
+.sv-discount-toggle.open .toggle-arrow { transform:rotate(180deg); }
+.sv-discounts {
+  display:none; flex-direction:column; gap:var(--space-sm);
+  padding-top:var(--space-sm); padding-bottom:var(--space-xs);
+}
+.sv-discounts.open { display:flex; }
+.sv-discount-row {
+  display:flex; align-items:center; gap:var(--space-md);
+  font-size:14px; font-weight:500;
+}
+.sv-discount-row .d-name {
+  flex:1; color:var(--text-secondary);
+}
+.sv-discount-row .d-price {
+  font-weight:700; font-variant-numeric:tabular-nums; color:var(--text-primary);
+}
+.sv-discount-row .d-del-btn {
+  padding:6px 12px; border-radius:var(--radius-full);
+  background:var(--red-soft); color:var(--red);
+  font-size:12px; font-weight:600;
+  transition:all var(--duration-fast);
+}
+.sv-discount-row .d-del-btn:active { transform:scale(.95); }
+.sv-del-all-btn {
+  width:100%; margin-top:var(--space-md);
+  padding:12px; border-radius:var(--radius-md);
+  background:linear-gradient(135deg,rgba(248,113,113,.15) 0%,rgba(248,113,113,.08) 100%);
+  border:1px solid rgba(248,113,113,.2);
+  color:var(--red); font-size:14px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  transition:all var(--duration-fast);
+}
+.sv-del-all-btn:active { transform:scale(.97); background:rgba(248,113,113,.2); }
+.sv-del-all-btn .material-symbols-rounded { font-size:18px; }
+.sv-no-discount {
+  font-size:13px; color:var(--text-tertiary); font-weight:500;
+  padding-top:var(--space-md); border-top:1px solid var(--border-subtle);
+}
+
+/* Home status button */
+.home-status-btn {
+  width:100%; max-width:320px;
+  padding:18px; border-radius:var(--radius-xl);
+  display:flex; align-items:center; justify-content:center;
+  gap:var(--space-md);
+  background:var(--bg-card); color:var(--text-secondary);
+  border:1.5px solid var(--border-default);
+  position:relative; overflow:hidden;
+  transition:all var(--duration-fast) var(--ease-spring);
+}
+.home-status-btn:active { transform:scale(.97); background:var(--bg-card-hover); }
+.home-status-btn .material-symbols-rounded { font-size:28px; color:var(--blue); }
+.home-status-btn .btn-label { font-size:17px; font-weight:700; letter-spacing:-.3px; }
+
+/* Modal danger button (for delete) */
+.modal-actions .modal-btn.danger {
+  background:var(--red-soft); color:var(--red);
+}
+
+/* ============================================================
+   ★ GUEST 전용: 2× 확대 (iOS + Android 완전 호환)
+   ─────────────────────────────────────────────────
+   기본: transform:scale(2) — 모든 브라우저에서 작동
+   보강: @supports(zoom:2) — Chrome/최신Safari에서 zoom 우선
+   컨테이너를 50vw × 50vh 로 줄여놓고 2배 확대
+   → 50×2 = 100 → 화면에 딱 맞음, 스크롤 없음
+   ============================================================ */
+
+* { touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+html, body {
+  height:100vh!important; height:100dvh!important;
+  overscroll-behavior:none;
+  -webkit-touch-callout:none;
+  -webkit-text-size-adjust:100%;
+  text-size-adjust:100%;
+  overflow:hidden!important;
+}
+
+/* ── GAS 배너 강제 숨김 (body 직계 자식 중 #app 아닌 것 전부) ── */
+body > *:not(#app):not(script):not(style):not(link):not(noscript) {
+  display:none!important;
+  height:0!important; width:0!important;
+  overflow:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  position:absolute!important;
+}
+
+/* ── 2× 확대: transform:scale(2) 단일 방식 (iOS + Android 공통) ── */
+/* zoom은 iOS GAS iframe에서 오작동하므로 사용하지 않음              */
+#app {
+  width:50vw; height:50vh; height:50dvh;
+  -webkit-transform:scale(2); transform:scale(2);
+  -webkit-transform-origin:top left; transform-origin:top left;
+  -webkit-text-size-adjust:100%; text-size-adjust:100%;
+  display:flex; flex-direction:column;
+  overflow:hidden; position:relative;
+  padding-top:var(--sat);
+}
+
+/* 홈 화면: 스크롤 금지 + 세로 가운데 */
+#homeScreen { overflow:hidden!important; }
+#homeScreen .home-body {
+  justify-content:center;
+  overflow:hidden!important;
+}
+
+/* 등록 화면: 차량번호 입력 좌우 스크롤 방지 */
+.car-input {
+  letter-spacing:4px!important;
+  max-width:100%!important; box-sizing:border-box!important;
+}
+.car-input-row {
+  max-width:100%!important; overflow:hidden!important;
+}
+
+/* Help 버튼 (홈 화면) */
+.home-help-btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  gap:6px; align-self:center;
+  padding:8px 24px; border-radius:20px;
+  background:var(--bg-card); border:1px solid var(--border-default);
+  color:var(--text-secondary); font-size:13px; font-weight:600;
+  cursor:pointer; transition:all var(--duration-fast) var(--ease-out);
+}
+.home-help-btn:active { background:var(--bg-card-hover); }
+.home-help-btn .material-symbols-rounded { font-size:20px; color:var(--blue); }
+.home-help-btn .btn-label { font-size:14px; }
+</style>
+
+<!-- ★ GAS API Bridge: GAS iframe 밖에서도 google.script.run 호환 동작 -->
+<script>
+(function() {
+  // GAS iframe 안에서 실행 중이면 → 이미 google.script.run 존재 → 아무것도 안 함
+  try {
+    if (typeof google !== 'undefined' && google.script && google.script.run) return;
+  } catch(e) {}
+
+  // ── 외부 호스팅 모드: fetch()로 GAS API 호출 ──
+  var GAS_API = 'https://script.google.com/macros/s/AKfycbwSjDs_TaDa_TEZrqk4DlcF6N6MLu2CIdGVEfPUZdrtMzy4n4sd9rFqrDAKZi1vpReb/exec';
+
+  function Runner() {
+    this._ok = function(){};
+    this._fail = function(e){ console.error('GAS API:', e); };
+  }
+  Runner.prototype.withSuccessHandler = function(fn) {
+    var r = new Runner(); r._ok = fn || function(){}; r._fail = this._fail; return r;
+  };
+  Runner.prototype.withFailureHandler = function(fn) {
+    var r = new Runner(); r._ok = this._ok; r._fail = fn || function(){}; return r;
+  };
+
+  var FN_NAMES = [
+    'guestSendSms','guestVerifySms','guestCheckAuth',
+    'uspaceSearchCars','uspaceGetPhoto','recordToSheet',
+    'uspaceRegisterDiscountBatch','getSheetPayTypes',
+    'uspaceGetStatus','uspaceDeleteDiscount',
+    'deleteFromSheet','deleteAllFromSheet',
+    'uspaceDeleteDiscountBatch','checkLoginStatus'
+  ];
+
+  FN_NAMES.forEach(function(name) {
+    Runner.prototype[name] = function() {
+      var args = Array.prototype.slice.call(arguments);
+      var onOk = this._ok, onFail = this._fail;
+      var url = GAS_API + '?fn=' + encodeURIComponent(name) +
+                '&args=' + encodeURIComponent(JSON.stringify(args));
+      fetch(url, { redirect:'follow' })
+        .then(function(r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.text();
+        })
+        .then(function(txt) {
+          try { onOk(JSON.parse(txt)); }
+          catch(e) { onFail({ message: 'Invalid server response' }); }
+        })
+        .catch(function(err) {
+          onFail({ message: err.message || 'Network error' });
+        });
+    };
+  });
+
+  window.google = { script: { run: new Runner() } };
+  console.log('[GAS Bridge] 외부 호스팅 모드 활성화');
+})();
+</script>
+
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ========== HEADER ========== -->
+  <div class="k-header">
+    <div class="k-header-left">
+      <div class="k-logo">P</div>
+      <div class="k-header-title">손님 주차할인</div>
+    </div>
+    <div class="k-header-right">
+      <span class="k-header-time" id="headerTime"></span>
+      <span class="k-badge" id="baseBadge">기본 2시간 할인</span>
+    </div>
+  </div>
+
+  <!-- Session banner -->
+  <div class="session-banner" id="sessionBanner"></div>
+
+  <!-- ========== PHONE VERIFICATION SCREEN ========== -->
+  <div class="screen active" id="phoneScreen">
+    <div class="phone-body">
+      <div class="phone-card">
+        <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px">v2.3</div>
+        <h2>손님 주차할인 인증</h2>
+        <p>등록된 휴대폰 번호로<br>인증 후 이용할 수 있습니다.</p>
+
+        <input type="tel" class="k-input" id="phoneInput"
+               placeholder="010-0000-0000" maxlength="13"
+               oninput="formatPhone(this)"
+               style="font-size:24px!important;height:68px;padding:20px 18px">
+        <button class="k-btn k-btn-primary k-btn-block" id="sendCodeBtn"
+                onclick="sendSmsCode()">
+          <span class="material-symbols-rounded" style="font-size:20px">sms</span>
+          인증코드 발송
+        </button>
+
+        <div id="codeSection">
+          <input type="tel" class="k-input" id="codeInput"
+                 placeholder="인증코드 6자리" maxlength="6"
+                 onkeydown="if(event.key==='Enter')verifySmsCode()"
+                 style="font-size:24px!important;height:68px;padding:20px 18px">
+          <button class="k-btn k-btn-primary k-btn-block" onclick="verifySmsCode()">
+            <span class="material-symbols-rounded" style="font-size:20px">verified</span>
+            인증 확인
+          </button>
+        </div>
+
+        <div class="phone-status" id="phoneStatus"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== HOME SCREEN ========== -->
+  <div class="screen" id="homeScreen">
+    <div class="home-body">
+      <div class="home-hero">
+        <div class="home-greeting">
+          <strong>손님 주차할인</strong>
+          <span class="sub">방문 차량 주차할인을 등록할 수 있습니다</span>
+        </div>
+      </div>
+      <button class="home-register-btn" onclick="goRegister()">
+        <span class="material-symbols-rounded">local_parking</span>
+        <span class="btn-label">주차등록</span>
+      </button>
+      <button class="home-status-btn" onclick="goStatus()">
+        <span class="material-symbols-rounded">assignment</span>
+        <span class="btn-label">등록현황</span>
+      </button>
+      <div class="auth-timer" id="authTimer" style="color:var(--text-tertiary);font-size:13px"></div>
+      <button class="home-help-btn" onclick="showHelpModal()" style="width:auto;align-self:center">
+        <span class="material-symbols-rounded">help</span>
+        <span class="btn-label">문의하기</span>
+      </button>
+    </div>
+    <div class="home-footer">사내 주차정산시스템</div>
+  </div>
+
+  <!-- ========== REGISTER SCREEN ========== -->
+  <div class="screen" id="regScreen">
+    <div class="step-container" id="regScrollArea">
+      <button class="back-btn" onclick="goHome()">
+        <span class="material-symbols-rounded">arrow_back</span> 홈
+      </button>
+
+      <!-- Info bar -->
+      <div class="reg-info-bar" id="regInfoBar">
+        <span class="reg-info-tag dept">HR</span>
+        <span class="reg-info-tag guest">손님용</span>
+      </div>
+
+      <!-- Car number input -->
+      <div class="car-input-row">
+        <input type="tel" class="car-input" id="carNoInput"
+               placeholder="0000" maxlength="4"
+               oninput="onCarInput(this)"
+               inputmode="numeric">
+        <button class="car-search-btn" onclick="searchCar()">
+          <span class="material-symbols-rounded">search</span>
+        </button>
+      </div>
+
+      <!-- Car results -->
+      <div class="car-results" id="carResults"></div>
+    </div>
+
+    <!-- Bottom bar: memo + submit -->
+    <div class="reg-bottom-bar">
+      <textarea class="reg-memo" id="memoInput" rows="2" required
+                placeholder="메모 (필수) ex) TA - 인터뷰 OOO님 , HR - OO업체 미팅 등 간단하게 작성해주세요."></textarea>
+      <button class="reg-submit-btn" id="regSubmitBtn"
+              onclick="submitRegistration()" disabled>
+        주차 할인권 등록
+      </button>
+    </div>
+  </div>
+
+  <!-- ========== STATUS SCREEN ========== -->
+  <div class="screen" id="statusScreen">
+    <!-- 상단: 홈 + 새로고침 + 날짜 네비게이션 -->
+    <div class="status-top-bar">
+      <button class="status-icon-btn" onclick="goHome()">
+        <span class="material-symbols-rounded">home</span>
+      </button>
+      <button class="status-icon-btn" onclick="loadStatus(null, true)">
+        <span class="material-symbols-rounded">refresh</span>
+      </button>
+      <div class="date-nav">
+        <button class="date-nav-arrow" onclick="navDate(-1)">
+          <span class="material-symbols-rounded">chevron_left</span>
+        </button>
+        <div class="date-nav-label" id="dateNavLabel" onclick="navDateToday()">
+          <span id="dateNavText">오늘</span>
+        </div>
+        <button class="date-nav-arrow" onclick="navDate(1)">
+          <span class="material-symbols-rounded">chevron_right</span>
+        </button>
+        <input type="date" id="dateNavInput" class="date-nav-picker" onchange="onNavDatePick(this.value)">
+      </div>
+    </div>
+
+    <!-- 검색 + 요약 -->
+    <div class="status-info-bar">
+      <input type="text" class="status-search" id="statusSearch"
+             placeholder="차량번호 검색" oninput="filterStatus()">
+      <div class="status-summary-inline">
+        <div class="status-stat">
+          <span class="stat-num total" id="sumCars">-</span>
+          <span class="stat-label">대</span>
+        </div>
+        <div class="status-stat">
+          <span class="stat-num" id="sumDiscounts" style="color:var(--text-secondary)">-</span>
+          <span class="stat-label">할인</span>
+        </div>
+        <div class="status-stat">
+          <span class="stat-num parking" id="sumParking">-</span>
+          <span class="stat-label">주차중</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 차량 카드 리스트 -->
+    <div class="status-list" id="statusList">
+      <div style="text-align:center;padding:60px 20px;color:var(--text-tertiary)">
+        데이터를 불러오는 중...
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== MODAL ========== -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box" id="modalBox"></div>
+  </div>
+
+  <!-- ========== LOADING ========== -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:var(--space-lg)">
+      <div class="spinner-wrap"><div class="spinner"></div></div>
+      <div id="loadingText" style="color:var(--text-primary);font-size:14px;font-weight:600;text-align:center;display:none"></div>
+    </div>
+  </div>
+
+  <!-- ========== TOAST ========== -->
+  <div class="toast-container" id="toastContainer"></div>
+
+</div>
+
+<script>
+/* ============================================================
+   iOS 확대 완전 차단 (PASS 앱처럼 화면 고정)
+   ============================================================ */
+(function() {
+  // 1) 핀치 줌 차단
+  document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
+  document.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
+  document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
+
+  // 2) 더블탭 줌 차단
+  var lastTouchEnd = 0;
+  document.addEventListener('touchend', function(e) {
+    var now = Date.now();
+    if (now - lastTouchEnd <= 300) { e.preventDefault(); }
+    lastTouchEnd = now;
+  }, { passive: false });
+
+  // 3) 입력 필드 포커스 시 자동 확대 차단
+  //    viewport를 강제로 리셋해서 확대를 원천 봉쇄
+  var vpMeta = document.querySelector('meta[name="viewport"]');
+  var vpContent = 'width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
+  function lockViewport() { vpMeta.setAttribute('content', vpContent); }
+  lockViewport();
+  document.addEventListener('focus', function(e) {
+    var tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+      lockViewport();
+      // 살짝 딜레이 후 한번 더 (iOS가 포커스 시점에 확대 시도하므로)
+      setTimeout(lockViewport, 100);
+      setTimeout(lockViewport, 300);
+    }
+  }, true);
+  document.addEventListener('blur', function(e) {
+    var tag = e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') {
+      lockViewport();
+    }
+  }, true);
+})();
+
+/* ============================================================
+   STATE
+   ============================================================ */
+var AUTH_STORAGE_KEY = 'guest_auth_phone';       // localStorage 키
+var AUTH_TS_KEY      = 'guest_auth_timestamp';   // 마지막 인증 성공 시각
+var AUTH_CACHE_MS    = 24 * 60 * 60 * 1000;      // 24시간 캐시
+var authedPhone = '';  // 인증된 전화번호
+
+var selectedMember = { dept: 'HR', name: 'HR' };
+var isGuest = true;
+var carResults = [];
+var selectedCar = null;
+
+var appliedDiscounts = {};
+var knownDiscountCounts = {};
+
+/* ============================================================
+   DISCOUNT BUSINESS LOGIC (from employee version)
+   ============================================================ */
+var EXIT_BUFFER = 10;
+var WEEKEND_FREE_MIN = 600; // 10hr free on weekends
+
+function isWeekend(entryDateStr) {
+  if (entryDateStr && entryDateStr.length >= 8) {
+    var clean = entryDateStr.replace(/\D/g, '');
+    var y = parseInt(clean.substring(0, 4), 10);
+    var mo = parseInt(clean.substring(4, 6), 10) - 1;
+    var d = parseInt(clean.substring(6, 8), 10);
+    var entryDay = new Date(y, mo, d).getDay();
+    return entryDay === 0 || entryDay === 6;
+  }
+  var day = new Date().getDay();
+  return day === 0 || day === 6;
+}
+
+var DSCNT_NAMES = {
+  '1': '기본 2시간 할인', '11': '기본 6시간 할인',
+  '2': '30분 할인', '3': '1시간 할인', '5': '2시간 할인'
+};
+var DSCNT_COVER_MIN = {
+  '1': 120, '11': 360, '2': 30, '3': 60, '5': 120
+};
+
+function getBaseDiscount(entryDateStr) {
+  if (entryDateStr && entryDateStr.length >= 13) {
+    var clean = entryDateStr.replace(/\D/g, '');
+    if (clean.length >= 12) {
+      var hh = parseInt(clean.substring(8, 10), 10);
+      var mm = parseInt(clean.substring(10, 12), 10);
+      if (hh * 60 + mm >= 1050) { // 17:30
+        return { baseId: '11', baseFreeMin: 360 };
+      }
+    }
+  }
+  return { baseId: '1', baseFreeMin: 120 };
+}
+
+function calcDiscount(incarMin, baseFreeMin) {
+  var totalMin = incarMin + EXIT_BUFFER;
+  var thd = 1;
+  var hd = 0;
+  var md = 0;
+  var remain = totalMin - baseFreeMin;
+  if (remain > 0) {
+    hd = Math.floor(remain / 60);
+    var leftover = remain % 60;
+    if (leftover > 0) {
+      if (leftover > 30) { hd++; } else { md = 1; }
+    }
+  }
+  return { thd: thd, hd: hd, md: md };
+}
+
+/* ============================================================
+   PHONE AUTH
+   ============================================================ */
+function formatPhone(input) {
+  var v = input.value.replace(/[^0-9]/g, '');
+  if (v.length > 11) v = v.substring(0, 11);
+  if (v.length > 7) {
+    input.value = v.substring(0,3) + '-' + v.substring(3,7) + '-' + v.substring(7);
+  } else if (v.length > 3) {
+    input.value = v.substring(0,3) + '-' + v.substring(3);
+  } else {
+    input.value = v;
+  }
+}
+
+function setPhoneStatus(msg, cls) {
+  var el = document.getElementById('phoneStatus');
+  el.textContent = msg;
+  el.className = 'phone-status' + (cls ? ' ' + cls : '');
+}
+
+function sendSmsCode() {
+  var phone = document.getElementById('phoneInput').value.trim();
+  if (!/^010-\d{4}-\d{4}$/.test(phone)) {
+    setPhoneStatus('올바른 휴대폰 번호를 입력해주세요', 'err');
+    return;
+  }
+
+  showLoading(true, '인증코드 발송 중...');
+  document.getElementById('sendCodeBtn').disabled = true;
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      showLoading(false);
+      document.getElementById('sendCodeBtn').disabled = false;
+      if (res && res.sent) {
+        setPhoneStatus('인증코드가 발송되었습니다', 'ok');
+        document.getElementById('codeSection').classList.add('show');
+        setTimeout(function() { document.getElementById('codeInput').focus(); }, 200);
+      } else {
+        setPhoneStatus(res.msg || '발송 실패', 'err');
+      }
+    })
+    .withFailureHandler(function(err) {
+      showLoading(false);
+      document.getElementById('sendCodeBtn').disabled = false;
+      setPhoneStatus('오류: ' + err.message, 'err');
+    })
+    .guestSendSms(phone);
+}
+
+function verifySmsCode() {
+  var phone = document.getElementById('phoneInput').value.trim();
+  var code = document.getElementById('codeInput').value.trim();
+  if (!code || code.length < 4) {
+    setPhoneStatus('인증코드를 입력해주세요', 'err');
+    return;
+  }
+
+  showLoading(true, '인증 확인 중...');
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      showLoading(false);
+      if (res && res.verified) {
+        setPhoneStatus('인증 성공!', 'ok');
+        // ★ localStorage에 영구 저장 + 인증 시각 기록
+        authedPhone = phone;
+        try {
+          localStorage.setItem(AUTH_STORAGE_KEY, phone);
+          localStorage.setItem(AUTH_TS_KEY, String(Date.now()));
+        } catch(e) {}
+        setTimeout(function() { showScreen('homeScreen'); }, 500);
+      } else {
+        setPhoneStatus(res.msg || '인증 실패', 'err');
+      }
+    })
+    .withFailureHandler(function(err) {
+      showLoading(false);
+      setPhoneStatus('오류: ' + err.message, 'err');
+    })
+    .guestVerifySms(phone, code);
+}
+
+function checkAuthExpired() {
+  // localStorage에 저장된 번호가 없으면 인증 만료
+  if (!authedPhone) {
+    showModal('warn', '인증 필요',
+      '본인인증이 필요합니다.',
+      [{ text: '인증 화면으로', cls: 'primary', action: function() { closeModal(); resetToPhone(); }}]
+    );
+    return true;
+  }
+  return false;
+}
+
+function resetToPhone() {
+  document.getElementById('phoneInput').value = '';
+  document.getElementById('codeInput').value = '';
+  document.getElementById('codeSection').classList.remove('show');
+  setPhoneStatus('', '');
+  showScreen('phoneScreen');
+}
+
+/**
+ * 관리자가 시트에서 삭제했는지 확인 (앱 사용 중 주기적 체크 가능)
+ */
+function recheckAuth() {
+  if (!authedPhone) return;
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && !res.authorized) {
+        // 권한 삭제됨 → 차단
+        try {
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+          localStorage.removeItem(AUTH_TS_KEY);
+        } catch(e) {}
+        authedPhone = '';
+        showModal('warn', '접근 차단',
+          '관리자에 의해 권한이 제거되었습니다.<br>더 이상 이 앱을 사용할 수 없습니다.',
+          [{ text: '확인', cls: 'primary', action: function() { closeModal(); resetToPhone(); }}]
+        );
+      }
+    })
+    .withFailureHandler(function() { /* 네트워크 오류 시 무시 */ })
+    .guestCheckAuth(authedPhone);
+}
+
+/* ============================================================
+   HELP MODAL
+   ============================================================ */
+function showHelpModal() {
+  showModal('info', '문의하기',
+    '<div style="text-align:center;padding:8px 0">' +
+    '<div style="font-size:18px;font-weight:700;color:var(--text-primary);margin-bottom:12px">시스템 문의</div>' +
+    '<div style="font-size:16px;color:var(--text-secondary);margin-bottom:16px">문제 발생 시 아래로 연락해주세요</div>' +
+    '<div style="background:var(--bg-input);border:1px solid var(--border-default);border-radius:14px;padding:20px;margin-bottom:8px">' +
+    '<div style="font-size:15px;color:var(--text-secondary);margin-bottom:6px">HR팀</div>' +
+    '<div style="font-size:22px;font-weight:800;color:var(--text-primary);margin-bottom:8px">유동현</div>' +
+    '<a href="tel:01052710382" style="font-size:20px;font-weight:700;color:var(--blue);text-decoration:none">010-5271-0382</a>' +
+    '</div></div>',
+    [{ text: '닫기', cls: 'secondary', action: closeModal }]
+  );
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function showScreen(id) {
+  var screens = document.querySelectorAll('.screen');
+  for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  resetRegister();
+  showScreen('homeScreen');
+  // 인증된 번호 표시
+  var timerEl = document.getElementById('authTimer');
+  if (timerEl && authedPhone) {
+    timerEl.textContent = '인증됨: ' + authedPhone;
+  }
+}
+
+function goRegister() {
+  if (checkAuthExpired()) return;
+  resetRegister();
+  showScreen('regScreen');
+  setTimeout(function() { document.getElementById('carNoInput').focus(); }, 200);
+}
+
+function resetRegister() {
+  selectedCar = null;
+  carResults = [];
+  document.getElementById('carNoInput').value = '';
+  document.getElementById('memoInput').value = '';
+  document.getElementById('carResults').style.display = 'none';
+  document.getElementById('carResults').innerHTML = '';
+  document.getElementById('regSubmitBtn').disabled = true;
+}
+
+/* ============================================================
+   CAR SEARCH
+   ============================================================ */
+function onCarInput(input) {
+  input.value = input.value.replace(/[^0-9]/g, '');
+  if (input.value.length >= 4) searchCar();
+}
+
+function searchCar() {
+  if (checkAuthExpired()) return;
+  var q = document.getElementById('carNoInput').value.trim();
+  if (q.length < 2) { toast('차량번호 2자리 이상 입력해주세요', 'error'); return; }
+
+  showLoading(true);
+  google.script.run
+    .withSuccessHandler(function(res) {
+      showLoading(false);
+      if (!res.ok) {
+        toast(res.msg || '검색 실패', 'error');
+        return;
+      }
+      carResults = res.data || [];
+      renderCarResults(q);
+    })
+    .withFailureHandler(function(err) {
+      showLoading(false);
+      toast('검색 오류: ' + err.message, 'error');
+    })
+    .uspaceSearchCars(q, '1A-605', todayStr8());
+}
+
+function renderCarResults(query) {
+  var container = document.getElementById('carResults');
+  selectedCar = null;
+  document.getElementById('regSubmitBtn').disabled = true;
+
+  if (carResults.length === 0) {
+    container.innerHTML = '<div style="padding:24px;color:var(--text-tertiary);font-size:14px;font-weight:500;text-align:center;width:100%">' +
+                          '검색 결과가 없습니다</div>';
+    container.style.display = 'flex';
+    return;
+  }
+
+  var html = '';
+  var lastDiscountCnt = 0;
+  for (var i = 0; i < carResults.length; i++) {
+    var r = carResults[i];
+    var plate = r.carNo || '';
+    var entryStr = r.entryDateToString || '';
+    var entryTime = entryStr.length >= 16 ? entryStr.substring(11, 16) : entryStr;
+    var parkMin = r.incar_min || 0;
+    var parkDisplay = parkMin >= 60
+      ? Math.floor(parkMin / 60) + '시간 ' + (parkMin % 60) + '분'
+      : parkMin + '분';
+    var discountCnt = Number(r.dscnt_cnt || 0);
+    lastDiscountCnt = discountCnt;
+    var hasDiscount = discountCnt > 0;
+    var hasPic = r.acEntrancePicName && r.acEntrancePicName.length > 3;
+
+    html += '<div class="car-card' + (hasDiscount ? ' used' : '') + '" onclick="selectCar(' + i + ')" data-idx="' + i + '">';
+
+    if (hasPic) {
+      html += '<div class="car-card-photo loading" id="carPhoto' + i + '"></div>';
+    }
+
+    html += '<div class="car-card-body">' +
+            '<div class="car-card-left">' +
+            '<div class="car-card-plate">' + esc(plate) + '</div>' +
+            '<div class="car-card-info">' +
+            '<span class="entry-time">입차 ' + esc(entryTime) + '</span> · 주차 ' + esc(parkDisplay) +
+            '</div></div>' +
+            '<div class="car-card-badges">' +
+            '<span class="badge badge-parking">주차중</span>';
+    if (hasDiscount) {
+      html += '<span class="badge badge-discount">할인 ' + discountCnt + '건</span>';
+    }
+    html += '</div></div></div>';
+  }
+
+  container.innerHTML = html;
+  container.style.display = 'flex';
+
+  if (carResults.length > 1) {
+    container.classList.add('multi');
+  } else {
+    container.classList.remove('multi');
+  }
+
+  for (var j = 0; j < carResults.length; j++) {
+    if (carResults[j].acEntrancePicName) loadCarPhoto(j, carResults[j].acEntrancePicName);
+  }
+
+  if (carResults.length === 1 && lastDiscountCnt === 0) selectCar(0);
+}
+
+function loadCarPhoto(idx, picPath) {
+  google.script.run
+    .withSuccessHandler(function(res) {
+      var el = document.getElementById('carPhoto' + idx);
+      if (!el) return;
+      if (res && res.ok && res.dataUrl) {
+        var img = document.createElement('img');
+        img.className = 'car-card-photo';
+        img.src = res.dataUrl;
+        img.alt = '입차 사진';
+        img.onerror = function() { el.textContent = '사진 없음'; };
+        el.replaceWith(img);
+      } else {
+        el.textContent = '사진 없음';
+        el.classList.remove('loading');
+      }
+    })
+    .withFailureHandler(function() {
+      var el = document.getElementById('carPhoto' + idx);
+      if (el) { el.textContent = ''; el.classList.remove('loading'); }
+    })
+    .uspaceGetPhoto(picPath);
+}
+
+function selectCar(idx) {
+  selectedCar = carResults[idx];
+  document.getElementById('regSubmitBtn').disabled = false;
+
+  var cards = document.querySelectorAll('.car-card');
+  for (var i = 0; i < cards.length; i++) cards[i].classList.remove('selected');
+  cards[idx].classList.add('selected');
+
+  var plate = selectedCar.carNo || '';
+  var serverCnt = Number(selectedCar.dscnt_cnt || 0);
+  var entryKey = plate + '_' + (selectedCar.entryDateToString || '').replace(/\D/g, '');
+  var myData = appliedDiscounts[entryKey];
+  var myCnt = knownDiscountCounts[plate] || 0;
+
+  if (serverCnt > 0 && !myData && myCnt === 0) {
+    toast('이 차량은 이미 할인 ' + serverCnt + '건이 적용되어 있습니다', 'info');
+  }
+}
+
+/* ============================================================
+   DISCOUNT REGISTRATION
+   ============================================================ */
+function submitRegistration() {
+  if (!selectedCar) return;
+  if (checkAuthExpired()) return;
+
+  // ★ 메모 필수 체크
+  var memoVal = document.getElementById('memoInput').value.trim();
+  if (!memoVal) {
+    toast('메모를 입력해주세요 (ex. TA-인터뷰 OOO님)', 'error');
+    document.getElementById('memoInput').focus();
+    return;
+  }
+
+  var carId = selectedCar.id || '';
+  if (!carId) { toast('차량 식별정보 없음', 'error'); return; }
+
+  var incarMin = selectedCar.incar_min || 0;
+  var carNo = selectedCar.carNo || '';
+  var entryKey = carNo + '_' + (selectedCar.entryDateToString || '').replace(/\D/g, '');
+  var entryDateRaw = selectedCar.entryDateToString || '';
+
+  // Weekend logic
+  if (isWeekend(entryDateRaw)) {
+    var weekendMemo = document.getElementById('memoInput').value.trim();
+    var safeRemain = WEEKEND_FREE_MIN - (incarMin + EXIT_BUFFER);
+
+    if (safeRemain >= 0) {
+      // Under 10hr — no discount needed
+      showModal('success', '주말 무료 주차',
+        '<div style="line-height:1.9">' +
+        '차량: <b>' + esc(carNo) + '</b><br>' +
+        '주차시간: <b>' + formatMinutes(incarMin) + '</b><br>' +
+        '<div style="background:var(--green-soft);border-radius:var(--radius-md);padding:12px;margin-top:8px">' +
+        '<span style="color:var(--green);font-weight:800">주말 10시간 기본무료 적용 중</span><br>' +
+        '<span style="color:var(--green);font-size:13px">남은 무료 시간: <b>' + formatMinutes(safeRemain) + '</b></span>' +
+        '</div></div>',
+        [{ text: '확인', cls: 'primary', action: function() { closeModal(); goHome(); }}]
+      );
+
+      google.script.run
+        .withSuccessHandler(function() {})
+        .withFailureHandler(function() {})
+        .recordToSheet({
+          action: 'new', name: 'HR', number: carNo, dept: 'HR',
+          memo: weekendMemo || '주말 10시간 무료',
+          isGuest: true, thd: 0, hd: 0, md: 0, payType: '주말무료'
+        });
+      return;
+    }
+
+    // Over 10hr — calculate excess
+    var excessMin = incarMin + EXIT_BUFFER - WEEKEND_FREE_MIN;
+    var exHd = Math.floor(excessMin / 60);
+    var exLeftover = excessMin % 60;
+    var exMd = 0;
+    if (exLeftover > 0) {
+      if (exLeftover > 30) { exHd++; } else { exMd = 1; }
+    }
+    var weekendTypes = [];
+    for (var wi = 0; wi < exHd; wi++) weekendTypes.push('3');
+    for (var wi2 = 0; wi2 < exMd; wi2++) weekendTypes.push('2');
+    var weekendBase = getBaseDiscount(entryDateRaw);
+    var weekendCalc = { thd: 0, hd: exHd, md: exMd };
+    var weekendDiscountSummary = weekendTypes.map(function(t) { return DSCNT_NAMES[t] || t; }).join(', ');
+    var weekendCost = (exHd * 1500) + (exMd * 750);
+
+    showModal('info', '주말 초과 주차 할인',
+      '<div style="line-height:1.9;text-align:left">' +
+      '차량: <b>' + esc(carNo) + '</b><br>' +
+      '주차시간: <b>' + formatMinutes(incarMin) + '</b><br>' +
+      '<div style="background:var(--blue-soft);border-radius:var(--radius-md);padding:10px;margin-top:8px;font-size:13px">' +
+      '주말 <b>10시간 기본무료는 유지</b>됩니다.<br>' +
+      '초과분 <b>' + formatMinutes(excessMin) + '</b>에 대해서만 유료 할인권을 등록합니다.' +
+      '</div><br>' +
+      '할인권: <b>' + weekendTypes.length + '장</b> (' + esc(weekendDiscountSummary) + ')<br>' +
+      (weekendCost > 0 ? '공제금액: <b style="color:var(--red)">' + weekendCost.toLocaleString() + '원</b>' : '') +
+      '</div>',
+      [
+        { text: '등록', cls: 'primary', action: function() {
+          closeModal();
+          applyDiscountsBatch(carId, weekendTypes, weekendCalc, weekendBase, entryKey);
+        }},
+        { text: '취소', cls: 'secondary', action: closeModal }
+      ]
+    );
+    return;
+  }
+
+  // Weekday logic
+  var prevData = appliedDiscounts[entryKey];
+  var base = getBaseDiscount(entryDateRaw);
+
+  if (prevData) {
+    var prevCoverMin = prevData.coverMin || 0;
+    var totalNeeded = incarMin + EXIT_BUFFER;
+    var additionalNeeded = totalNeeded - prevCoverMin;
+
+    if (additionalNeeded <= 0) {
+      var remMin = prevCoverMin - incarMin;
+      showModal('info', '추가 등록 불필요',
+        '이미 할인이 적용되어 있습니다.<br>남은 출차 시간: <b>' + formatMinutes(remMin) + '</b>',
+        [
+          { text: '확인', cls: 'primary', action: closeModal },
+          { text: '30분 추가', cls: 'secondary', action: function() {
+            closeModal();
+            applyDiscountsBatch(carId, ['2'], { thd:0, hd:0, md:1 }, base, entryKey);
+          }},
+          { text: '1시간 추가', cls: 'secondary', action: function() {
+            closeModal();
+            applyDiscountsBatch(carId, ['3'], { thd:0, hd:1, md:0 }, base, entryKey);
+          }}
+        ]
+      );
+      return;
+    }
+
+    var addHd = Math.floor(additionalNeeded / 60);
+    var addLeftover = additionalNeeded % 60;
+    var addMd = 0;
+    if (addLeftover > 0) {
+      if (addLeftover > 30) { addHd++; } else { addMd = 1; }
+    }
+
+    var addCalc = { thd: 0, hd: addHd, md: addMd };
+    var addTypes = [];
+    for (var ai = 0; ai < addCalc.hd; ai++) addTypes.push('3');
+    for (var ai2 = 0; ai2 < addCalc.md; ai2++) addTypes.push('2');
+
+    if (addTypes.length === 0) { toast('추가 할인 불필요', 'info'); return; }
+
+    showModal('info', '추가 할인권 등록',
+      '<div style="line-height:1.9;text-align:left">' +
+      '차량: <b>' + esc(carNo) + '</b><br>' +
+      '주차시간: <b>' + formatMinutes(incarMin) + '</b><br>' +
+      '기존 할인: <b>' + formatMinutes(prevCoverMin) + '</b> 커버 중<br>' +
+      '추가 필요: <b>' + formatMinutes(additionalNeeded) + '</b><br>' +
+      '추가 할인권: <b>' + addTypes.length + '장</b>' +
+      '</div>',
+      [
+        { text: '등록', cls: 'primary', action: function() {
+          closeModal();
+          applyDiscountsBatch(carId, addTypes, addCalc, base, entryKey);
+        }},
+        { text: '취소', cls: 'secondary', action: closeModal }
+      ]
+    );
+    return;
+  }
+
+  // First-time registration
+  var calc = calcDiscount(incarMin, base.baseFreeMin);
+  var discountTypes = [base.baseId];
+  for (var i = 0; i < calc.hd; i++) discountTypes.push('3');
+  for (var i2 = 0; i2 < calc.md; i2++) discountTypes.push('2');
+
+  var totalCost = (calc.hd * 1500) + (calc.md * 750);
+  var parkTimeStr = formatMinutes(incarMin);
+  var discountSummary = discountTypes.map(function(t) { return DSCNT_NAMES[t] || t; }).join(', ');
+
+  showModal('info', '할인권 등록 확인',
+    '<div style="line-height:1.9;text-align:left">' +
+    '차량: <b>' + esc(carNo) + '</b><br>' +
+    '주차시간: <b>' + parkTimeStr + '</b><br>' +
+    '할인권: <b>' + discountTypes.length + '장</b><br>' +
+    '<span style="font-size:12px;color:var(--text-tertiary)">' + esc(discountSummary) + '</span><br>' +
+    (totalCost > 0 ? '공제금액: <b style="color:var(--red)">' + totalCost.toLocaleString() + '원</b>' : '') +
+    '</div>',
+    [
+      { text: '등록', cls: 'primary', action: function() {
+        closeModal();
+        applyDiscountsBatch(carId, discountTypes, calc, base, entryKey);
+      }},
+      { text: '취소', cls: 'secondary', action: closeModal }
+    ]
+  );
+}
+
+function applyDiscountsBatch(carId, types, calc, base, entryKey) {
+  if (checkAuthExpired()) return;
+
+  showLoading(true, '할인 ' + types.length + '건 등록중...');
+  document.getElementById('regSubmitBtn').disabled = true;
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      showLoading(false);
+      if (!res.ok && !res.results) {
+        toast('등록 실패: ' + (res.msg || ''), 'error');
+        document.getElementById('regSubmitBtn').disabled = false;
+        return;
+      }
+
+      var failTypes = [];
+      if (res.results) {
+        for (var i = 0; i < res.results.length; i++) {
+          var r = res.results[i];
+          if (r.fallback) {
+            // ★ 재입차: 기본할인 → 동일 시간 유료로 대체됨
+            calc.thd = 0;
+            var extraHd = r.extraHd || 2;
+            calc.hd += extraHd;
+            // ★ types 배열도 수정 → finishRegistration에서 thd 재계산 시 올바르게 0
+            var fbNewTypes = [];
+            for (var fi = 0; fi < types.length; fi++) {
+              if (types[fi] === '1') {
+                fbNewTypes.push('3'); fbNewTypes.push('3');
+              } else if (types[fi] === '11') {
+                for (var fx = 0; fx < 6; fx++) fbNewTypes.push('3');
+              } else {
+                fbNewTypes.push(types[fi]);
+              }
+            }
+            types.length = 0;
+            for (var fj = 0; fj < fbNewTypes.length; fj++) types.push(fbNewTypes[fj]);
+            toast('재입차: 무료할인 → ' + extraHd + '시간 유료로 대체', 'info');
+          } else if (!r.ok) {
+            var failLabel = (DSCNT_NAMES[r.type] || r.type) + (r.msg ? '(' + r.msg + ')' : '');
+            failTypes.push(failLabel);
+            if (r.isBusinessError && (r.type === '1' || r.type === '11')) {
+              calc.thd = 0;
+            }
+          }
+        }
+      }
+      if (failTypes.length > 0) {
+        toast(failTypes.join(', ') + ' 실패', 'error');
+      }
+      finishRegistration(calc.hd, calc.md, base, types, entryKey);
+    })
+    .withFailureHandler(function(err) {
+      showLoading(false);
+      toast('오류: ' + err.message, 'error');
+      document.getElementById('regSubmitBtn').disabled = false;
+    })
+    .uspaceRegisterDiscountBatch(carId, types, '1A-605');
+}
+
+function finishRegistration(hd, md, base, types, entryKey) {
+  showLoading(false);
+  closeModal();
+
+  // Invalidate status cache so next visit to 등록현황 shows fresh data
+  _statusCache.time = 0;
+
+  var payType = '손님용';
+  var plate = selectedCar ? (selectedCar.carNo || '') : '';
+  var memo = document.getElementById('memoInput').value.trim();
+
+  var thd = 0;
+  if (types) {
+    for (var ti = 0; ti < types.length; ti++) {
+      if (types[ti] === '1' || types[ti] === '11') { thd = 1; break; }
+    }
+  }
+  var incarMin = selectedCar ? (selectedCar.incar_min || 0) : 0;
+  var baseFreeMin = base ? base.baseFreeMin : 120;
+
+  var prevCover = appliedDiscounts[entryKey];
+  var prevCoverMin = prevCover ? (prevCover.coverMin || 0) : 0;
+  var thisCoverMin = (thd * baseFreeMin) + (hd * 60) + (md * 30);
+  var weekendBonus = 0;
+  if (isWeekend(selectedCar ? selectedCar.entryDateToString : '') && prevCoverMin === 0 && thd === 0) {
+    weekendBonus = WEEKEND_FREE_MIN;
+  }
+  var coverMin = prevCoverMin + thisCoverMin + weekendBonus;
+  var remainMin = coverMin - incarMin;
+  var remainStr = formatMinutes(Math.max(0, remainMin));
+
+  if (entryKey) {
+    appliedDiscounts[entryKey] = {
+      coverMin: coverMin,
+      name: 'HR', dept: 'HR', isGuest: true
+    };
+  }
+  if (plate && types) {
+    var prevKnown = knownDiscountCounts[plate] || (Number(selectedCar.dscnt_cnt) || 0);
+    knownDiscountCounts[plate] = prevKnown + types.length;
+  }
+
+  // Sheet recording (fire-and-forget)
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.error) toast('시트 기록 참고: ' + res.error, 'info');
+    })
+    .withFailureHandler(function() {
+      toast('시트 기록 실패 (할인은 정상)', 'info');
+    })
+    .recordToSheet({
+      action: prevCover ? 'update' : 'new',
+      name: 'HR', number: plate, dept: 'HR',
+      memo: memo, isGuest: true,
+      thd: thd, hd: hd, md: md,
+      payType: payType
+    });
+
+  // Type count summary
+  var typeCounts = {};
+  (types || []).forEach(function(t) { typeCounts[t] = (typeCounts[t] || 0) + 1; });
+  var discountDetail = Object.keys(typeCounts).map(function(t) {
+    return (DSCNT_NAMES[t] || t) + (typeCounts[t] > 1 ? ' ×' + typeCounts[t] : '');
+  }).join(', ');
+
+  // Save context for extra discount
+  window._lastRegCtx = {
+    carId: selectedCar ? (selectedCar.id || '') : '',
+    plate: plate,
+    entryKey: entryKey,
+    coverMin: coverMin,
+    incarMin: incarMin
+  };
+
+  showModal('success', '등록 완료',
+    '<div style="line-height:2">' +
+    '차량 <b style="font-size:18px;letter-spacing:1px">' + esc(plate) + '</b><br>' +
+    '<span style="font-size:14px;color:var(--blue);font-weight:600">' + esc(discountDetail) + '</span>' +
+    '<div id="extraRemainBox" style="background:var(--green-soft);border-radius:var(--radius-md);padding:14px;margin-top:14px">' +
+    '<span style="color:var(--green);font-weight:800;font-size:17px">남은 출차 시간: ' + remainStr + '</span>' +
+    '</div>' +
+    '<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border-subtle)">' +
+    '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;font-weight:600">추가 할인 등록</div>' +
+    '<div style="display:flex;gap:8px">' +
+    '<button onclick="addExtraDiscount(\'2\',30)" class="extra-dc-btn" style="flex:1;border:1.5px solid var(--blue);background:var(--blue-soft);color:var(--blue);border-radius:var(--radius-md);padding:10px 0;font-size:14px;font-weight:700;cursor:pointer">+30분</button>' +
+    '<button onclick="addExtraDiscount(\'3\',60)" class="extra-dc-btn" style="flex:1;border:1.5px solid var(--green);background:var(--green-soft);color:var(--green);border-radius:var(--radius-md);padding:10px 0;font-size:14px;font-weight:700;cursor:pointer">+1시간</button>' +
+    '</div></div></div>',
+    [{ text: '확인', cls: 'primary', action: function() { closeModal(); goHome(); }}]
+  );
+  document.getElementById('regSubmitBtn').disabled = false;
+}
+
+function addExtraDiscount(typeId, addMin) {
+  if (checkAuthExpired()) return;
+  var ctx = window._lastRegCtx;
+  if (!ctx || !ctx.carId) { toast('차량 정보가 없습니다. 다시 등록해주세요.', 'error'); return; }
+
+  var btns = document.querySelectorAll('.extra-dc-btn');
+  btns.forEach(function(b) { b.disabled = true; b.style.opacity = '0.5'; });
+
+  var typeName = DSCNT_NAMES[typeId] || typeId;
+  toast(typeName + ' 추가 등록중...', 'info');
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      btns.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+
+      if (!res.ok && !res.results) {
+        toast('추가 등록 실패: ' + (res.msg || ''), 'error');
+        return;
+      }
+      var hasFail = false;
+      if (res.results) {
+        for (var i = 0; i < res.results.length; i++) {
+          if (!res.results[i].ok) { hasFail = true; toast(typeName + ' 추가 실패: ' + (res.results[i].msg || ''), 'error'); }
+        }
+      }
+      if (hasFail) return;
+
+      toast(typeName + ' 추가 완료!', 'success');
+
+      ctx.coverMin += addMin;
+      var newRemain = ctx.coverMin - ctx.incarMin;
+      var remainBox = document.getElementById('extraRemainBox');
+      if (remainBox) {
+        remainBox.innerHTML = '<span style="color:var(--green);font-weight:800;font-size:17px">남은 출차 시간: ' + formatMinutes(Math.max(0, newRemain)) + '</span>';
+      }
+
+      if (ctx.entryKey && appliedDiscounts[ctx.entryKey]) {
+        appliedDiscounts[ctx.entryKey].coverMin = ctx.coverMin;
+      }
+      if (ctx.plate) {
+        knownDiscountCounts[ctx.plate] = (knownDiscountCounts[ctx.plate] || 0) + 1;
+      }
+
+      var extraHd = (typeId === '3') ? 1 : 0;
+      var extraMd = (typeId === '2') ? 1 : 0;
+      google.script.run
+        .withSuccessHandler(function() {})
+        .withFailureHandler(function() { toast('시트 추가기록 오류 (할인은 정상)', 'info'); })
+        .recordToSheet({
+          action: 'update', name: 'HR', number: ctx.plate, dept: 'HR',
+          memo: '', isGuest: true,
+          thd: 0, hd: extraHd, md: extraMd,
+          payType: '손님용'
+        });
+    })
+    .withFailureHandler(function(err) {
+      btns.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+      toast('추가 등록 오류: ' + err.message, 'error');
+    })
+    .uspaceRegisterDiscountBatch(ctx.carId, [typeId], '1A-605');
+}
+
+/* ============================================================
+   STATUS DASHBOARD
+   ============================================================ */
+var statusRecords = [];
+var sheetPayTypes = {};
+var recentlyDeletedPlates = {};
+var statusStartDate = todayStr();
+var statusEndDate = todayStr();
+var _statusCache = { key: '', time: 0, sheetData: null, uspaceData: null };
+var STATUS_CACHE_TTL = 60000;
+var STATUS_STALE_TTL = 300000;
+var _statusLoading = false;
+
+function todayStr() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function yesterdayStr() {
+  var d = new Date(); d.setDate(d.getDate() - 1);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function formatFullTime(str) {
+  if (!str) return '';
+  var clean = String(str).replace(/\D/g, '');
+  if (clean.length >= 14) {
+    return clean.substring(8,10) + ':' + clean.substring(10,12) + ':' + clean.substring(12,14);
+  } else if (clean.length >= 12) {
+    return clean.substring(8,10) + ':' + clean.substring(10,12);
+  }
+  return str;
+}
+
+function parseDateTime14(s) {
+  if (!s || s.length < 12) return null;
+  var y = parseInt(s.substring(0,4),10);
+  var mo = parseInt(s.substring(4,6),10) - 1;
+  var d = parseInt(s.substring(6,8),10);
+  var h = parseInt(s.substring(8,10),10);
+  var mi = parseInt(s.substring(10,12),10);
+  var sec = s.length >= 14 ? parseInt(s.substring(12,14),10) : 0;
+  return new Date(y, mo, d, h, mi, sec);
+}
+
+function calcParkDuration(entryStr, exitStr) {
+  if (!entryStr) return '';
+  var clean1 = String(entryStr).replace(/\D/g, '');
+  var clean2 = exitStr ? String(exitStr).replace(/\D/g, '') : '';
+  var d1 = parseDateTime14(clean1);
+  if (!d1) return '';
+  var d2 = clean2 ? parseDateTime14(clean2) : new Date();
+  if (!d2) return '';
+  var diffMin = Math.floor((d2 - d1) / 60000);
+  if (diffMin < 0) return '';
+  var h = Math.floor(diffMin / 60);
+  var m = diffMin % 60;
+  return (h > 0 ? h + '시간 ' : '') + m + '분';
+}
+
+function getDiscountCoverMin(discountName) {
+  if (!discountName) return 0;
+  if (discountName.indexOf('6시간') >= 0) return 360;
+  if (discountName.indexOf('2시간') >= 0) return 120;
+  if (discountName.indexOf('1시간') >= 0) return 60;
+  if (discountName.indexOf('30분') >= 0) return 30;
+  return 0;
+}
+
+function calcDeadlineStr(entryDateStr, totalCoverMin) {
+  if (!entryDateStr || totalCoverMin <= 0) return '';
+  var clean = entryDateStr.replace(/\D/g, '');
+  if (clean.length < 12) return '';
+  var y = parseInt(clean.substring(0, 4));
+  var mo = parseInt(clean.substring(4, 6)) - 1;
+  var d = parseInt(clean.substring(6, 8));
+  var h = parseInt(clean.substring(8, 10));
+  var mi = parseInt(clean.substring(10, 12));
+  var deadline = new Date(y, mo, d, h, mi);
+  deadline.setMinutes(deadline.getMinutes() + totalCoverMin);
+  var now = new Date();
+  var diffMs = deadline.getTime() - now.getTime();
+  var remainMin = Math.floor(diffMs / 60000);
+  var timeStr = String(deadline.getHours()).padStart(2, '0') + ':' + String(deadline.getMinutes()).padStart(2, '0');
+  if (remainMin <= 0) {
+    return { time: timeStr, label: '마감 초과', urgent: true, overdue: true };
+  } else if (remainMin <= 30) {
+    return { time: timeStr, label: remainMin + '분 남음', urgent: true, overdue: false };
+  } else {
+    return { time: timeStr, label: '', urgent: false, overdue: false };
+  }
+}
+
+function goStatus() {
+  if (checkAuthExpired()) return;
+  var today = todayStr();
+  statusStartDate = today; statusEndDate = today;
+  document.getElementById('statusSearch').value = '';
+  showScreen('statusScreen');
+  updateDateNavLabel();
+  loadStatus();
+}
+
+function groupStatusRecords(data) {
+  var map = {};
+  for (var i = 0; i < data.length; i++) {
+    var r = data[i];
+    var plate = String(r.carno || '').trim();
+    if (!plate) continue;
+    var entryStr = String(r.entry_date || '');
+    var entryTimeKey = entryStr.length >= 14 ? entryStr.substring(0, 14) : entryStr;
+    var key = entryTimeKey + '_' + plate;
+
+    if (!map[key]) {
+      var exitStr = String(r.dtOutDate || '').trim();
+      var dateKey = entryStr.length >= 8 ? entryStr.substring(0, 8) : '';
+      var isPast = dateKey && dateKey < todayStr8();
+      map[key] = {
+        plate: plate,
+        entryDate: entryStr,
+        exitDate: exitStr,
+        paidStat: r.paid_stat || '',
+        isParking: false,
+        discounts: [],
+        totalCoverMin: 0,
+        latestReg: '',
+        ownerName: '',
+        payType: ''
+      };
+      map[key].isParking = !exitStr && !isPast;
+    }
+    var exitCheck = String(r.dtOutDate || '').trim();
+    if (exitCheck && !map[key].exitDate) {
+      map[key].exitDate = exitCheck;
+      var isPastDate = (entryStr.length >= 8 ? entryStr.substring(0, 8) : '') < todayStr8();
+      map[key].isParking = !exitCheck && !isPastDate;
+    }
+
+    if (r.discount_name) {
+      map[key].discounts.push({
+        name: r.discount_name || '',
+        time: r.reg_date || '',
+        price: r.discount_price || 0,
+        tckttrnsId: r.tckttrns_id || '',
+        idno: r.idno || ''
+      });
+      map[key].totalCoverMin += getDiscountCoverMin(r.discount_name);
+    }
+    var regStr = String(r.reg_date || '');
+    if (regStr > map[key].latestReg) map[key].latestReg = regStr;
+  }
+
+  var groups = [];
+  for (var k in map) {
+    if (map.hasOwnProperty(k)) {
+      groups.push(map[k]);
+    }
+  }
+  groups.sort(function(a, b) {
+    return (b.latestReg || b.entryDate || '').localeCompare(a.latestReg || a.entryDate || '');
+  });
+  return groups;
+}
+
+function _mergeSheetPayTypes() {
+  for (var i = 0; i < statusRecords.length; i++) {
+    var g = statusRecords[i];
+    var plateClean = g.plate.replace(/\s/g, '');
+    var info = sheetPayTypes[plateClean] || sheetPayTypes[g.plate];
+    if (info) {
+      g.payType = info.payType || '';
+      if (info.regName) g.sheetRegName = info.regName;
+    }
+    if (!g.payType && g.discounts.length > 0) {
+      var totalPrice = 0;
+      for (var pi = 0; pi < g.discounts.length; pi++) {
+        totalPrice += Number(g.discounts[pi].price) || 0;
+      }
+      if (totalPrice > 0) {
+        g.payType = '할인권 구매';
+      }
+    }
+
+    // ★ 23시 이후 퇴근 보정: 출차시각이 23시 이후이면 "추가근무 (23시 퇴근)"으로 변경
+    //   (재입차로 인해 "할인권 구매"로 표시되는 것 방지)
+    if (g.exitDate) {
+      var exitClean = String(g.exitDate).replace(/\D/g, '');
+      if (exitClean.length >= 10) {
+        var exitHH = parseInt(exitClean.substring(8, 10), 10);
+        if (exitHH >= 23 && (g.payType === '할인권 구매' || !g.payType)) {
+          g.payType = '추가근무 (23시 퇴근)';
+        }
+      }
+    }
+    // ★ 아직 주차중 + 현재시각이 23시 이후 → "할인권 구매" 대신 "추가근무" 표시
+    if (g.isParking && (g.payType === '할인권 구매' || (!g.payType && g.discounts.length > 0))) {
+      var nowHour = new Date().getHours();
+      if (nowHour >= 23 || nowHour < 6) {
+        g.payType = '추가근무 (23시 퇴근)';
+      }
+    }
+  }
+}
+
+function _updateStatusSummary() {
+  var totalCars = statusRecords.length;
+  var totalDiscounts = 0;
+  var totalParking = 0;
+  for (var i = 0; i < statusRecords.length; i++) {
+    totalDiscounts += statusRecords[i].discounts.length;
+    if (statusRecords[i].isParking) totalParking++;
+  }
+  document.getElementById('sumCars').textContent = totalCars;
+  document.getElementById('sumDiscounts').textContent = totalDiscounts;
+  document.getElementById('sumParking').textContent = totalParking;
+}
+
+function _renderFromCache() {
+  sheetPayTypes = _statusCache.sheetData || {};
+  statusRecords = groupStatusRecords(_statusCache.uspaceData.data || []);
+  _mergeSheetPayTypes();
+  renderStatus();
+  _updateStatusSummary();
+}
+
+function loadStatus(callback, forceRefresh) {
+  var cacheKey = statusStartDate + '~' + statusEndDate;
+  var now = Date.now();
+  var cacheAge = now - _statusCache.time;
+  var cacheHit = _statusCache.key === cacheKey && _statusCache.uspaceData;
+
+  if (!forceRefresh && cacheHit && cacheAge < STATUS_CACHE_TTL) {
+    _renderFromCache();
+    if (callback) callback();
+    return;
+  }
+
+  var showedStale = false;
+  if (!forceRefresh && cacheHit && cacheAge < STATUS_STALE_TTL) {
+    _renderFromCache();
+    if (callback) { callback(); callback = null; }
+    showedStale = true;
+  }
+
+  if (_statusLoading && showedStale) return;
+  _statusLoading = true;
+
+  var list = document.getElementById('statusList');
+  if (!showedStale) {
+    list.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--text-tertiary)">데이터를 불러오는 중...</div>';
+  }
+
+  var pending = 2;
+  var uspaceRes = null;
+  var loadError = null;
+
+  function tryFinish() {
+    pending--;
+    if (pending > 0) return;
+    _statusLoading = false;
+
+    if (loadError) {
+      if (!showedStale) {
+        list.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--red)">' + esc(loadError) + '</div>';
+      }
+      if (callback) callback();
+      return;
+    }
+    if (!uspaceRes || !uspaceRes.ok) {
+      if (!showedStale) {
+        list.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--red)">' + esc((uspaceRes && uspaceRes.msg) || '데이터 로드 실패') + '</div>';
+      }
+      if (callback) callback();
+      return;
+    }
+
+    _statusCache = { key: cacheKey, time: Date.now(), sheetData: sheetPayTypes, uspaceData: uspaceRes };
+
+    statusRecords = groupStatusRecords(uspaceRes.data || []);
+    _mergeSheetPayTypes();
+    renderStatus();
+    _updateStatusSummary();
+    if (callback) callback();
+  }
+
+  google.script.run
+    .withSuccessHandler(function(types) {
+      sheetPayTypes = types || {};
+      tryFinish();
+    })
+    .withFailureHandler(function() {
+      sheetPayTypes = {};
+      tryFinish();
+    })
+    .getSheetPayTypes(statusStartDate);
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      uspaceRes = res;
+      tryFinish();
+    })
+    .withFailureHandler(function(err) {
+      loadError = '오류: ' + (err.message || '데이터 로드 실패');
+      tryFinish();
+    })
+    .uspaceGetStatus(statusStartDate, statusEndDate, '1A-605');
+}
+
+function renderStatus() {
+  var list = document.getElementById('statusList');
+  var query = (document.getElementById('statusSearch').value || '').trim().toLowerCase();
+  var groups = statusRecords;
+
+  if (query) {
+    groups = groups.filter(function(g) {
+      return g.plate.toLowerCase().indexOf(query) >= 0 ||
+             (g.ownerName && g.ownerName.toLowerCase().indexOf(query) >= 0);
+    });
+  }
+
+  if (groups.length === 0) {
+    list.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--text-tertiary);font-weight:500">' +
+                     '등록된 차량이 없습니다</div>';
+    return;
+  }
+
+  var html = '';
+  for (var i = 0; i < groups.length; i++) {
+    var g = groups[i];
+    var entryFmt = formatFullTime(g.entryDate);
+    var exitFmt = g.exitDate ? formatFullTime(g.exitDate) : '';
+    var parkDur = calcParkDuration(g.entryDate, g.exitDate);
+
+    html += '<div class="sv-card ' + (g.isParking ? 'parking-card' : 'exited-card') + '">';
+
+    var deadline = null;
+    if (g.isParking && g.totalCoverMin > 0) {
+      deadline = calcDeadlineStr(g.entryDate, g.totalCoverMin);
+    }
+
+    // payType tag
+    var payTypeTag = '';
+    if (g.payType) {
+      var ptClass = 'type-ticket';
+      var ptIcon = 'credit_card';
+      var ptLabel = g.payType;
+      if (g.payType.indexOf('손님') >= 0) {
+        ptClass = 'type-guest'; ptIcon = 'person'; ptLabel = '손님용';
+      } else if (g.payType.indexOf('추가근무') >= 0 || g.payType.indexOf('야간') >= 0) {
+        ptClass = 'type-night'; ptIcon = 'dark_mode';
+        var hourMatch = g.payType.match(/(\d+)시/);
+        ptLabel = hourMatch ? hourMatch[1] + '시 야간' : '야간';
+      } else if (g.payType.indexOf('법인') >= 0) {
+        ptClass = 'type-corp'; ptIcon = 'business'; ptLabel = '법인차량';
+      } else if (g.payType.indexOf('할인권') >= 0) {
+        ptClass = 'type-ticket'; ptIcon = 'confirmation_number'; ptLabel = '급여공제';
+      }
+      payTypeTag = '<span class="sv-paytype ' + ptClass + '">' +
+                   '<span class="material-symbols-rounded" style="font-size:12px">' + ptIcon + '</span>' +
+                   esc(ptLabel) + '</span>';
+    }
+
+    // registrant name tag
+    var regNameTag = '';
+    if (g.sheetRegName && !g.ownerName) {
+      regNameTag = '<span style="font-size:13px;color:var(--text-secondary);font-weight:600;margin-left:8px">' + esc(g.sheetRegName) + '</span>';
+    }
+
+    html += '<div class="sv-card-top">' +
+            '<div>' +
+            '<span class="sv-plate">' + esc(g.plate) + '</span>' +
+            (g.ownerName ? '<span style="font-size:13px;color:#FD3D00;font-weight:600;margin-left:8px">' + esc(g.ownerName) + '</span>' : regNameTag) +
+            payTypeTag +
+            '</div>' +
+            (g.isParking
+              ? '<span class="sv-badge parking">주차중</span>'
+              : '<span class="sv-badge exited">출차</span>') +
+            '</div>';
+
+    // deadline display
+    if (deadline) {
+      var dlColor = deadline.overdue ? 'var(--red)' : (deadline.urgent ? '#f59e0b' : 'var(--blue)');
+      var dlIcon = deadline.overdue ? 'warning' : 'schedule';
+      html += '<div style="display:flex;align-items:center;gap:6px;padding:8px 12px;margin:4px 0 2px;' +
+              'background:' + (deadline.overdue ? 'rgba(239,68,68,.08)' : (deadline.urgent ? 'rgba(245,158,11,.08)' : 'rgba(59,130,246,.06)')) + ';' +
+              'border-radius:var(--radius-sm);border-left:3px solid ' + dlColor + '">' +
+              '<span class="material-symbols-rounded" style="font-size:18px;color:' + dlColor + '">' + dlIcon + '</span>' +
+              '<span style="font-size:14px;font-weight:700;color:' + dlColor + '">' +
+              esc(deadline.time) + '까지 출차' +
+              '</span>';
+      if (deadline.label) {
+        html += '<span style="font-size:12px;font-weight:600;color:' + dlColor + ';margin-left:4px;' +
+                (deadline.overdue ? 'background:rgba(239,68,68,.12);padding:2px 8px;border-radius:10px' : '') + '">' +
+                esc(deadline.label) + '</span>';
+      }
+      html += '</div>';
+    }
+
+    // time info
+    html += '<div class="sv-times">' +
+            '<span><span class="time-label">입차</span><span class="time-value">' + esc(entryFmt) + '</span></span>';
+    if (exitFmt) {
+      html += '<span><span class="time-label">출차</span><span class="time-value">' + esc(exitFmt) + '</span></span>';
+    }
+    if (parkDur) {
+      html += '<span class="time-duration">' + esc(parkDur) + '</span>';
+    }
+    html += '</div>';
+
+    // discount details (dropdown)
+    if (g.discounts.length === 0) {
+      html += '<div class="sv-no-discount">할인 적용 없음</div>';
+    } else {
+      var totalPrice = 0;
+      for (var j = 0; j < g.discounts.length; j++) {
+        totalPrice += Number(g.discounts[j].price) || 0;
+      }
+      var totalStr = totalPrice > 0 ? totalPrice.toLocaleString() + '원' : '전체 무료';
+
+      html += '<div class="sv-discount-toggle" onclick="toggleDiscount(this)">' +
+              '<span class="toggle-label">' +
+              '<span class="material-symbols-rounded" style="font-size:16px">confirmation_number</span>' +
+              '할인 내역 <span class="cnt">' + g.discounts.length + '건</span>' +
+              '<span style="color:var(--text-secondary);font-weight:600;font-size:12px;margin-left:4px">' + esc(totalStr) + '</span>' +
+              '</span>' +
+              '<span class="material-symbols-rounded toggle-arrow">expand_more</span>' +
+              '</div>';
+
+      var deletableDiscounts = [];
+      html += '<div class="sv-discounts" id="svDisc' + i + '">';
+      for (var j2 = 0; j2 < g.discounts.length; j2++) {
+        var d = g.discounts[j2];
+        var priceStr = Number(d.price) > 0 ? Number(d.price).toLocaleString() + '원' : '무료';
+        html += '<div class="sv-discount-row">' +
+                '<span class="d-name">' + esc(d.name || '할인') + '</span>' +
+                '<span class="d-price">' + esc(priceStr) + '</span>';
+        if (g.isParking && d.tckttrnsId) {
+          deletableDiscounts.push({ tckttrnsId: d.tckttrnsId, idno: d.idno });
+          html += '<button class="d-del-btn" onclick="event.stopPropagation();deleteDiscount(\'' +
+                  esc(d.tckttrnsId) + '\',\'' + esc(d.idno) + '\',\'' +
+                  esc(g.plate) + '\',' + (Number(d.price)||0) + ')">삭제</button>';
+        }
+        html += '</div>';
+      }
+      if (deletableDiscounts.length >= 2) {
+        html += '<button class="sv-del-all-btn" ' +
+                'onclick="event.stopPropagation();deleteAllDiscounts(\'' + esc(g.plate) + '\',' +
+                JSON.stringify(deletableDiscounts).replace(/"/g, '&quot;') + ')">' +
+                '<span class="material-symbols-rounded">delete_sweep</span>' +
+                '전체 삭제 (' + deletableDiscounts.length + '건)</button>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  list.innerHTML = html;
+}
+
+function toggleDiscount(toggleEl) {
+  var discDiv = toggleEl.nextElementSibling;
+  if (!discDiv) return;
+  var isOpen = discDiv.classList.contains('open');
+  if (isOpen) {
+    discDiv.classList.remove('open');
+    toggleEl.classList.remove('open');
+  } else {
+    discDiv.classList.add('open');
+    toggleEl.classList.add('open');
+  }
+}
+
+function filterStatus() { renderStatus(); }
+
+/* Date navigation */
+function updateDateNavLabel() {
+  var d = new Date(statusStartDate + 'T00:00:00');
+  var days = ['일','월','화','수','목','금','토'];
+  var today = todayStr();
+  var yest = yesterdayStr();
+  var label = '';
+  if (statusStartDate === today) {
+    label = '오늘';
+  } else if (statusStartDate === yest) {
+    label = '어제';
+  } else {
+    label = (d.getMonth()+1) + '/' + d.getDate() + ' (' + days[d.getDay()] + ')';
+  }
+  var dot = (statusStartDate === today) ? '<span class="today-dot"></span>' : '';
+  document.getElementById('dateNavText').innerHTML = label + dot;
+  document.getElementById('dateNavInput').value = statusStartDate;
+  document.getElementById('dateNavInput').max = today;
+}
+
+function navDate(offset) {
+  var d = new Date(statusStartDate + 'T00:00:00');
+  d.setDate(d.getDate() + offset);
+  var today = new Date(); today.setHours(0,0,0,0);
+  if (d > today) return;
+  var ds = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  statusStartDate = ds; statusEndDate = ds;
+  updateDateNavLabel();
+  loadStatus();
+}
+
+function navDateToday() {
+  statusStartDate = todayStr(); statusEndDate = todayStr();
+  updateDateNavLabel();
+  loadStatus();
+}
+
+function onNavDatePick(val) {
+  if (!val) return;
+  statusStartDate = val; statusEndDate = val;
+  updateDateNavLabel();
+  loadStatus();
+}
+
+/* Delete discount */
+function deleteDiscount(tckttrnsId, idno, plate, price) {
+  showModal('warn', '할인 삭제',
+    '차량 <b>' + esc(plate) + '</b>의 할인을 삭제하시겠습니까?',
+    [
+      { text: '삭제', cls: 'danger', action: function() {
+        closeModal();
+        showLoading(true, '할인 삭제중...');
+        google.script.run
+          .withSuccessHandler(function(res) {
+            showLoading(false);
+            knownDiscountCounts[plate] = 0;
+            Object.keys(appliedDiscounts).forEach(function(key) {
+              if (key.indexOf(plate) === 0) delete appliedDiscounts[key];
+            });
+            recentlyDeletedPlates[plate] = true;
+            toast('할인 삭제 완료', 'success');
+            // ★ 낙관적 UI: 화면에서 즉시 제거
+            _optimisticRemoveDiscount(plate, tckttrnsId);
+            // 시트 동기화 (백그라운드)
+            google.script.run
+              .withSuccessHandler(function(r) {
+                if (r && !r.deleted) toast('시트: 해당 기록 없음', 'info');
+              })
+              .withFailureHandler(function(e) { toast('시트 삭제 오류: ' + e.message, 'error'); })
+              .deleteFromSheet(plate, price, 1);
+            _statusCache.time = 0;
+          })
+          .withFailureHandler(function(err) {
+            showLoading(false);
+            toast('삭제 실패: ' + err.message, 'error');
+          })
+          .uspaceDeleteDiscount(tckttrnsId, idno);
+      }},
+      { text: '취소', cls: 'secondary', action: closeModal }
+    ]
+  );
+}
+
+function deleteAllDiscounts(plate, discounts) {
+  if (typeof discounts === 'string') discounts = JSON.parse(discounts);
+  if (!discounts || discounts.length === 0) return;
+  showModal('warn', '전체 삭제',
+    '차량 <b>' + esc(plate) + '</b>의 할인 <b>' + discounts.length + '건</b>을 모두 삭제하시겠습니까?',
+    [
+      { text: '전체 삭제 (' + discounts.length + '건)', cls: 'danger', action: function() {
+        closeModal();
+        deleteAllBatch(plate, discounts);
+      }},
+      { text: '취소', cls: 'secondary', action: closeModal }
+    ]
+  );
+}
+
+function deleteAllBatch(plate, discounts) {
+  showLoading(true, '할인 ' + discounts.length + '건 삭제중...');
+  google.script.run
+    .withSuccessHandler(function(res) {
+      showLoading(false);
+      knownDiscountCounts[plate] = 0;
+      Object.keys(appliedDiscounts).forEach(function(key) {
+        if (key.indexOf(plate) === 0) delete appliedDiscounts[key];
+      });
+      recentlyDeletedPlates[plate] = true;
+      if (res.failed === 0) {
+        toast(res.success + '건 삭제 완료', 'success');
+      } else {
+        toast(res.success + '건 삭제, ' + res.failed + '건 실패', 'error');
+        if (res.errors && res.errors.length > 0) {
+          toast(res.errors[0], 'error');
+        }
+      }
+      // ★ 낙관적 UI: 해당 차량 모든 할인 즉시 제거
+      _optimisticRemoveAllDiscounts(plate);
+      // 시트 삭제 (백그라운드)
+      google.script.run
+        .withSuccessHandler(function(r) {
+          if (r && !r.deleted) toast('시트: 해당 기록 없음', 'info');
+          else if (r && r.deleted) toast('시트 기록도 삭제됨', 'success');
+        })
+        .withFailureHandler(function(e) { toast('시트 전체삭제 오류: ' + e.message, 'error'); })
+        .deleteAllFromSheet(plate);
+      _statusCache.time = 0;
+    })
+    .withFailureHandler(function(err) {
+      showLoading(false);
+      toast('삭제 실패: ' + err.message, 'error');
+    })
+    .uspaceDeleteDiscountBatch(discounts);
+}
+
+/**
+ * 낙관적 UI: 개별 할인 삭제 → statusRecords에서 제거 후 즉시 렌더링
+ */
+function _optimisticRemoveDiscount(plate, tckttrnsId) {
+  for (var i = 0; i < statusRecords.length; i++) {
+    var g = statusRecords[i];
+    if (g.carNo !== plate || !g.discounts) continue;
+    for (var j = g.discounts.length - 1; j >= 0; j--) {
+      if (String(g.discounts[j].tckttrnsId) === String(tckttrnsId)) {
+        g.discounts.splice(j, 1);
+        g.discountCnt = g.discounts.length;
+        break;
+      }
+    }
+    if (g.discounts.length === 0) {
+      statusRecords.splice(i, 1);
+    }
+    break;
+  }
+  _updateStatusSummary();
+  renderStatus();
+}
+
+/**
+ * 낙관적 UI: 전체 삭제 → 해당 차량의 모든 할인을 제거 후 즉시 렌더링
+ */
+function _optimisticRemoveAllDiscounts(plate) {
+  for (var i = statusRecords.length - 1; i >= 0; i--) {
+    if (statusRecords[i].carNo === plate) {
+      statusRecords.splice(i, 1);
+    }
+  }
+  _updateStatusSummary();
+  renderStatus();
+}
+
+function refreshStatusKeepScroll() {
+  var listEl = document.getElementById('statusList');
+  var scrollTop = listEl ? listEl.scrollTop : 0;
+  var searchVal = document.getElementById('statusSearch').value;
+  loadStatus(function() {
+    document.getElementById('statusSearch').value = searchVal;
+    if (searchVal) renderStatus();
+    if (listEl) listEl.scrollTop = scrollTop;
+  }, true);
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+function showModal(type, title, body, buttons) {
+  var box = document.getElementById('modalBox');
+  var iconMap = { success: 'check_circle', error: 'error', warn: 'warning', info: 'info' };
+
+  var html = '<div class="modal-handle"></div>' +
+             '<div class="modal-icon-wrap ' + type + '">' +
+             '<span class="material-symbols-rounded">' + (iconMap[type] || 'info') + '</span></div>' +
+             '<div class="modal-title">' + title + '</div>' +
+             '<div class="modal-body">' + body + '</div>';
+
+  if (buttons && buttons.length) {
+    var actionsClass = 'modal-actions';
+    if (buttons.length === 2) actionsClass += ' two-buttons';
+    html += '<div class="' + actionsClass + '">';
+    for (var i = 0; i < buttons.length; i++) {
+      var b = buttons[i];
+      html += '<button class="modal-btn ' + (b.cls || 'primary') + '" id="modalBtn' + i + '">' + esc(b.text) + '</button>';
+    }
+    html += '</div>';
+  }
+
+  box.innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('show');
+
+  if (buttons) {
+    for (var j = 0; j < buttons.length; j++) {
+      (function(fn) {
+        var btn = document.getElementById('modalBtn' + j);
+        if (btn && fn) btn.onclick = fn;
+      })(buttons[j].action);
+    }
+  }
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+function toast(msg, type) {
+  var container = document.getElementById('toastContainer');
+  var iconMap = { success: 'check_circle', error: 'error', info: 'info' };
+  var el = document.createElement('div');
+  el.className = 'toast ' + (type || 'info');
+  el.innerHTML = '<span class="material-symbols-rounded" style="font-size:18px">' +
+                 (iconMap[type] || 'info') + '</span>' + esc(msg);
+  container.appendChild(el);
+
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() { el.classList.add('show'); });
+  });
+  setTimeout(function() {
+    el.classList.remove('show');
+    setTimeout(function() { el.remove(); }, 300);
+  }, 2500);
+}
+
+/* ============================================================
+   LOADING
+   ============================================================ */
+function showLoading(show, text) {
+  var textEl = document.getElementById('loadingText');
+  if (text) {
+    textEl.textContent = text;
+    textEl.style.display = 'block';
+  } else {
+    textEl.style.display = 'none';
+  }
+  document.getElementById('loadingOverlay').classList.toggle('show', show);
+}
+
+/* ============================================================
+   CLOCK
+   ============================================================ */
+function updateClock() {
+  var now = new Date();
+  var days = ['일','월','화','수','목','금','토'];
+  var HH = String(now.getHours()).padStart(2,'0');
+  var MM = String(now.getMinutes()).padStart(2,'0');
+  var SS = String(now.getSeconds()).padStart(2,'0');
+  var str = (now.getMonth()+1) + '/' + now.getDate() + ' (' + days[now.getDay()] + ') ' + HH + ':' + MM + ':' + SS;
+  var el = document.getElementById('headerTime');
+  if (el) el.textContent = str;
+
+  var badge = document.getElementById('baseBadge');
+  if (badge) {
+    var dayOfWeek = now.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      badge.textContent = '주말 10시간 무료';
+      badge.style.background = 'var(--blue-soft)';
+      badge.style.color = 'var(--blue)';
+    } else {
+      badge.textContent = '기본 2시간 할인';
+      badge.style.background = 'var(--green-soft)';
+      badge.style.color = 'var(--green)';
+    }
+  }
+}
+
+/* ============================================================
+   UTIL
+   ============================================================ */
+function todayStr8() {
+  var d = new Date();
+  return d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0');
+}
+
+function formatMinutes(min) {
+  if (min <= 0) return '0분';
+  var h = Math.floor(min / 60);
+  var m = min % 60;
+  return (h > 0 ? h + '시간 ' : '') + m + '분';
+}
+
+function esc(s) {
+  if (!s) return '';
+  var d = document.createElement('div');
+  d.textContent = String(s);
+  return d.innerHTML;
+}
+
+/* ============================================================
+   iOS SCALE 보호 — 인라인 스타일 복원
+   2x 확대 상태(transform 또는 zoom)에서 iOS가 input 포커스 시
+   자동 확대해도, 블러 후 원래 스케일링으로 확실히 되돌립니다.
+   (2x 확대 상태에서 input 유효 폰트=32px → iOS 자동확대 안 함.
+    만약 발생해도 이 코드가 원복.)
+   ============================================================ */
+(function protectScale() {
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (!isIOS) return;
+
+  var appEl = document.getElementById('app');
+  if (!appEl) return;
+
+  // 항상 transform:scale(2) 방식으로 복원 (zoom은 GAS iframe에서 불안정)
+  function restoreScale() {
+    appEl.style.transform = 'scale(2)';
+    appEl.style.webkitTransform = 'scale(2)';
+    appEl.style.transformOrigin = 'top left';
+    appEl.style.webkitTransformOrigin = 'top left';
+    appEl.style.width = '50vw';
+    appEl.style.height = '50vh';
+    appEl.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    // 스크롤 위치 리셋 (iOS가 input 포커스 시 스크롤 이동하는 것 방지)
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+  }
+
+  // ★ input 포커스 시: iOS 자동확대/스크롤 즉시 차단
+  document.addEventListener('focusin', function(e) {
+    var t = (e.target.tagName || '').toUpperCase();
+    if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') {
+      // 포커스 직후 스크롤 리셋 (iOS가 input 위치로 이동하려는 것 차단)
+      setTimeout(function() {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      }, 50);
+      setTimeout(function() {
+        window.scrollTo(0, 0);
+        restoreScale();
+      }, 200);
+      setTimeout(function() {
+        window.scrollTo(0, 0);
+      }, 500);
+    }
+  });
+
+  // input 블러 시 스케일 복원
+  document.addEventListener('focusout', function(e) {
+    var t = (e.target.tagName || '').toUpperCase();
+    if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') {
+      setTimeout(restoreScale, 300);
+    }
+  });
+
+  // VisualViewport로 iOS 자동확대 감지 → 원복
+  if (window.visualViewport) {
+    var vpTimeout;
+    window.visualViewport.addEventListener('resize', function() {
+      clearTimeout(vpTimeout);
+      vpTimeout = setTimeout(function() {
+        if (window.visualViewport.scale > 1.02) {
+          // iOS가 자동확대함 → 강제 원복
+          restoreScale();
+        }
+      }, 100);
+    });
+    window.visualViewport.addEventListener('scroll', function() {
+      // viewport 스크롤도 리셋
+      window.scrollTo(0, 0);
+    });
+  }
+})();
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(function init() {
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // iOS pinch-zoom prevention
+  document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
+  document.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
+  document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
+
+  var lastTap = 0;
+  document.addEventListener('touchend', function(e) {
+    var now = Date.now();
+    if (now - lastTap < 300) { e.preventDefault(); }
+    lastTap = now;
+  }, { passive: false });
+
+  // Close modal on overlay click
+  document.getElementById('modalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // ★ 최초 인증 확인: 캐시 유효(24h)면 즉시 진입, 백그라운드에서 권한 재확인
+  var savedPhone = '';
+  var savedTs = 0;
+  try {
+    savedPhone = localStorage.getItem(AUTH_STORAGE_KEY) || '';
+    savedTs = parseInt(localStorage.getItem(AUTH_TS_KEY) || '0', 10);
+  } catch(e) {}
+
+  var cacheValid = savedPhone && (Date.now() - savedTs < AUTH_CACHE_MS);
+
+  if (savedPhone && cacheValid) {
+    // ── 캐시 유효: 즉시 홈 화면 (서버 대기 없음!) ──
+    authedPhone = savedPhone;
+    showScreen('homeScreen');
+
+    // 백그라운드에서 권한 재확인 (UI 블로킹 없음)
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (res && res.authorized) {
+          // 아직 유효 → 타임스탬프 갱신
+          try { localStorage.setItem(AUTH_TS_KEY, String(Date.now())); } catch(e) {}
+        } else {
+          // 관리자가 삭제함 → 즉시 차단
+          try {
+            localStorage.removeItem(AUTH_STORAGE_KEY);
+            localStorage.removeItem(AUTH_TS_KEY);
+          } catch(e) {}
+          authedPhone = '';
+          showScreen('phoneScreen');
+          showModal('warn', '접근 차단',
+            '등록된 권한이 없습니다.<br>관리자에게 문의해주세요.',
+            [{ text: '확인', cls: 'primary', action: closeModal }]
+          );
+        }
+      })
+      .withFailureHandler(function() {
+        // 네트워크 오류 → 캐시 믿고 계속 사용
+      })
+      .guestCheckAuth(savedPhone);
+
+    // uspace 연결 확인 (백그라운드)
+    google.script.run
+      .withSuccessHandler(function(r) {
+        if (r.loggedIn || r.hasCreds) showSessionBanner('uspace 연결됨', 'ok', 2000);
+      })
+      .withFailureHandler(function() {})
+      .checkLoginStatus();
+
+  } else if (savedPhone && !cacheValid) {
+    // ── 캐시 만료(24h 초과): 서버 확인 필수 ──
+    showLoading(true, '권한 확인 중...');
+    google.script.run
+      .withSuccessHandler(function(res) {
+        showLoading(false);
+        if (res && res.authorized) {
+          authedPhone = savedPhone;
+          try { localStorage.setItem(AUTH_TS_KEY, String(Date.now())); } catch(e) {}
+          showScreen('homeScreen');
+          showSessionBanner('인증됨: ' + savedPhone, 'ok', 3000);
+          google.script.run
+            .withSuccessHandler(function(r) {
+              if (r.loggedIn || r.hasCreds) showSessionBanner('uspace 연결됨', 'ok', 2000);
+            })
+            .withFailureHandler(function() {})
+            .checkLoginStatus();
+        } else {
+          try {
+            localStorage.removeItem(AUTH_STORAGE_KEY);
+            localStorage.removeItem(AUTH_TS_KEY);
+          } catch(e) {}
+          authedPhone = '';
+          showScreen('phoneScreen');
+          showModal('warn', '접근 차단',
+            '등록된 권한이 없습니다.<br>관리자에게 문의해주세요.',
+            [{ text: '확인', cls: 'primary', action: closeModal }]
+          );
+        }
+      })
+      .withFailureHandler(function(err) {
+        showLoading(false);
+        authedPhone = savedPhone;
+        showScreen('homeScreen');
+        showSessionBanner('오프라인 모드 (권한 확인 불가)', 'warn', 5000);
+      })
+      .guestCheckAuth(savedPhone);
+
+  } else {
+    // ── 저장된 번호 없음 → 인증 화면 ──
+    showScreen('phoneScreen');
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (res.loggedIn || res.hasCreds) showSessionBanner('uspace 연결됨', 'ok', 3000);
+      })
+      .withFailureHandler(function() {})
+      .checkLoginStatus();
+  }
+})();
+
+/* ============================================================
+   SESSION BANNER
+   ============================================================ */
+/* ============================================================
+   INACTIVITY TIMER — 5분 비활동시 메인화면으로 자동 이동
+   ============================================================ */
+var _lastActivity = Date.now();
+var INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5분
+
+['touchstart', 'click', 'keydown', 'scroll'].forEach(function(evt) {
+  document.addEventListener(evt, function() { _lastActivity = Date.now(); }, { passive: true });
+});
+
+setInterval(function() {
+  if (Date.now() - _lastActivity < INACTIVITY_TIMEOUT) return;
+  // 이미 홈/인증 화면이면 무시
+  var home = document.getElementById('homeScreen');
+  var phone = document.getElementById('phoneScreen');
+  if ((home && home.classList.contains('active')) || (phone && phone.classList.contains('active'))) return;
+  // 로딩 중이면 무시
+  var loadEl = document.getElementById('loadingOverlay');
+  if (loadEl && loadEl.classList.contains('show')) return;
+  // 모달 닫기 + 홈으로 이동
+  closeModal();
+  goHome();
+  showSessionBanner('5분간 활동이 없어 메인화면으로 이동했습니다', 'warn', 4000);
+  _lastActivity = Date.now();
+}, 30000);
+
+/* ============================================================
+   포그라운드 복귀 시 권한 재확인
+   홈 버튼/뒤로가기 후 다시 앱에 들어올 때
+   시트에서 삭제된 사용자를 즉시 차단
+   ============================================================ */
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible' && authedPhone) {
+    recheckAuth();
+  }
+});
+
+/* ============================================================
+   GAS BANNER 숨김 — "이 애플리케이션은 Google Apps Script..."
+   ============================================================ */
+(function hideGasBanner() {
+  function removeBannerElements() {
+    var allEls = document.querySelectorAll('div, p, span, a, section, header');
+    for (var i = 0; i < allEls.length; i++) {
+      var el = allEls[i];
+      // #app 내부 요소는 건드리지 않음
+      if (document.getElementById('app') && document.getElementById('app').contains(el)) continue;
+      var txt = (el.textContent || '').trim();
+      if ((txt.indexOf('이 애플리케이션은') >= 0 && txt.indexOf('Google') >= 0) ||
+          (txt.indexOf('This application') >= 0 && txt.indexOf('Google Apps Script') >= 0) ||
+          (txt.indexOf('앱 스크립트') >= 0)) {
+        el.style.cssText = 'display:none!important;height:0!important;overflow:hidden!important;';
+        if (el.parentElement && !document.getElementById('app').contains(el.parentElement)) {
+          el.parentElement.style.cssText = 'display:none!important;height:0!important;overflow:hidden!important;';
+        }
+      }
+    }
+  }
+
+  // 즉시 + 지연 실행 (iOS에서 배너가 늦게 로드될 수 있으므로 촘촘하게)
+  removeBannerElements();
+  setTimeout(removeBannerElements, 100);
+  setTimeout(removeBannerElements, 300);
+  setTimeout(removeBannerElements, 500);
+  setTimeout(removeBannerElements, 1000);
+  setTimeout(removeBannerElements, 2000);
+  setTimeout(removeBannerElements, 3000);
+  setTimeout(removeBannerElements, 5000);
+  setTimeout(removeBannerElements, 8000);
+  // 이후 10초 간격으로 계속 체크 (배너가 동적으로 재생성될 수 있음)
+  setInterval(removeBannerElements, 10000);
+
+  // 동적으로 추가되는 요소 감시
+  if (window.MutationObserver) {
+    var observer = new MutationObserver(function(mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        var nodes = mutations[i].addedNodes;
+        for (var j = 0; j < nodes.length; j++) {
+          var node = nodes[j];
+          if (node.nodeType !== 1) continue;
+          var txt = (node.textContent || '').trim();
+          if ((txt.indexOf('이 애플리케이션은') >= 0 && txt.indexOf('Google') >= 0) ||
+              (txt.indexOf('This application') >= 0 && txt.indexOf('Google Apps Script') >= 0)) {
+            node.style.cssText = 'display:none!important;height:0!important;overflow:hidden!important;';
+          }
+        }
+      }
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+  }
+
+  // ★ 부모 프레임 접근 시도 (같은 도메인일 경우만 성공)
+  try {
+    if (window.top !== window.self) {
+      var topDoc = window.top.document;
+      var topEls = topDoc.querySelectorAll('div, header, section, p');
+      for (var k = 0; k < topEls.length; k++) {
+        var txt = (topEls[k].textContent || '').trim();
+        if ((txt.indexOf('이 애플리케이션은') >= 0 || txt.indexOf('This application') >= 0) &&
+            txt.indexOf('Google') >= 0) {
+          topEls[k].style.cssText = 'display:none!important;';
+        }
+      }
+    }
+  } catch(e) { /* cross-origin — 무시 */ }
+})();
+
+function showSessionBanner(msg, type, autoDismissMs) {
+  var banner = document.getElementById('sessionBanner');
+  banner.textContent = msg;
+  banner.className = 'session-banner ' + (type || 'warn') + ' show';
+  if (autoDismissMs) {
+    setTimeout(function() { banner.classList.remove('show'); }, autoDismissMs);
+  }
+}
+</script>
+</body>
+</html>
