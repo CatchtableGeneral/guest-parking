@@ -864,28 +864,114 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   -webkit-transform-origin:top left; transform-origin:top left;
 }
 
-/* ── 텍스트 줄바꿈 방지 & 반응형 처리 ── */
-.k-header { flex-wrap:nowrap; overflow:hidden; gap:8px; }
-.k-header-left { flex-shrink:1; min-width:0; overflow:hidden; }
-.k-header-right { flex-shrink:0; }
-.k-header-title { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size:min(17px, 4.2vw); }
-.k-header-time { white-space:nowrap; }
-.k-badge { white-space:nowrap; font-size:min(12px, 3vw); padding:4px 10px; }
-.home-greeting { overflow:hidden; }
-.home-greeting strong { font-size:min(32px, 8.5vw); white-space:nowrap; }
-.home-greeting .sub { font-size:min(14px, 3.7vw); white-space:nowrap; }
-.home-register-btn { max-width:min(320px, 85vw); }
-.home-register-btn .btn-label { white-space:nowrap; font-size:min(22px, 5.8vw); }
-.home-status-btn { max-width:min(320px, 85vw); }
-.home-status-btn .btn-label { white-space:nowrap; font-size:min(17px, 4.5vw); }
-.home-help-btn .btn-label { white-space:nowrap; }
-.home-footer { white-space:nowrap; }
-.reg-submit-btn { white-space:nowrap; font-size:min(18px, 4.8vw); }
-.status-top-bar { flex-wrap:nowrap; }
-.date-nav-label { white-space:nowrap; min-width:auto; font-size:min(15px, 3.8vw); padding:10px 12px; }
-.status-info-bar { flex-wrap:nowrap; gap:8px; }
-.status-summary-inline { gap:var(--space-md); }
-.phone-card h2 { font-size:min(22px, 5.8vw); white-space:nowrap; }
+/* ============================================================
+   ★ 자연스러운 모바일 앱 비율 (직접 호스팅 전용)
+   ─────────────────────────────────────────────────
+   GAS iframe(.gas-mode)에서는 원래 크기 유지 (2x 스케일 적용)
+   GitHub Pages에서는 일반 모바일 앱 기준으로 축소 조정
+   참고: 카카오톡/네이버 등 한국 앱 기준 사이즈
+   ============================================================ */
+
+/* ── 헤더 ── */
+#app:not(.gas-mode) .k-header { padding:10px 16px; gap:8px; }
+#app:not(.gas-mode) .k-header-left { flex-shrink:1; min-width:0; overflow:hidden; }
+#app:not(.gas-mode) .k-header-right { flex-shrink:0; }
+#app:not(.gas-mode) .k-logo { width:28px; height:28px; border-radius:8px; font-size:14px; }
+#app:not(.gas-mode) .k-header-title {
+  font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+#app:not(.gas-mode) .k-header-time { font-size:13px; white-space:nowrap; }
+#app:not(.gas-mode) .k-badge {
+  font-size:11px; padding:3px 8px; white-space:nowrap;
+}
+
+/* ── 홈 화면 ── */
+#app:not(.gas-mode) #homeScreen .home-body {
+  gap:20px; padding:20px 16px;
+}
+#app:not(.gas-mode) .home-greeting { font-size:18px; }
+#app:not(.gas-mode) .home-greeting strong { font-size:22px; }
+#app:not(.gas-mode) .home-greeting .sub { font-size:13px; margin-top:6px; }
+#app:not(.gas-mode) .home-register-btn {
+  max-width:240px; padding:20px; gap:10px;
+  border-radius:20px; box-shadow:0 4px 20px rgba(255,61,0,.25);
+}
+#app:not(.gas-mode) .home-register-btn .material-symbols-rounded { font-size:36px; }
+#app:not(.gas-mode) .home-register-btn .btn-label { font-size:16px; }
+#app:not(.gas-mode) .home-status-btn {
+  max-width:240px; padding:12px; gap:8px;
+}
+#app:not(.gas-mode) .home-status-btn .material-symbols-rounded { font-size:20px; }
+#app:not(.gas-mode) .home-status-btn .btn-label { font-size:14px; }
+#app:not(.gas-mode) .home-help-btn { padding:6px 16px; font-size:12px; }
+#app:not(.gas-mode) .home-help-btn .material-symbols-rounded { font-size:16px; }
+#app:not(.gas-mode) .home-help-btn .btn-label { font-size:12px; }
+#app:not(.gas-mode) .home-footer { font-size:11px; padding:12px; }
+
+/* ── 인증 화면 ── */
+#app:not(.gas-mode) #phoneScreen .phone-body {
+  gap:20px; padding:32px 20px;
+}
+#app:not(.gas-mode) .phone-card {
+  padding:20px 16px; gap:12px;
+}
+#app:not(.gas-mode) .phone-card h2 { font-size:18px; }
+#app:not(.gas-mode) .phone-card p { font-size:13px; }
+#app:not(.gas-mode) .phone-status { font-size:11px; }
+#app:not(.gas-mode) .k-input { padding:12px 14px; font-size:15px!important; }
+#app:not(.gas-mode) .k-btn { padding:12px 20px; font-size:14px; }
+
+/* ── 등록 화면 ── */
+#app:not(.gas-mode) .step-container { padding:16px 16px calc(16px + var(--sab)); }
+#app:not(.gas-mode) .back-btn {
+  padding:8px 14px 8px 10px; font-size:13px; margin-bottom:16px;
+}
+#app:not(.gas-mode) .back-btn .material-symbols-rounded { font-size:18px; }
+#app:not(.gas-mode) .reg-info-bar { padding:8px 12px; margin-bottom:16px; }
+#app:not(.gas-mode) .reg-info-tag { padding:4px 10px; font-size:12px; }
+#app:not(.gas-mode) .car-input-row { gap:8px; margin-bottom:16px; }
+#app:not(.gas-mode) .car-input {
+  font-size:24px!important; padding:14px 12px; letter-spacing:6px;
+}
+#app:not(.gas-mode) .car-search-btn { width:56px; }
+#app:not(.gas-mode) .car-search-btn .material-symbols-rounded { font-size:24px; }
+#app:not(.gas-mode) .car-card-plate { font-size:20px; letter-spacing:.5px; }
+#app:not(.gas-mode) .car-card-info { font-size:13px; }
+#app:not(.gas-mode) .car-card-body { padding:12px 16px; }
+#app:not(.gas-mode) .badge { padding:4px 10px; font-size:11px; }
+#app:not(.gas-mode) .reg-memo { padding:12px; font-size:14px!important; }
+#app:not(.gas-mode) .reg-bottom-bar { padding:10px 16px calc(10px + var(--sab)); }
+#app:not(.gas-mode) .reg-submit-btn {
+  padding:14px; font-size:15px; border-radius:12px;
+}
+
+/* ── 모달 ── */
+#app:not(.gas-mode) .modal-box { padding:8px 20px calc(20px + var(--sab)); }
+#app:not(.gas-mode) .modal-icon-wrap { width:44px; height:44px; margin-bottom:12px; }
+#app:not(.gas-mode) .modal-icon-wrap .material-symbols-rounded { font-size:22px; }
+#app:not(.gas-mode) .modal-title { font-size:17px; }
+#app:not(.gas-mode) .modal-body { font-size:14px; margin-bottom:16px; }
+#app:not(.gas-mode) .modal-actions .modal-btn { padding:14px; font-size:15px; }
+
+/* ── 상태(현황) 화면 ── */
+#app:not(.gas-mode) .status-top-bar { padding:8px 16px; gap:6px; flex-wrap:nowrap; }
+#app:not(.gas-mode) .status-icon-btn { width:36px; height:36px; }
+#app:not(.gas-mode) .status-icon-btn .material-symbols-rounded { font-size:18px; }
+#app:not(.gas-mode) .date-nav-arrow { width:32px; height:32px; }
+#app:not(.gas-mode) .date-nav-arrow .material-symbols-rounded { font-size:18px; }
+#app:not(.gas-mode) .date-nav-label {
+  font-size:13px; padding:8px 12px; min-width:auto; white-space:nowrap;
+}
+#app:not(.gas-mode) .status-info-bar {
+  padding:8px 16px; gap:8px; flex-wrap:nowrap;
+}
+#app:not(.gas-mode) .status-search { padding:10px 12px; font-size:14px!important; }
+#app:not(.gas-mode) .status-summary-inline { gap:12px; }
+#app:not(.gas-mode) .status-stat .stat-num { font-size:17px; }
+#app:not(.gas-mode) .status-stat .stat-label { font-size:11px; }
+
+/* ── 토스트 ── */
+#app:not(.gas-mode) .toast { padding:10px 14px; font-size:13px; }
 
 /* 홈 화면: 스크롤 금지 + 세로 가운데 */
 #homeScreen { overflow:hidden!important; }
