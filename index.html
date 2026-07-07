@@ -1128,7 +1128,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
     'uspaceRegisterDiscountBatch','getSheetPayTypes',
     'uspaceGetStatus','uspaceDeleteDiscount',
     'deleteFromSheet','deleteAllFromSheet',
-    'uspaceDeleteDiscountBatch','checkLoginStatus','uspaceGetBalance','getAppVersion'
+    'uspaceDeleteDiscountBatch','checkLoginStatus','uspaceGetBalance','getAppVersion','getEmployeeCarNumbers'
   ];
 
   FN_NAMES.forEach(function(name) {
@@ -1204,7 +1204,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   <div class="screen active" id="phoneScreen">
     <div class="phone-body">
       <div class="phone-card">
-        <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px">v2.5</div>
+        <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px">v2.6</div>
         <h2>손님 주차할인 인증</h2>
         <p>등록된 휴대폰 번호로<br>인증 후 이용할 수 있습니다.</p>
 
@@ -1257,7 +1257,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
         <span class="btn-label">문의하기</span>
       </button>
     </div>
-    <div class="home-footer">사내 주차정산시스템 v2.5</div>
+    <div class="home-footer">사내 주차정산시스템 v2.6</div>
   </div>
 
   <!-- ========== REGISTER SCREEN ========== -->
@@ -1557,6 +1557,7 @@ function verifySmsCode() {
         } catch(e) {}
         setTimeout(function() { showScreen('homeScreen'); }, 500);
         setTimeout(function() { loadBalance(); }, 1000); // ★ 잔액 프리로드
+        setTimeout(function() { loadEmployeeCarNumbers(); }, 1200); // ★ 자차목록 프리로드
       } else {
         setPhoneStatus(res.msg || '인증 실패', 'err');
       }
@@ -1815,6 +1816,65 @@ function submitRegistration() {
   if (!memoVal) {
     toast('메모를 입력해주세요 (ex. TA-인터뷰 OOO님)', 'error');
     document.getElementById('memoInput').focus();
+    return;
+  }
+
+  // ★ v2.6 자차 리베이트 방지 — 구성원 차량 차단
+  var regCarNo = String(selectedCar.carNo || '').replace(/\s/g, '');
+  if (isEmployeeCar(regCarNo)) {
+    showModal('warn', '등록 불가',
+      '<div style="line-height:1.8;text-align:center;padding:8px 0">' +
+      '<div style="font-size:40px;margin-bottom:12px">🚫</div>' +
+      '<div style="font-size:15px;font-weight:700;color:var(--red);margin-bottom:8px">' +
+      '손님용으로 잘못들어오신거죠 ?</div>' +
+      '<div style="font-size:14px;color:var(--text-secondary);margin-bottom:12px">' +
+      '자차등록으로 다시 시도해주세요.<br>' +
+      '<b>개인차량은 손님용 등록이 불가합니다</b></div>' +
+      '<div style="background:var(--red-soft);border-radius:var(--radius-md);padding:10px;font-size:13px;color:var(--red)">' +
+      '차량: <b>' + esc(regCarNo) + '</b></div>' +
+      '</div>',
+      [{ text: '확인', cls: 'primary', action: closeModal }]
+    );
+    return;
+  }
+
+  // ★ 자차목록 미로드 상태에서 시도 시 실시간 체크
+  if (!_empCarLoaded) {
+    showLoading(true, '차량 확인 중...');
+    google.script.run
+      .withSuccessHandler(function(list) {
+        showLoading(false);
+        if (Array.isArray(list)) {
+          _employeeCarNumbers = list.map(function(n) { return String(n).replace(/\s/g, ''); });
+          _empCarLoaded = true;
+        }
+        if (isEmployeeCar(regCarNo)) {
+          showModal('warn', '등록 불가',
+            '<div style="line-height:1.8;text-align:center;padding:8px 0">' +
+            '<div style="font-size:40px;margin-bottom:12px">🚫</div>' +
+            '<div style="font-size:15px;font-weight:700;color:var(--red);margin-bottom:8px">' +
+            '손님용으로 잘못들어오신거죠 ?</div>' +
+            '<div style="font-size:14px;color:var(--text-secondary);margin-bottom:12px">' +
+            '자차등록으로 다시 시도해주세요.<br>' +
+            '<b>개인차량은 손님용 등록이 불가합니다</b></div>' +
+            '<div style="background:var(--red-soft);border-radius:var(--radius-md);padding:10px;font-size:13px;color:var(--red)">' +
+            '차량: <b>' + esc(regCarNo) + '</b></div>' +
+            '</div>',
+            [{ text: '확인', cls: 'primary', action: closeModal }]
+          );
+          return;
+        }
+        // 통과 → 원래 등록 로직 재실행
+        submitRegistration();
+      })
+      .withFailureHandler(function(err) {
+        showLoading(false);
+        // 목록 조회 실패 시 → 등록은 진행 (안전장치 실패해도 서비스 중단 방지)
+        console.error('자차목록 실시간 조회 실패:', err);
+        _empCarLoaded = true; // 재시도 방지
+        submitRegistration();
+      })
+      .getEmployeeCarNumbers();
     return;
   }
 
@@ -2989,6 +3049,38 @@ function loadBalance() {
 }
 
 /* ============================================================
+   ★ 구성원 자차번호 목록 (리베이트 방지)
+   ============================================================ */
+var _employeeCarNumbers = [];   // 캐시
+var _empCarLoaded = false;
+
+function loadEmployeeCarNumbers() {
+  google.script.run
+    .withSuccessHandler(function(list) {
+      if (Array.isArray(list)) {
+        _employeeCarNumbers = list.map(function(n) {
+          return String(n).replace(/\s/g, '');
+        });
+        _empCarLoaded = true;
+      }
+    })
+    .withFailureHandler(function(err) {
+      console.error('자차목록 로드 실패:', err);
+    })
+    .getEmployeeCarNumbers();
+}
+
+/** 차량번호가 구성원 자차인지 확인 */
+function isEmployeeCar(carNo) {
+  var cleaned = String(carNo || '').replace(/\s/g, '');
+  if (!cleaned) return false;
+  for (var i = 0; i < _employeeCarNumbers.length; i++) {
+    if (_employeeCarNumbers[i] === cleaned) return true;
+  }
+  return false;
+}
+
+/* ============================================================
    UTIL
    ============================================================ */
 function todayStr8() {
@@ -3127,6 +3219,7 @@ function esc(s) {
     authedPhone = savedPhone;
     showScreen('homeScreen');
     setTimeout(function() { loadBalance(); }, 800); // ★ 잔액 프리로드
+    setTimeout(function() { loadEmployeeCarNumbers(); }, 1000); // ★ 자차목록 프리로드
 
     // 백그라운드에서 권한 재확인 (UI 블로킹 없음)
     google.script.run
@@ -3172,6 +3265,7 @@ function esc(s) {
           try { localStorage.setItem(AUTH_TS_KEY, String(Date.now())); } catch(e) {}
           showScreen('homeScreen');
           setTimeout(function() { loadBalance(); }, 800); // ★ 잔액 프리로드
+          setTimeout(function() { loadEmployeeCarNumbers(); }, 1000); // ★ 자차목록 프리로드
           showSessionBanner('인증됨: ' + savedPhone, 'ok', 3000);
           google.script.run
             .withSuccessHandler(function(r) {
