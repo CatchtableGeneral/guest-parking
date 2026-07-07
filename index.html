@@ -204,10 +204,13 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   box-shadow:var(--shadow-lg);
   border:1px solid var(--border-default);
   animation:fadeIn .3s ease;
-  max-height:80vh; overflow-y:auto;
+  max-height:80vh; display:flex; flex-direction:column; overflow:hidden;
 }
 .update-box .update-header {
-  text-align:center; margin-bottom:20px;
+  text-align:center; margin-bottom:20px; flex-shrink:0;
+}
+#updateContent, #changelogContent {
+  flex:1; overflow-y:auto; min-height:0;
 }
 .update-box .update-icon {
   font-size:44px; color:var(--accent); margin-bottom:12px;
@@ -248,6 +251,7 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   width:100%; padding:13px; border:none; border-radius:var(--radius-md);
   background:var(--accent); color:#fff; font-size:15px; font-weight:700;
   cursor:pointer; transition:background .2s; margin-top:8px;
+  flex-shrink:0;
 }
 .update-box .update-btn:active { background:var(--accent-hover); }
 .update-box .update-btn.secondary {
@@ -1204,7 +1208,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   <div class="screen active" id="phoneScreen">
     <div class="phone-body">
       <div class="phone-card">
-        <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px">v2.6</div>
+        <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px">v2.7</div>
         <h2>손님 주차할인 인증</h2>
         <p>등록된 휴대폰 번호로<br>인증 후 이용할 수 있습니다.</p>
 
@@ -1257,7 +1261,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
         <span class="btn-label">문의하기</span>
       </button>
     </div>
-    <div class="home-footer">사내 주차정산시스템 v2.6</div>
+    <div class="home-footer">사내 주차정산시스템 v2.7</div>
   </div>
 
   <!-- ========== REGISTER SCREEN ========== -->
@@ -1819,7 +1823,7 @@ function submitRegistration() {
     return;
   }
 
-  // ★ v2.6 자차 리베이트 방지 — 구성원 차량 차단
+  // ★ v2.7 자차 리베이트 방지 — 구성원 차량 차단
   var regCarNo = String(selectedCar.carNo || '').replace(/\s/g, '');
   if (isEmployeeCar(regCarNo)) {
     showModal('warn', '등록 불가',
@@ -3456,6 +3460,10 @@ function _buildChangelogHTML(changelog, limit) {
 }
 
 function checkAppVersion() {
+  // ★ 이미 팝업이 떠있으면 중복 체크 안 함
+  var overlay = document.getElementById('updateOverlay');
+  if (overlay && overlay.classList.contains('show')) return;
+
   google.script.run
     .withSuccessHandler(function(res) {
       if (!res || res.version === undefined) return;
@@ -3496,6 +3504,14 @@ function checkAppVersion() {
 }
 
 function doAppUpdate() {
+  // ★ 팝업 닫고 로딩 화면 표시 후 새로고침
+  document.getElementById('updateOverlay').classList.remove('show');
+
+  var loadDiv = document.createElement('div');
+  loadDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg-main,#f5f5f5);display:flex;align-items:center;justify-content:center;z-index:999999;flex-direction:column;gap:16px';
+  loadDiv.innerHTML = '<div style="font-size:40px">⏳</div><div style="font-size:16px;color:#888;font-weight:600">업데이트 적용 중...</div>';
+  document.body.appendChild(loadDiv);
+
   google.script.run
     .withSuccessHandler(function(res) {
       if (res && res.version !== undefined) {
@@ -3528,6 +3544,8 @@ function closeChangelog() {
 }
 
 setTimeout(function() { checkAppVersion(); }, 3000);
+// ★ 상시 켜놓는 기기용: 1분마다 자동 버전 체크
+setInterval(function() { checkAppVersion(); }, 60 * 1000);
 
 </script>
 
