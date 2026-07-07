@@ -188,6 +188,92 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
 }
 .k-balance.loading { opacity:.4; }
 .k-balance.error { background:rgba(244,67,54,.1); color:#ef5350; }
+
+/* ============================================================
+   UPDATE NOTIFICATION / CHANGELOG
+   ============================================================ */
+.update-overlay {
+  display:none; position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,.7); backdrop-filter:blur(8px);
+  z-index:99999; align-items:center; justify-content:center;
+}
+.update-overlay.show { display:flex; }
+.update-box {
+  background:var(--bg-card); border-radius:var(--radius-xl);
+  padding:28px 24px 20px; max-width:360px; width:92%;
+  box-shadow:var(--shadow-lg);
+  border:1px solid var(--border-default);
+  animation:fadeIn .3s ease;
+  max-height:80vh; overflow-y:auto;
+}
+.update-box .update-header {
+  text-align:center; margin-bottom:20px;
+}
+.update-box .update-icon {
+  font-size:44px; color:var(--accent); margin-bottom:12px;
+  display:block;
+}
+.update-box h3 {
+  font-size:17px; font-weight:700; color:var(--text-primary);
+  margin:0 0 4px;
+}
+.update-box .update-ver {
+  font-size:13px; color:var(--text-secondary); margin:0;
+}
+.update-box .changelog-section {
+  margin-bottom:16px;
+}
+.update-box .changelog-section .cl-title {
+  font-size:14px; font-weight:700; color:var(--text-primary);
+  margin:0 0 8px; display:flex; align-items:center; gap:8px;
+}
+.update-box .changelog-section .cl-date {
+  font-size:11px; font-weight:400; color:var(--text-tertiary);
+}
+.update-box .cl-item {
+  display:flex; align-items:flex-start; gap:8px;
+  padding:6px 0; font-size:13px; color:var(--text-secondary);
+  line-height:1.4;
+}
+.cl-tag {
+  flex-shrink:0; padding:2px 7px; border-radius:4px;
+  font-size:10px; font-weight:700; letter-spacing:-.2px;
+  white-space:nowrap;
+}
+.cl-tag.feat { background:var(--blue-soft); color:var(--blue); }
+.cl-tag.fix { background:var(--green-soft); color:var(--green); }
+.cl-tag.improve { background:var(--purple-soft); color:var(--purple); }
+.cl-tag.remove { background:var(--red-soft); color:var(--red); }
+.update-box .update-btn {
+  width:100%; padding:13px; border:none; border-radius:var(--radius-md);
+  background:var(--accent); color:#fff; font-size:15px; font-weight:700;
+  cursor:pointer; transition:background .2s; margin-top:8px;
+}
+.update-box .update-btn:active { background:var(--accent-hover); }
+.update-box .update-btn.secondary {
+  background:var(--bg-input); color:var(--text-secondary); margin-top:8px;
+}
+.update-box .update-btn.secondary:active { background:var(--bg-input-focus); }
+
+/* ★ 왼쪽 하단 상시 아이콘 */
+.changelog-fab {
+  position:fixed; left:12px; bottom:12px; z-index:9990;
+  width:36px; height:36px; border-radius:50%;
+  background:var(--bg-card); border:1px solid var(--border-default);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; box-shadow:var(--shadow-md);
+  transition:transform .2s, box-shadow .2s;
+}
+.changelog-fab:active { transform:scale(.92); }
+.changelog-fab .material-symbols-rounded {
+  font-size:18px; color:var(--text-secondary);
+}
+.changelog-fab .fab-dot {
+  position:absolute; top:1px; right:1px;
+  width:7px; height:7px; border-radius:50%;
+  background:var(--accent); display:none;
+}
+.changelog-fab .fab-dot.show { display:block; }
 .k-badge {
   padding:5px 12px; border-radius:var(--radius-full);
   font-size:12px; font-weight:600; letter-spacing:-.2px;
@@ -1042,7 +1128,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
     'uspaceRegisterDiscountBatch','getSheetPayTypes',
     'uspaceGetStatus','uspaceDeleteDiscount',
     'deleteFromSheet','deleteAllFromSheet',
-    'uspaceDeleteDiscountBatch','checkLoginStatus'
+    'uspaceDeleteDiscountBatch','checkLoginStatus','uspaceGetBalance','getAppVersion'
   ];
 
   FN_NAMES.forEach(function(name) {
@@ -3244,6 +3330,143 @@ function showSessionBanner(msg, type, autoDismissMs) {
     setTimeout(function() { banner.classList.remove('show'); }, autoDismissMs);
   }
 }
+
+/* ============================================================
+   APP VERSION CHECK + CHANGELOG — 자동 업데이트 감지
+   ============================================================ */
+var _changelogData = null;
+
+function _tagClass(type) {
+  if (type === '기능추가') return 'feat';
+  if (type === '버그수정') return 'fix';
+  if (type === '개선') return 'improve';
+  if (type === '제거') return 'remove';
+  return 'improve';
+}
+
+function _buildChangelogHTML(changelog, limit) {
+  if (!changelog || !changelog.length) return '<p style="color:var(--text-tertiary);font-size:13px;">변경 내역이 없습니다.</p>';
+  var list = limit ? changelog.slice(0, limit) : changelog;
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    var entry = list[i];
+    html += '<div class="changelog-section">';
+    html += '<div class="cl-title">v' + esc(entry.version) + ' <span class="cl-date">' + esc(entry.date) + '</span></div>';
+    for (var j = 0; j < entry.items.length; j++) {
+      var item = entry.items[j];
+      html += '<div class="cl-item"><span class="cl-tag ' + _tagClass(item.type) + '">' + esc(item.type) + '</span><span>' + esc(item.text) + '</span></div>';
+    }
+    html += '</div>';
+  }
+  return html;
+}
+
+function checkAppVersion() {
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (!res || res.version === undefined) return;
+      var serverVer = String(res.version);
+      _changelogData = res.changelog || [];
+
+      try { localStorage.setItem('appChangelog', JSON.stringify(_changelogData)); } catch(e) {}
+
+      var savedVer = '';
+      try { savedVer = localStorage.getItem('appVersion') || ''; } catch(e) {}
+
+      if (!savedVer) {
+        try { localStorage.setItem('appVersion', serverVer); } catch(e) {}
+        return;
+      }
+
+      if (savedVer !== serverVer) {
+        var box = document.getElementById('updateContent');
+        var verLabel = document.getElementById('updateVerLabel');
+        if (verLabel) verLabel.textContent = 'v' + savedVer + ' → v' + serverVer;
+
+        var newEntries = [];
+        for (var i = 0; i < _changelogData.length; i++) {
+          if (_changelogData[i].version === savedVer) break;
+          newEntries.push(_changelogData[i]);
+        }
+        if (box) box.innerHTML = _buildChangelogHTML(newEntries.length ? newEntries : _changelogData, 3);
+
+        document.getElementById('updateOverlay').classList.add('show');
+        var dot = document.querySelector('.fab-dot');
+        if (dot) dot.classList.add('show');
+      }
+    })
+    .withFailureHandler(function(err) {
+      console.log('버전 체크 실패 (무시):', err);
+    })
+    .getAppVersion();
+}
+
+function doAppUpdate() {
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.version !== undefined) {
+        try { localStorage.setItem('appVersion', String(res.version)); } catch(e) {}
+      }
+      window.location.href = window.location.href.split('?')[0] + '?v=' + Date.now();
+    })
+    .withFailureHandler(function() {
+      window.location.href = window.location.href.split('?')[0] + '?v=' + Date.now();
+    })
+    .getAppVersion();
+}
+
+function showChangelog() {
+  var data = _changelogData;
+  if (!data) {
+    try { data = JSON.parse(localStorage.getItem('appChangelog') || '[]'); } catch(e) { data = []; }
+  }
+  var box = document.getElementById('changelogContent');
+  var overlay = document.getElementById('changelogOverlay');
+  if (box) box.innerHTML = _buildChangelogHTML(data);
+  if (overlay) overlay.classList.add('show');
+  var dot = document.querySelector('.fab-dot');
+  if (dot) dot.classList.remove('show');
+}
+
+function closeChangelog() {
+  var overlay = document.getElementById('changelogOverlay');
+  if (overlay) overlay.classList.remove('show');
+}
+
+setTimeout(function() { checkAppVersion(); }, 3000);
+
 </script>
+
+<!-- ★ 업데이트 알림 팝업 -->
+<div class="update-overlay" id="updateOverlay">
+  <div class="update-box">
+    <div class="update-header">
+      <span class="update-icon material-symbols-rounded">system_update</span>
+      <h3>새 버전이 있습니다</h3>
+      <p class="update-ver" id="updateVerLabel"></p>
+    </div>
+    <div id="updateContent"></div>
+    <button class="update-btn" onclick="doAppUpdate()">업데이트 적용</button>
+  </div>
+</div>
+
+<!-- ★ 변경 내역 팝업 -->
+<div class="update-overlay" id="changelogOverlay">
+  <div class="update-box">
+    <div class="update-header">
+      <span class="update-icon material-symbols-rounded">history</span>
+      <h3>업데이트 내역</h3>
+    </div>
+    <div id="changelogContent"></div>
+    <button class="update-btn secondary" onclick="closeChangelog()">닫기</button>
+  </div>
+</div>
+
+<!-- ★ 왼쪽 하단 상시 아이콘 -->
+<div class="changelog-fab" onclick="showChangelog()" title="업데이트 내역">
+  <span class="material-symbols-rounded">update</span>
+  <span class="fab-dot"></span>
+</div>
+
 </body>
 </html>
