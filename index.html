@@ -178,6 +178,16 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   font-size:14px; font-weight:500; color:var(--text-secondary);
   font-variant-numeric:tabular-nums;
 }
+.k-balance {
+  padding:4px 10px; border-radius:var(--radius-full);
+  font-size:12px; font-weight:700; letter-spacing:-.2px;
+  font-variant-numeric:tabular-nums;
+  background:rgba(255,183,77,.12); color:#ffb74d;
+  white-space:nowrap;
+  transition:opacity .3s ease;
+}
+.k-balance.loading { opacity:.4; }
+.k-balance.error { background:rgba(244,67,54,.1); color:#ef5350; }
 .k-badge {
   padding:5px 12px; border-radius:var(--radius-full);
   font-size:12px; font-weight:600; letter-spacing:-.2px;
@@ -881,6 +891,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 #app:not(.gas-mode) .k-header-time { font-size:13px; white-space:nowrap; }
+#app:not(.gas-mode) .k-balance { font-size:10px; padding:3px 7px; }
 #app:not(.gas-mode) .k-badge {
   font-size:11px; padding:3px 8px; white-space:nowrap;
 }
@@ -1094,6 +1105,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
       <div class="k-header-title">손님 주차할인</div>
     </div>
     <div class="k-header-right">
+      <span class="k-balance loading" id="headerBalance">잔액 조회중...</span>
       <span class="k-header-time" id="headerTime"></span>
       <span class="k-badge" id="baseBadge">기본 2시간 할인</span>
     </div>
@@ -1458,6 +1470,7 @@ function verifySmsCode() {
           localStorage.setItem(AUTH_TS_KEY, String(Date.now()));
         } catch(e) {}
         setTimeout(function() { showScreen('homeScreen'); }, 500);
+        setTimeout(function() { loadBalance(); }, 1000); // ★ 잔액 프리로드
       } else {
         setPhoneStatus(res.msg || '인증 실패', 'err');
       }
@@ -2016,6 +2029,9 @@ function finishRegistration(hd, md, base, types, entryKey) {
     coverMin: coverMin,
     incarMin: incarMin
   };
+
+  // ★ 등록 완료 → 잔액 갱신
+  setTimeout(function() { loadBalance(); }, 1500);
 
   showModal('success', '등록 완료',
     '<div style="line-height:2">' +
@@ -2631,6 +2647,7 @@ function deleteDiscount(tckttrnsId, idno, plate, price) {
             });
             recentlyDeletedPlates[plate] = true;
             toast('할인 삭제 완료', 'success');
+            setTimeout(function() { loadBalance(); }, 1500); // ★ 잔액 갱신
             // ★ 낙관적 UI: 화면에서 즉시 제거
             _optimisticRemoveDiscount(plate, tckttrnsId);
             // 시트 동기화 (백그라운드)
@@ -2686,6 +2703,7 @@ function deleteAllBatch(plate, discounts) {
           toast(res.errors[0], 'error');
         }
       }
+      setTimeout(function() { loadBalance(); }, 1500); // ★ 잔액 갱신
       // ★ 낙관적 UI: 해당 차량 모든 할인 즉시 제거
       _optimisticRemoveAllDiscounts(plate);
       // 시트 삭제 (백그라운드)
@@ -2857,6 +2875,34 @@ function updateClock() {
 }
 
 /* ============================================================
+   BALANCE DISPLAY
+   ============================================================ */
+function loadBalance() {
+  var el = document.getElementById('headerBalance');
+  if (!el) return;
+  el.className = 'k-balance loading';
+  el.textContent = '잔액 조회중...';
+
+  google.script.run
+    .withSuccessHandler(function(res) {
+      if (res && res.ok && res.balance !== undefined) {
+        var formatted = Number(res.balance).toLocaleString();
+        el.textContent = '잔액 ' + formatted + '원';
+        el.className = 'k-balance';
+      } else {
+        el.textContent = '잔액 조회실패';
+        el.className = 'k-balance error';
+      }
+    })
+    .withFailureHandler(function(err) {
+      el.textContent = '잔액 조회실패';
+      el.className = 'k-balance error';
+      console.error('잔액 조회 오류:', err);
+    })
+    .uspaceGetBalance('1A-605');
+}
+
+/* ============================================================
    UTIL
    ============================================================ */
 function todayStr8() {
@@ -2994,6 +3040,7 @@ function esc(s) {
     // ── 캐시 유효: 즉시 홈 화면 (서버 대기 없음!) ──
     authedPhone = savedPhone;
     showScreen('homeScreen');
+    setTimeout(function() { loadBalance(); }, 800); // ★ 잔액 프리로드
 
     // 백그라운드에서 권한 재확인 (UI 블로킹 없음)
     google.script.run
@@ -3038,6 +3085,7 @@ function esc(s) {
           authedPhone = savedPhone;
           try { localStorage.setItem(AUTH_TS_KEY, String(Date.now())); } catch(e) {}
           showScreen('homeScreen');
+          setTimeout(function() { loadBalance(); }, 800); // ★ 잔액 프리로드
           showSessionBanner('인증됨: ' + savedPhone, 'ok', 3000);
           google.script.run
             .withSuccessHandler(function(r) {
