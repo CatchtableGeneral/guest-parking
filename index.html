@@ -3445,6 +3445,9 @@ function showSessionBanner(msg, type, autoDismissMs) {
 /* ============================================================
    APP VERSION CHECK + CHANGELOG — 자동 업데이트 감지
    ============================================================ */
+// ★ HTML에 하드코딩된 버전 (서버 버전과 비교하여 업데이트 감지)
+// → localStorage가 비어있어도, 삭제 후 재설치해도, 이 값으로 비교하므로 확실히 감지됨
+var APP_LOCAL_VERSION = '2.9';
 var _changelogData = null;
 var _pendingServerVer = '';
 
@@ -3486,24 +3489,18 @@ function checkAppVersion() {
 
       try { localStorage.setItem('appChangelog', JSON.stringify(_changelogData)); } catch(e) {}
 
-      var savedVer = '';
-      try { savedVer = localStorage.getItem('appVersion') || ''; } catch(e) {}
-
-      if (!savedVer) {
-        try { localStorage.setItem('appVersion', serverVer); } catch(e) {}
-        return;
-      }
-
-      if (savedVer !== serverVer) {
+      // ★ 핵심: HTML 자체 버전(APP_LOCAL_VERSION)과 서버 버전 직접 비교
+      //   → localStorage가 비어있든, 앱을 삭제/재설치했든 상관없이 정확히 감지
+      if (APP_LOCAL_VERSION !== serverVer) {
         _pendingServerVer = serverVer;
 
         var box = document.getElementById('updateContent');
         var verLabel = document.getElementById('updateVerLabel');
-        if (verLabel) verLabel.textContent = 'v' + savedVer + ' → v' + serverVer;
+        if (verLabel) verLabel.textContent = 'v' + APP_LOCAL_VERSION + ' → v' + serverVer;
 
         var newEntries = [];
         for (var i = 0; i < _changelogData.length; i++) {
-          if (_changelogData[i].version === savedVer) break;
+          if (_changelogData[i].version === APP_LOCAL_VERSION) break;
           newEntries.push(_changelogData[i]);
         }
         if (box) box.innerHTML = _buildChangelogHTML(newEntries.length ? newEntries : _changelogData, 3);
@@ -3511,6 +3508,9 @@ function checkAppVersion() {
         document.getElementById('updateOverlay').classList.add('show');
         var dot = document.querySelector('.fab-dot');
         if (dot) dot.classList.add('show');
+      } else {
+        // ★ HTML과 서버 일치 → localStorage 동기화 (기록용)
+        try { localStorage.setItem('appVersion', serverVer); } catch(e) {}
       }
     })
     .withFailureHandler(function(err) {
