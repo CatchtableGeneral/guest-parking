@@ -178,9 +178,15 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   font-size:14px; font-weight:500; color:var(--text-secondary);
   font-variant-numeric:tabular-nums;
 }
+.k-balance-bar {
+  text-align:center; padding:6px var(--space-xl) 5px;
+  background:rgba(10,10,10,.9);
+  border-bottom:1px solid var(--border-subtle);
+  flex-shrink:0;
+}
 .k-balance {
-  padding:4px 10px; border-radius:var(--radius-full);
-  font-size:12px; font-weight:700; letter-spacing:-.2px;
+  padding:3px 10px; border-radius:var(--radius-full);
+  font-size:11px; font-weight:700; letter-spacing:-.2px;
   font-variant-numeric:tabular-nums;
   background:rgba(255,183,77,.12); color:#ffb74d;
   white-space:nowrap;
@@ -981,7 +987,8 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 #app:not(.gas-mode) .k-header-time { font-size:13px; white-space:nowrap; }
-#app:not(.gas-mode) .k-balance { font-size:10px; padding:3px 7px; }
+#app:not(.gas-mode) .k-balance-bar { padding:4px 16px 3px; }
+#app:not(.gas-mode) .k-balance { font-size:10px; padding:2px 7px; }
 #app:not(.gas-mode) .k-badge {
   font-size:11px; padding:3px 8px; white-space:nowrap;
 }
@@ -1195,10 +1202,12 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
       <div class="k-header-title">손님 주차할인</div>
     </div>
     <div class="k-header-right">
-      <span class="k-balance loading" id="headerBalance">잔액 조회중...</span>
       <span class="k-header-time" id="headerTime"></span>
       <span class="k-badge" id="baseBadge">기본 2시간 할인</span>
     </div>
+  </div>
+  <div class="k-balance-bar">
+    <span class="k-balance loading" id="headerBalance">잔액 조회중...</span>
   </div>
 
   <!-- Session banner -->
@@ -1208,7 +1217,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   <div class="screen active" id="phoneScreen">
     <div class="phone-body">
       <div class="phone-card">
-        <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px">v2.7</div>
+        <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px">v2.8</div>
         <h2>손님 주차할인 인증</h2>
         <p>등록된 휴대폰 번호로<br>인증 후 이용할 수 있습니다.</p>
 
@@ -1261,7 +1270,10 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
         <span class="btn-label">문의하기</span>
       </button>
     </div>
-    <div class="home-footer">사내 주차정산시스템 v2.7</div>
+    <div class="home-footer">
+      사내 주차정산시스템 v2.8
+      <span onclick="checkAppVersion(); toast('업데이트 확인 중...','info')" style="margin-left:8px;color:var(--accent);cursor:pointer;text-decoration:underline">업데이트 확인</span>
+    </div>
   </div>
 
   <!-- ========== REGISTER SCREEN ========== -->
@@ -3433,6 +3445,7 @@ function showSessionBanner(msg, type, autoDismissMs) {
    APP VERSION CHECK + CHANGELOG — 자동 업데이트 감지
    ============================================================ */
 var _changelogData = null;
+var _pendingServerVer = '';
 
 function _tagClass(type) {
   if (type === '기능추가') return 'feat';
@@ -3481,6 +3494,8 @@ function checkAppVersion() {
       }
 
       if (savedVer !== serverVer) {
+        _pendingServerVer = serverVer;
+
         var box = document.getElementById('updateContent');
         var verLabel = document.getElementById('updateVerLabel');
         if (verLabel) verLabel.textContent = 'v' + savedVer + ' → v' + serverVer;
@@ -3504,25 +3519,20 @@ function checkAppVersion() {
 }
 
 function doAppUpdate() {
-  // ★ 팝업 닫고 로딩 화면 표시 후 새로고침
-  document.getElementById('updateOverlay').classList.remove('show');
+  // ★ 1) 버전 즉시 저장 (비동기 호출 없이)
+  if (_pendingServerVer) {
+    try { localStorage.setItem('appVersion', _pendingServerVer); } catch(e) {}
+  }
 
+  // ★ 2) 팝업 닫고 로딩 화면 표시
+  document.getElementById('updateOverlay').classList.remove('show');
   var loadDiv = document.createElement('div');
   loadDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg-main,#f5f5f5);display:flex;align-items:center;justify-content:center;z-index:999999;flex-direction:column;gap:16px';
   loadDiv.innerHTML = '<div style="font-size:40px">⏳</div><div style="font-size:16px;color:#888;font-weight:600">업데이트 적용 중...</div>';
   document.body.appendChild(loadDiv);
 
-  google.script.run
-    .withSuccessHandler(function(res) {
-      if (res && res.version !== undefined) {
-        try { localStorage.setItem('appVersion', String(res.version)); } catch(e) {}
-      }
-      window.location.href = window.location.href.split('?')[0] + '?v=' + Date.now();
-    })
-    .withFailureHandler(function() {
-      window.location.href = window.location.href.split('?')[0] + '?v=' + Date.now();
-    })
-    .getAppVersion();
+  // ★ 3) 즉시 새 페이지 로드 (캐시 우회)
+  window.location.href = window.location.href.split('?')[0] + '?v=' + Date.now();
 }
 
 function showChangelog() {
