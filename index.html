@@ -1147,8 +1147,9 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
       var args = Array.prototype.slice.call(arguments);
       var onOk = this._ok, onFail = this._fail;
       var url = GAS_API + '?fn=' + encodeURIComponent(name) +
-                '&args=' + encodeURIComponent(JSON.stringify(args));
-      fetch(url, { redirect:'follow' })
+                '&args=' + encodeURIComponent(JSON.stringify(args)) +
+                '&_=' + Date.now();
+      fetch(url, { redirect:'follow', cache:'no-store' })
         .then(function(r) {
           if (!r.ok) throw new Error('HTTP ' + r.status);
           return r.text();
@@ -1217,7 +1218,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   <div class="screen active" id="phoneScreen">
     <div class="phone-body">
       <div class="phone-card">
-        <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px">v2.9</div>
+        <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px">v2.8</div>
         <h2>손님 주차할인 인증</h2>
         <p>등록된 휴대폰 번호로<br>인증 후 이용할 수 있습니다.</p>
 
@@ -1271,7 +1272,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
       </button>
     </div>
     <div class="home-footer">
-      사내 주차정산시스템 v2.9
+      사내 주차정산시스템 v2.8
       <span onclick="checkAppVersion(); toast('업데이트 확인 중...','info')" style="margin-left:8px;color:var(--accent);cursor:pointer;text-decoration:underline">업데이트 확인</span>
     </div>
   </div>
