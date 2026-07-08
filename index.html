@@ -265,9 +265,9 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
 }
 .update-box .update-btn.secondary:active { background:var(--bg-input-focus); }
 
-/* ★ 왼쪽 하단 상시 아이콘 */
+/* ★ 왼쪽 상단 상시 아이콘 (업데이트 내역) */
 .changelog-fab {
-  position:fixed; left:12px; bottom:12px; z-index:9990;
+  position:fixed; left:12px; top:calc(60px + env(safe-area-inset-top, 0px)); z-index:9990;
   width:36px; height:36px; border-radius:50%;
   background:var(--bg-card); border:1px solid var(--border-default);
   display:flex; align-items:center; justify-content:center;
@@ -1218,7 +1218,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   <div class="screen active" id="phoneScreen">
     <div class="phone-body">
       <div class="phone-card">
-        <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px">v2.9</div>
+        <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px">v3.0</div>
         <h2>손님 주차할인 인증</h2>
         <p>등록된 휴대폰 번호로<br>인증 후 이용할 수 있습니다.</p>
 
@@ -1272,7 +1272,7 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
       </button>
     </div>
     <div class="home-footer">
-      사내 주차정산시스템 v2.9
+      사내 주차정산시스템 v3.0
       <span onclick="checkAppVersion(); toast('업데이트 확인 중...','info')" style="margin-left:8px;color:var(--accent);cursor:pointer;text-decoration:underline">업데이트 확인</span>
     </div>
   </div>
@@ -1843,10 +1843,10 @@ function submitRegistration() {
       '<div style="line-height:1.8;text-align:center;padding:8px 0">' +
       '<div style="font-size:40px;margin-bottom:12px">🚫</div>' +
       '<div style="font-size:15px;font-weight:700;color:var(--red);margin-bottom:8px">' +
-      '손님용으로 잘못들어오신거죠 ?</div>' +
+      '등록이 제한된 차량입니다</div>' +
       '<div style="font-size:14px;color:var(--text-secondary);margin-bottom:12px">' +
-      '자차등록으로 다시 시도해주세요.<br>' +
-      '<b>개인차량은 손님용 등록이 불가합니다</b></div>' +
+      '자차 또는 외부업체 차량은<br>' +
+      '<b>손님용 할인 등록이 불가합니다</b></div>' +
       '<div style="background:var(--red-soft);border-radius:var(--radius-md);padding:10px;font-size:13px;color:var(--red)">' +
       '차량: <b>' + esc(regCarNo) + '</b></div>' +
       '</div>',
@@ -1870,10 +1870,10 @@ function submitRegistration() {
             '<div style="line-height:1.8;text-align:center;padding:8px 0">' +
             '<div style="font-size:40px;margin-bottom:12px">🚫</div>' +
             '<div style="font-size:15px;font-weight:700;color:var(--red);margin-bottom:8px">' +
-            '손님용으로 잘못들어오신거죠 ?</div>' +
+            '등록이 제한된 차량입니다</div>' +
             '<div style="font-size:14px;color:var(--text-secondary);margin-bottom:12px">' +
-            '자차등록으로 다시 시도해주세요.<br>' +
-            '<b>개인차량은 손님용 등록이 불가합니다</b></div>' +
+            '자차 또는 외부업체 차량은<br>' +
+            '<b>손님용 할인 등록이 불가합니다</b></div>' +
             '<div style="background:var(--red-soft);border-radius:var(--radius-md);padding:10px;font-size:13px;color:var(--red)">' +
             '차량: <b>' + esc(regCarNo) + '</b></div>' +
             '</div>',
@@ -3447,7 +3447,7 @@ function showSessionBanner(msg, type, autoDismissMs) {
    ============================================================ */
 // ★ HTML에 하드코딩된 버전 (서버 버전과 비교하여 업데이트 감지)
 // → localStorage가 비어있어도, 삭제 후 재설치해도, 이 값으로 비교하므로 확실히 감지됨
-var APP_LOCAL_VERSION = '2.9';
+var APP_LOCAL_VERSION = '3.0';
 var _changelogData = null;
 var _pendingServerVer = '';
 
@@ -3585,7 +3585,7 @@ setInterval(function() { checkAppVersion(); }, 60 * 1000);
   </div>
 </div>
 
-<!-- ★ 왼쪽 하단 상시 아이콘 -->
+<!-- ★ 왼쪽 상단 상시 아이콘 (업데이트 내역) -->
 <div class="changelog-fab" onclick="showChangelog()" title="업데이트 내역">
   <span class="material-symbols-rounded">update</span>
   <span class="fab-dot"></span>
