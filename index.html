@@ -232,17 +232,17 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
 .update-box .update-ver {
   font-size:13px; color:var(--text-secondary); margin:0;
 }
-.update-box .changelog-section {
+.update-box .changelog-section, .modal-body .changelog-section {
   margin-bottom:16px;
 }
-.update-box .changelog-section .cl-title {
+.update-box .changelog-section .cl-title, .modal-body .changelog-section .cl-title {
   font-size:14px; font-weight:700; color:var(--text-primary);
   margin:0 0 8px; display:flex; align-items:center; gap:8px;
 }
-.update-box .changelog-section .cl-date {
+.update-box .changelog-section .cl-date, .modal-body .changelog-section .cl-date {
   font-size:11px; font-weight:400; color:var(--text-tertiary);
 }
-.update-box .cl-item {
+.update-box .cl-item, .modal-body .cl-item {
   display:flex; align-items:flex-start; gap:8px;
   padding:6px 0; font-size:13px; color:var(--text-secondary);
   line-height:1.4;
@@ -1304,7 +1304,7 @@ if ('serviceWorker' in navigator) {
       </button>
     </div>
     <div class="home-footer">
-      사내 주차정산시스템 v3.1
+      사내 주차정산시스템 v3.2
       <span onclick="manualCheckUpdate()" style="margin-left:8px;color:var(--accent);cursor:pointer;text-decoration:underline">업데이트 확인</span>
     </div>
   </div>
@@ -3479,7 +3479,7 @@ function showSessionBanner(msg, type, autoDismissMs) {
    ============================================================ */
 // ★ HTML에 하드코딩된 버전 (서버 버전과 비교하여 업데이트 감지)
 // → localStorage가 비어있어도, 삭제 후 재설치해도, 이 값으로 비교하므로 확실히 감지됨
-var APP_LOCAL_VERSION = '3.1';
+var APP_LOCAL_VERSION = '3.2';
 var _changelogData = null;
 var _pendingServerVer = '';
 
@@ -3509,9 +3509,9 @@ function _buildChangelogHTML(changelog, limit) {
 }
 
 function checkAppVersion() {
-  // ★ 이미 팝업이 떠있으면 중복 체크 안 함
-  var overlay = document.getElementById('updateOverlay');
-  if (overlay && overlay.classList.contains('show')) return;
+  // ★ 이미 모달이 떠있으면 중복 체크 안 함
+  var modal = document.getElementById('modalOverlay');
+  if (modal && modal.classList.contains('show')) return;
 
   google.script.run
     .withSuccessHandler(function(res) {
@@ -3522,24 +3522,31 @@ function checkAppVersion() {
       try { localStorage.setItem('appChangelog', JSON.stringify(_changelogData)); } catch(e) {}
 
       // ★ 핵심: HTML 자체 버전(APP_LOCAL_VERSION)과 서버 버전 직접 비교
-      //   → localStorage가 비어있든, 앱을 삭제/재설치했든 상관없이 정확히 감지
       if (APP_LOCAL_VERSION !== serverVer) {
         _pendingServerVer = serverVer;
-
-        var box = document.getElementById('updateContent');
-        var verLabel = document.getElementById('updateVerLabel');
         var dateStr = '';
         if (_changelogData.length > 0 && _changelogData[0].date) dateStr = ' (' + _changelogData[0].date + ')';
-        if (verLabel) verLabel.textContent = 'v' + APP_LOCAL_VERSION + ' → v' + serverVer + dateStr;
 
         var newEntries = [];
         for (var i = 0; i < _changelogData.length; i++) {
           if (_changelogData[i].version === APP_LOCAL_VERSION) break;
           newEntries.push(_changelogData[i]);
         }
-        if (box) box.innerHTML = _buildChangelogHTML(newEntries.length ? newEntries : _changelogData, 3);
+        var changelogHtml = _buildChangelogHTML(newEntries.length ? newEntries : _changelogData, 3);
 
-        document.getElementById('updateOverlay').classList.add('show');
+        showModal('warn', '새 버전이 있습니다',
+          '<div style="text-align:center;margin-bottom:12px">' +
+          '<div style="font-size:15px;font-weight:700;color:var(--accent)">v' + APP_LOCAL_VERSION + ' → v' + serverVer + dateStr + '</div>' +
+          '</div>' +
+          '<div style="max-height:30vh;overflow-y:auto;text-align:left;margin-bottom:12px">' + changelogHtml + '</div>' +
+          '<div style="background:var(--bg-input);border:1px solid var(--border-default);border-radius:12px;padding:14px 16px">' +
+          '<p style="font-size:13px;font-weight:700;color:var(--text-primary);margin:0 0 8px">업데이트 방법</p>' +
+          '<p style="font-size:12px;color:var(--text-secondary);margin:0;line-height:1.8">' +
+          '① 최근 앱 목록에서 브라우저를 <strong>완전히 종료</strong><br>' +
+          '② 브라우저를 다시 열고 접속하면 자동 반영됩니다</p>' +
+          '</div>',
+          [{ text: '확인', cls: 'secondary', action: closeModal }]
+        );
         var dot = document.querySelector('.fab-dot');
         if (dot) dot.classList.add('show');
       } else {
@@ -3553,33 +3560,6 @@ function checkAppVersion() {
     .getAppVersion();
 }
 
-function doAppUpdate() {
-  // ★ 1) 버전 즉시 저장 (비동기 호출 없이)
-  if (_pendingServerVer) {
-    try { localStorage.setItem('appVersion', _pendingServerVer); } catch(e) {}
-  }
-
-  // ★ 2) 팝업 닫고 로딩 화면 표시
-  document.getElementById('updateOverlay').classList.remove('show');
-  var loadDiv = document.createElement('div');
-  loadDiv.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg-main,#f5f5f5);display:flex;align-items:center;justify-content:center;z-index:999999;flex-direction:column;gap:16px';
-  loadDiv.innerHTML = '<div style="font-size:40px">⏳</div><div style="font-size:16px;color:#888;font-weight:600">업데이트 적용 중...</div>';
-  document.body.appendChild(loadDiv);
-
-  // ★ 3) PWA/서비스워커 캐시 강제 삭제 (AOS 대응)
-  try {
-    if ('caches' in window) {
-      caches.keys().then(function(names) {
-        names.forEach(function(n) { caches.delete(n); });
-      });
-    }
-  } catch(e) {}
-
-  // ★ 4) 즉시 새 페이지 로드 (location.replace로 뒤로가기 캐시도 방지)
-  var baseUrl = window.location.href.split('?')[0].split('#')[0];
-  window.location.replace(baseUrl + '?_v=' + Date.now() + '&_r=' + Math.random().toString(36).slice(2));
-}
-
 function manualCheckUpdate() {
   toast('업데이트 확인 중...', 'info');
   google.script.run
@@ -3589,19 +3569,21 @@ function manualCheckUpdate() {
       _changelogData = res.changelog || [];
       try { localStorage.setItem('appChangelog', JSON.stringify(_changelogData)); } catch(e) {}
       if (APP_LOCAL_VERSION !== serverVer) {
-        _pendingServerVer = serverVer;
-        var box = document.getElementById('updateContent');
-        var verLabel = document.getElementById('updateVerLabel');
+        // ★ 새 버전 있음 → showModal로 메모리 정리 안내
         var dateStr = '';
         if (_changelogData.length > 0 && _changelogData[0].date) dateStr = ' (' + _changelogData[0].date + ')';
-        if (verLabel) verLabel.textContent = 'v' + APP_LOCAL_VERSION + ' → v' + serverVer + dateStr;
-        var newEntries = [];
-        for (var i = 0; i < _changelogData.length; i++) {
-          if (_changelogData[i].version === APP_LOCAL_VERSION) break;
-          newEntries.push(_changelogData[i]);
-        }
-        if (box) box.innerHTML = _buildChangelogHTML(newEntries.length ? newEntries : _changelogData, 3);
-        document.getElementById('updateOverlay').classList.add('show');
+        showModal('warn', '새 버전이 있습니다',
+          '<div style="text-align:center;margin-bottom:12px">' +
+          '<div style="font-size:15px;font-weight:700;color:var(--accent)">v' + APP_LOCAL_VERSION + ' → v' + serverVer + dateStr + '</div>' +
+          '</div>' +
+          '<div style="background:var(--bg-input);border:1px solid var(--border-default);border-radius:12px;padding:14px 16px">' +
+          '<p style="font-size:13px;font-weight:700;color:var(--text-primary);margin:0 0 8px">업데이트 방법</p>' +
+          '<p style="font-size:12px;color:var(--text-secondary);margin:0;line-height:1.8">' +
+          '① 최근 앱 목록에서 브라우저를 <strong>완전히 종료</strong><br>' +
+          '② 브라우저를 다시 열고 접속하면 자동 반영됩니다</p>' +
+          '</div>',
+          [{ text: '확인', cls: 'secondary', action: closeModal }]
+        );
       } else {
         toast('현재 최신 버전입니다 (v' + serverVer + ')', 'success');
       }
@@ -3613,14 +3595,14 @@ function manualCheckUpdate() {
 }
 
 function showChangelog() {
-  // ★ 데이터가 없으면 서버에서 직접 가져온 후 팝업 표시
+  // ★ 데이터가 없으면 순서대로: localStorage → 서버
   if (!_changelogData || !_changelogData.length) {
-    // localStorage 백업 먼저 시도
     try {
       var cached = JSON.parse(localStorage.getItem('appChangelog') || '[]');
-      if (cached && cached.length) { _changelogData = cached; _displayChangelog(); return; }
+      if (cached && cached.length) { _changelogData = cached; }
     } catch(e) {}
-    // 서버에서 직접 가져오기
+  }
+  if (!_changelogData || !_changelogData.length) {
     toast('업데이트 내역 불러오는 중...', 'info');
     google.script.run
       .withSuccessHandler(function(res) {
@@ -3628,7 +3610,7 @@ function showChangelog() {
           _changelogData = res.changelog;
           try { localStorage.setItem('appChangelog', JSON.stringify(_changelogData)); } catch(e) {}
         }
-        _displayChangelog();
+        _showChangelogModal();
       })
       .withFailureHandler(function() {
         toast('서버 연결 실패', 'error');
@@ -3636,16 +3618,18 @@ function showChangelog() {
       .getAppVersion();
     return;
   }
-  _displayChangelog();
+  _showChangelogModal();
 }
 
-function _displayChangelog() {
+function _showChangelogModal() {
+  // ★ 문의하기와 동일한 showModal() 사용 — 확실하게 동작
   var data = _changelogData || [];
-  var box = document.getElementById('changelogContent');
-  var overlay = document.getElementById('changelogOverlay');
-  if (box) box.innerHTML = _buildChangelogHTML(data);
-  if (overlay) overlay.classList.add('show');
-  // 알림 점 + 코멘트 + 홈화면 힌트 모두 제거
+  var content = _buildChangelogHTML(data);
+  showModal('info', '업데이트 내역',
+    '<div style="max-height:50vh;overflow-y:auto;text-align:left">' + content + '</div>',
+    [{ text: '닫기', cls: 'secondary', action: closeModal }]
+  );
+  // 알림 점 + 코멘트 + 홈화면 힌트 제거
   var dot = document.querySelector('.fab-dot');
   if (dot) dot.classList.remove('show');
   var comment = document.getElementById('fabComment');
@@ -3653,11 +3637,6 @@ function _displayChangelog() {
   var regHint = document.getElementById('homeChangelogHint');
   if (regHint) regHint.style.display = 'none';
   try { localStorage.setItem('lastSeenChangelogVer', APP_LOCAL_VERSION); } catch(e) {}
-}
-
-function closeChangelog() {
-  var overlay = document.getElementById('changelogOverlay');
-  if (overlay) overlay.classList.remove('show');
 }
 
 // ★ 최근 업데이트 코멘트 표시 (아직 내역을 안 본 경우)
@@ -3679,31 +3658,6 @@ setTimeout(function() { checkAppVersion(); }, 3000);
 setInterval(function() { checkAppVersion(); }, 60 * 1000);
 
 </script>
-
-<!-- ★ 업데이트 알림 팝업 -->
-<div class="update-overlay" id="updateOverlay">
-  <div class="update-box">
-    <div class="update-header">
-      <span class="update-icon material-symbols-rounded">system_update</span>
-      <h3>새 버전이 있습니다</h3>
-      <p class="update-ver" id="updateVerLabel"></p>
-    </div>
-    <div id="updateContent"></div>
-    <button class="update-btn" onclick="doAppUpdate()">업데이트 적용</button>
-  </div>
-</div>
-
-<!-- ★ 변경 내역 팝업 -->
-<div class="update-overlay" id="changelogOverlay">
-  <div class="update-box">
-    <div class="update-header">
-      <span class="update-icon material-symbols-rounded">history</span>
-      <h3>업데이트 내역</h3>
-    </div>
-    <div id="changelogContent"></div>
-    <button class="update-btn secondary" onclick="closeChangelog()">닫기</button>
-  </div>
-</div>
 
 <!-- ★ 왼쪽 상단 상시 아이콘 (업데이트 내역) -->
 <div class="changelog-fab" onclick="showChangelog()" title="업데이트 내역">
