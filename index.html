@@ -1298,9 +1298,13 @@ if ('serviceWorker' in navigator) {
         <span class="material-symbols-rounded">help</span>
         <span class="btn-label">문의하기</span>
       </button>
+      <button class="reg-changelog-hint" id="homeChangelogHint" onclick="showChangelog()" style="display:none;align-self:center;margin-top:4px">
+        <span class="material-symbols-rounded" style="font-size:16px;color:var(--accent)">update</span>
+        <span style="font-size:11px;font-weight:700;color:var(--accent)">최근 업데이트된 내역이 있어요!</span>
+      </button>
     </div>
     <div class="home-footer">
-      사내 주차정산시스템 v3.0
+      사내 주차정산시스템 v3.1
       <span onclick="manualCheckUpdate()" style="margin-left:8px;color:var(--accent);cursor:pointer;text-decoration:underline">업데이트 확인</span>
     </div>
   </div>
@@ -1308,15 +1312,9 @@ if ('serviceWorker' in navigator) {
   <!-- ========== REGISTER SCREEN ========== -->
   <div class="screen" id="regScreen">
     <div class="step-container" id="regScrollArea">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <button class="back-btn" onclick="goHome()" style="margin-bottom:0">
-          <span class="material-symbols-rounded">arrow_back</span> 홈
-        </button>
-        <button class="reg-changelog-hint" id="regChangelogHint" onclick="showChangelog()" style="display:none">
-          <span style="font-size:11px;font-weight:700;color:var(--accent)">업데이트 내역</span>
-          <span class="material-symbols-rounded" style="font-size:16px;color:var(--accent)">update</span>
-        </button>
-      </div>
+      <button class="back-btn" onclick="goHome()">
+        <span class="material-symbols-rounded">arrow_back</span> 홈
+      </button>
 
       <!-- Info bar -->
       <div class="reg-info-bar" id="regInfoBar">
@@ -3481,7 +3479,7 @@ function showSessionBanner(msg, type, autoDismissMs) {
    ============================================================ */
 // ★ HTML에 하드코딩된 버전 (서버 버전과 비교하여 업데이트 감지)
 // → localStorage가 비어있어도, 삭제 후 재설치해도, 이 값으로 비교하므로 확실히 감지됨
-var APP_LOCAL_VERSION = '3.0';
+var APP_LOCAL_VERSION = '3.1';
 var _changelogData = null;
 var _pendingServerVer = '';
 
@@ -3615,20 +3613,44 @@ function manualCheckUpdate() {
 }
 
 function showChangelog() {
-  var data = _changelogData;
-  if (!data) {
-    try { data = JSON.parse(localStorage.getItem('appChangelog') || '[]'); } catch(e) { data = []; }
+  // ★ 데이터가 없으면 서버에서 직접 가져온 후 팝업 표시
+  if (!_changelogData || !_changelogData.length) {
+    // localStorage 백업 먼저 시도
+    try {
+      var cached = JSON.parse(localStorage.getItem('appChangelog') || '[]');
+      if (cached && cached.length) { _changelogData = cached; _displayChangelog(); return; }
+    } catch(e) {}
+    // 서버에서 직접 가져오기
+    toast('업데이트 내역 불러오는 중...', 'info');
+    google.script.run
+      .withSuccessHandler(function(res) {
+        if (res && res.changelog && res.changelog.length) {
+          _changelogData = res.changelog;
+          try { localStorage.setItem('appChangelog', JSON.stringify(_changelogData)); } catch(e) {}
+        }
+        _displayChangelog();
+      })
+      .withFailureHandler(function() {
+        toast('서버 연결 실패', 'error');
+      })
+      .getAppVersion();
+    return;
   }
+  _displayChangelog();
+}
+
+function _displayChangelog() {
+  var data = _changelogData || [];
   var box = document.getElementById('changelogContent');
   var overlay = document.getElementById('changelogOverlay');
   if (box) box.innerHTML = _buildChangelogHTML(data);
   if (overlay) overlay.classList.add('show');
-  // 알림 점 + 코멘트 + 등록화면 힌트 모두 제거
+  // 알림 점 + 코멘트 + 홈화면 힌트 모두 제거
   var dot = document.querySelector('.fab-dot');
   if (dot) dot.classList.remove('show');
   var comment = document.getElementById('fabComment');
   if (comment) comment.classList.remove('show');
-  var regHint = document.getElementById('regChangelogHint');
+  var regHint = document.getElementById('homeChangelogHint');
   if (regHint) regHint.style.display = 'none';
   try { localStorage.setItem('lastSeenChangelogVer', APP_LOCAL_VERSION); } catch(e) {}
 }
@@ -3647,7 +3669,7 @@ function closeChangelog() {
       if (c) c.classList.add('show');
       var d = document.querySelector('.fab-dot');
       if (d) d.classList.add('show');
-      var rh = document.getElementById('regChangelogHint');
+      var rh = document.getElementById('homeChangelogHint');
       if (rh) rh.style.display = 'flex';
     }
   } catch(e) {}
