@@ -2396,7 +2396,7 @@ function filterNames() {
   }
 
   var filtered = memberList.filter(function(m) {
-    return m.name.toLowerCase().indexOf(q) >= 0 ||
+    return m.name.toLowerCase().indexOf(q) === 0 ||
            m.dept.toLowerCase().indexOf(q) >= 0;
   }).slice(0, 20);
 
@@ -4074,8 +4074,8 @@ function kbReset() {
 // ── 하이브리드 검색: 완성형 + 초성 자동 매칭 ──
 function kbMatchName(name, q) {
   if (!q) return false;
-  // 1) 직접 매칭
-  if (name.indexOf(q) >= 0) return true;
+  // 1) 직접 매칭 (이름 앞에서부터만)
+  if (name.indexOf(q) === 0) return true;
   // 2) 입력이 모두 자음(초성)이면 초성 검색
   var allJamo = true;
   for (var i = 0; i < q.length; i++) {
@@ -4097,7 +4097,7 @@ function kbMatchName(name, q) {
     var pre = q.slice(0, -1), lj = q.slice(-1);
     if (!pre) return false;
     var idx = name.indexOf(pre);
-    if (idx < 0) return false;
+    if (idx !== 0) return false;
     var ni = idx + pre.length;
     if (ni >= name.length) return false;
     var nc2 = name.charCodeAt(ni) - 0xAC00;
@@ -4450,7 +4450,7 @@ document.addEventListener('click', function(e) {
    APP VERSION CHECK + CHANGELOG — 자동 업데이트 감지
    ============================================================ */
 // ★ HTML에 하드코딩된 버전 (서버 버전과 비교하여 업데이트 감지)
-var APP_LOCAL_VERSION = '3.4';
+var APP_LOCAL_VERSION = '3.5';
 var _changelogData = null; // 서버에서 받은 전체 changelog 보관
 var _pendingServerVer = ''; // 업데이트 대기중인 서버 버전
 var _pendingUpdateUrl = ''; // GAS 배포 URL (reload 대신 사용)
