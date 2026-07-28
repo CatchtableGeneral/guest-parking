@@ -1138,6 +1138,9 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
    TABLET SPLIT LAYOUT — Keypad Panels
    ============================================================ */
 .tablet-keypad-panel { display:none; }
+/* Step 1 래퍼: 모바일에서도 flex 채움 유지 */
+.s1-top-wrap { flex:1; display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+.s1-top-wrap > .step-container { flex:1; min-width:0; overflow-y:auto; }
 
 /* --- Step 1: Chosung (초성) keypad --- */
 .chosung-selected {
