@@ -1167,7 +1167,8 @@ if ('serviceWorker' in navigator) {
     'uspaceRegisterDiscountBatch','getSheetPayTypes',
     'uspaceGetStatus','uspaceDeleteDiscount',
     'deleteFromSheet','deleteAllFromSheet',
-    'uspaceDeleteDiscountBatch','checkLoginStatus','uspaceGetBalance','getAppVersion','getEmployeeCarNumbers'
+    'uspaceDeleteDiscountBatch','checkLoginStatus','uspaceGetBalance','getAppVersion','getEmployeeCarNumbers',
+    'uspaceSessionWarmup'
   ];
 
   FN_NAMES.forEach(function(name) {
@@ -3317,6 +3318,13 @@ function esc(s) {
       })
       .withFailureHandler(function() {})
       .checkLoginStatus();
+    // ★ v5.0: 세션 워밍업 — 만료된 세션 미리 재로그인
+    setTimeout(function() {
+      google.script.run
+        .withSuccessHandler(function(r) { if (r && r.ok) console.log('warmup: ' + r.reason); })
+        .withFailureHandler(function() {})
+        .uspaceSessionWarmup();
+    }, 500);
 
   } else if (savedPhone && !cacheValid) {
     // ── 캐시 만료(24h 초과): 서버 확인 필수 ──
@@ -3398,6 +3406,19 @@ setInterval(function() {
   showSessionBanner('5분간 활동이 없어 메인화면으로 이동했습니다', 'warn', 4000);
   _lastActivity = Date.now();
 }, 30000);
+
+// ★ v5.0: 4분마다 uspace 세션 실제 검증 + 만료 시 자동 재로그인
+//   태블릿 24시간 가동 대응 — 세션이 끊겨도 자동 복구
+setInterval(function() {
+  google.script.run
+    .withSuccessHandler(function(r) {
+      if (r && !r.ok && r.reason && r.reason.indexOf('fail') >= 0) {
+        showSessionBanner('uspace 연결 실패 — 관리자 확인 필요', 'warn');
+      }
+    })
+    .withFailureHandler(function() {})
+    .uspaceSessionWarmup();
+}, 4 * 60 * 1000);
 
 /* ============================================================
    포그라운드 복귀 시 권한 재확인
@@ -3494,7 +3515,7 @@ function showSessionBanner(msg, type, autoDismissMs) {
    ============================================================ */
 // ★ HTML에 하드코딩된 버전 (서버 버전과 비교하여 업데이트 감지)
 // → localStorage가 비어있어도, 삭제 후 재설치해도, 이 값으로 비교하므로 확실히 감지됨
-var APP_LOCAL_VERSION = '4.8';
+var APP_LOCAL_VERSION = '5.1';
 var _changelogData = null;
 var _pendingServerVer = '';
 
