@@ -484,6 +484,36 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
 /* ============================================================
    REGISTER SCREEN
    ============================================================ */
+/* ★ v5.4 등록화면 상단 (홈 / 등록현황) */
+.reg-top-row { display:flex; align-items:center; gap:8px; }
+.reg-status-btn {
+  margin-left:auto; display:inline-flex; align-items:center; gap:4px;
+  padding:7px 14px; border-radius:var(--radius-full);
+  background:var(--bg-card); color:var(--text-secondary);
+  border:1px solid var(--border-default);
+  font-size:13px; font-weight:700;
+}
+.reg-status-btn:active { transform:scale(.95); }
+.reg-status-btn .material-symbols-rounded { font-size:17px; }
+.reg-who {
+  margin-left:auto; font-size:12px; font-weight:700; color:var(--text-tertiary);
+  white-space:nowrap;
+}
+
+/* ★ v5.4 메모 추천 버튼 */
+.memo-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+.memo-chips button {
+  padding:8px 14px; border-radius:var(--radius-full);
+  background:var(--bg-card); color:var(--text-secondary);
+  border:1px solid var(--border-default);
+  font-size:13px; font-weight:700; white-space:nowrap;
+}
+.memo-chips button:active { transform:scale(.94); }
+.memo-chips button.on {
+  background:var(--accent-soft); color:var(--accent);
+  border-color:rgba(255,61,0,.4);
+}
+
 .reg-info-bar {
   display:flex; gap:var(--space-sm); align-items:center; flex-wrap:wrap;
   padding:var(--space-md) var(--space-lg);
@@ -670,6 +700,23 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   transition:all var(--duration-fast) var(--ease-spring);
 }
 .modal-actions .modal-btn:active { transform:scale(.98); }
+
+/* ★ v5.6 자동 복귀 게이지
+   확인 버튼 안에서 주황색이 왼쪽으로 줄어들며 남은 시간을 보여줍니다.
+   숫자를 세는 것보다 한눈에 들어오고, 화면을 만지면 즉시 꽉 찬 상태로 돌아갑니다. */
+/* .primary 와 같은 우선순위면 나중에 선언된 쪽이 이기므로 한 단계 올려둡니다 */
+.modal-actions .modal-btn.primary.draining,
+.modal-actions .modal-btn.draining {
+  position:relative; overflow:hidden;
+  background:rgba(255,61,0,.18) !important;
+  box-shadow:none;
+}
+.modal-actions .modal-btn.draining .btn-drain {
+  position:absolute; left:0; top:0; bottom:0; width:100%;
+  background:var(--accent);
+  z-index:0; pointer-events:none;
+}
+.modal-actions .modal-btn .btn-label { position:relative; z-index:1; }
 .modal-actions .modal-btn.primary {
   background:var(--accent); color:#fff;
   box-shadow:0 2px 8px rgba(255,61,0,.2);
@@ -1168,7 +1215,7 @@ if ('serviceWorker' in navigator) {
     'uspaceGetStatus','uspaceDeleteDiscount',
     'deleteFromSheet','deleteAllFromSheet',
     'uspaceDeleteDiscountBatch','checkLoginStatus','uspaceGetBalance','getAppVersion','getEmployeeCarNumbers',
-    'uspaceSessionWarmup','uspaceVerifyAndNotify','uspacePrefetchDetail'
+    'uspaceSessionWarmup','uspaceVerifyAndNotify','uspacePrefetchDetail','uspaceGetCarDiscounts'
   ];
 
   FN_NAMES.forEach(function(name) {
@@ -1313,14 +1360,21 @@ if ('serviceWorker' in navigator) {
   <!-- ========== REGISTER SCREEN ========== -->
   <div class="screen" id="regScreen">
     <div class="step-container" id="regScrollArea">
-      <button class="back-btn" onclick="goHome()">
-        <span class="material-symbols-rounded">arrow_back</span> 홈
-      </button>
+      <!-- ★ v5.4: 인증 후 바로 이 화면으로 오므로, 등록현황을 여기에 둠 -->
+      <div class="reg-top-row">
+        <button class="back-btn" onclick="goHome()">
+          <span class="material-symbols-rounded">arrow_back</span> 홈
+        </button>
+        <button class="reg-status-btn" onclick="goStatus()">
+          <span class="material-symbols-rounded">assignment</span> 등록현황
+        </button>
+      </div>
 
       <!-- Info bar -->
       <div class="reg-info-bar" id="regInfoBar">
-        <span class="reg-info-tag dept">HR</span>
+        <span class="reg-info-tag dept" id="regDeptTag">HR</span>
         <span class="reg-info-tag guest">손님용</span>
+        <span class="reg-who" id="regWho"></span>
       </div>
 
       <!-- Car number input -->
@@ -1340,6 +1394,8 @@ if ('serviceWorker' in navigator) {
 
     <!-- Bottom bar: memo + submit -->
     <div class="reg-bottom-bar">
+      <!-- ★ v5.4: 자주 쓰는 사유를 눌러서 채우기 (부서에 맞춰 자동으로 바뀜) -->
+      <div class="memo-chips" id="memoChips"></div>
       <textarea class="reg-memo" id="memoInput" rows="2" required
                 placeholder="메모 (필수) ex) TA - 인터뷰 OOO님 , HR - OO업체 미팅 등 간단하게 작성해주세요."></textarea>
       <button class="reg-submit-btn" id="regSubmitBtn"
@@ -1483,6 +1539,83 @@ var AUTH_TS_KEY      = 'guest_auth_timestamp';   // 마지막 인증 성공 시�
 var AUTH_CACHE_MS    = 24 * 60 * 60 * 1000;      // 24시간 캐시
 var authedPhone = '';  // 인증된 전화번호
 
+/* ════════════════════════════════════════════════
+   ★ v5.4 담당자 정보 (관리자 시트 D=이름 / G=부서)
+   - 인증할 때 서버가 같이 내려줍니다
+   - 메모 추천 버튼을 부서에 맞게 띄우는 데 사용
+   ════════════════════════════════════════════════ */
+var authedName = '';
+var authedDept = '';   // 'GA' 또는 'TA'
+var WHO_NAME_KEY = 'guest_who_name';
+var WHO_DEPT_KEY = 'guest_who_dept';
+
+// 자주 쓰는 메모 사유 — 누르면 '　TA - 면접 ' 까지 채워집니다
+var MEMO_PRESETS = {
+  TA: ['면접', '인터뷰', '채용 설명회'],
+  GA: ['외부업체 미팅', '벤더 방문', '임원/VIP 방문'],
+  '': ['미팅', '방문']
+};
+
+function setAuthedWho(name, dept) {
+  if (name) authedName = String(name);
+  if (dept) authedDept = String(dept).toUpperCase();
+  try {
+    if (authedName) localStorage.setItem(WHO_NAME_KEY, authedName);
+    if (authedDept) localStorage.setItem(WHO_DEPT_KEY, authedDept);
+  } catch(e) {}
+  renderWhoTags();
+  renderMemoChips();
+}
+
+function restoreAuthedWho() {
+  try {
+    authedName = localStorage.getItem(WHO_NAME_KEY) || '';
+    authedDept = localStorage.getItem(WHO_DEPT_KEY) || '';
+  } catch(e) {}
+  renderWhoTags();
+  renderMemoChips();
+}
+
+function renderWhoTags() {
+  var tag = document.getElementById('regDeptTag');
+  if (tag) tag.textContent = authedDept || 'HR';
+  var who = document.getElementById('regWho');
+  if (who) who.textContent = authedName ? ('담당 ' + authedName) : '';
+}
+
+function renderMemoChips() {
+  var box = document.getElementById('memoChips');
+  if (!box) return;
+  var list = MEMO_PRESETS[authedDept] || MEMO_PRESETS[''];
+  var prefix = authedDept ? (authedDept + ' - ') : '';
+  var html = '';
+  for (var i = 0; i < list.length; i++) {
+    html += '<button type="button" onclick="pickMemo(\'' + list[i] + '\')">' + list[i] + '</button>';
+  }
+  html += '<button type="button" onclick="pickMemo(\'\')">직접입력</button>';
+  box.innerHTML = html;
+  box.setAttribute('data-prefix', prefix);
+}
+
+function pickMemo(word) {
+  var box = document.getElementById('memoChips');
+  var input = document.getElementById('memoInput');
+  if (!input) return;
+  var prefix = (box && box.getAttribute('data-prefix')) || '';
+  input.value = word ? (prefix + word + ' ') : prefix;
+  // 눌린 버튼만 강조
+  if (box) {
+    var btns = box.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++) {
+      if (btns[i].textContent === (word || '직접입력')) btns[i].classList.add('on');
+      else btns[i].classList.remove('on');
+    }
+  }
+  input.focus();
+  // 커서를 맨 뒤로 (이름만 바로 이어서 칠 수 있게)
+  try { input.setSelectionRange(input.value.length, input.value.length); } catch(e) {}
+}
+
 var selectedMember = { dept: 'HR', name: 'HR' };
 var isGuest = true;
 var carResults = [];
@@ -1519,8 +1652,12 @@ var DSCNT_COVER_MIN = {
 };
 
 function getBaseDiscount(entryDateStr) {
-  if (entryDateStr && entryDateStr.length >= 13) {
-    var clean = entryDateStr.replace(/\D/g, '');
+  // ★ v5.5: 바깥 조건이 '원본 글자수 13자 이상'이라,
+  //   uspace가 'yyyyMMddHHmm'(12자리)로 주면 저녁 입차인데도
+  //   6시간 무료가 아닌 2시간 무료로 떨어져 4시간을 유료로 사게 됩니다.
+  //   → 숫자만 추린 길이로 판단 (기존 형식은 동작 그대로)
+  if (entryDateStr) {
+    var clean = String(entryDateStr).replace(/\D/g, '');
     if (clean.length >= 12) {
       var hh = parseInt(clean.substring(8, 10), 10);
       var mm = parseInt(clean.substring(10, 12), 10);
@@ -1620,7 +1757,9 @@ function verifySmsCode() {
           localStorage.setItem(AUTH_STORAGE_KEY, phone);
           localStorage.setItem(AUTH_TS_KEY, String(Date.now()));
         } catch(e) {}
-        setTimeout(function() { showScreen('homeScreen'); }, 500);
+        setAuthedWho(res.name, res.dept);                 // ★ v5.4 담당자 정보
+        // ★ v5.4: 홈을 거치지 않고 바로 등록 화면 (대부분 주차등록이 목적)
+        setTimeout(function() { goRegister(); }, 500);
         setTimeout(function() { loadBalance(); }, 1000); // ★ 잔액 프리로드
         setTimeout(function() { loadEmployeeCarNumbers(); }, 1200); // ★ 자차목록 프리로드
       } else {
@@ -1668,6 +1807,8 @@ function recheckAuth() {
           localStorage.removeItem(AUTH_TS_KEY);
         } catch(e) {}
         authedPhone = '';
+        authedName = ''; authedDept = '';   // ★ v5.4
+        try { localStorage.removeItem(WHO_NAME_KEY); localStorage.removeItem(WHO_DEPT_KEY); } catch(e) {}
         showModal('warn', '접근 차단',
           '관리자에 의해 권한이 제거되었습니다.<br>더 이상 이 앱을 사용할 수 없습니다.',
           [{ text: '확인', cls: 'primary', action: function() { closeModal(); resetToPhone(); }}]
@@ -1726,6 +1867,7 @@ function resetRegister() {
   carResults = [];
   document.getElementById('carNoInput').value = '';
   document.getElementById('memoInput').value = '';
+  renderMemoChips();   // ★ v5.4: 버튼 선택 상태 초기화
   document.getElementById('carResults').style.display = 'none';
   document.getElementById('carResults').innerHTML = '';
   document.getElementById('regSubmitBtn').disabled = true;
@@ -2168,7 +2310,9 @@ function applyDiscountsBatch(carId, types, calc, base, entryKey) {
       toast('오류: ' + err.message, 'error');
       document.getElementById('regSubmitBtn').disabled = false;
     })
-    .uspaceRegisterDiscountBatch(carId, types, '1A-605');
+    // ★ v5.4: 주차시간을 넘겨야 알림의 '출차 마감'이 정확해짐 + 인증 담당자 표시
+    .uspaceRegisterDiscountBatch(carId, types, '1A-605', '',
+        (selectedCar && selectedCar.incar_min) || 0, authedPhone);
 }
 
 function finishRegistration(hd, md, base, types, entryKey) {
@@ -2248,13 +2392,39 @@ function finishRegistration(hd, md, base, types, entryKey) {
   // ★ 등록 완료 → 잔액 갱신
   setTimeout(function() { loadBalance(); }, 1500);
 
+  /* ★ v5.6 B안 — 무료가 끝나는 '시각'을 크게, 짧으면 경고 */
+  var _deadlineStr = '';
+  try {
+    if (remainMin > 0) {
+      var _dl = new Date(Date.now() + remainMin * 60000);
+      _deadlineStr = _dl.getHours() + '시 ' + String(_dl.getMinutes()).padStart(2, '0') + '분';
+    }
+  } catch(e) {}
+  var _stayWarnHtml = '';
+  if (remainMin <= 0) {
+    _stayWarnHtml = '<div style="background:rgba(248,113,113,.12);border-left:4px solid var(--red);' +
+      'border-radius:var(--radius-sm);padding:12px;margin-top:10px;text-align:left">' +
+      '<div style="color:var(--red);font-weight:800;font-size:15px">⚠️ 이미 할인 시간을 넘겼습니다</div>' +
+      '<div style="font-size:13px;color:var(--text-secondary);margin-top:4px">' +
+      '아래 <b>추가 할인</b>을 눌러 더 등록해주세요.</div></div>';
+  } else if (remainMin <= 180) {
+    _stayWarnHtml = '<div style="background:rgba(251,191,36,.12);border-left:4px solid var(--yellow);' +
+      'border-radius:var(--radius-sm);padding:12px;margin-top:10px;text-align:left">' +
+      '<div style="color:var(--yellow);font-weight:800;font-size:15px">⏰ ' + esc(_deadlineStr) + ' 이후엔 요금이 부과됩니다</div>' +
+      '<div style="font-size:13px;color:var(--text-secondary);margin-top:4px">' +
+      '더 계실 예정이면 <b>지금 추가 할인</b>을 등록해주세요.</div></div>';
+  }
+
   showModal('success', '등록 완료',
     '<div style="line-height:2">' +
     '차량 <b style="font-size:18px;letter-spacing:1px">' + esc(plate) + '</b><br>' +
     '<span style="font-size:14px;color:var(--blue);font-weight:600">' + esc(discountDetail) + '</span>' +
     '<div id="extraRemainBox" style="background:var(--green-soft);border-radius:var(--radius-md);padding:14px;margin-top:14px">' +
     '<span style="color:var(--green);font-weight:800;font-size:17px">남은 출차 시간: ' + remainStr + '</span>' +
+    (_deadlineStr ? '<div style="margin-top:6px;font-size:22px;font-weight:900;color:var(--green);letter-spacing:.5px">' +
+                    esc(_deadlineStr) + ' 까지</div>' : '') +
     '</div>' +
+    _stayWarnHtml +
     '<div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border-subtle)">' +
     '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:10px;font-weight:600">추가 할인 등록</div>' +
     '<div style="display:flex;gap:8px">' +
@@ -2263,23 +2433,45 @@ function finishRegistration(hd, md, base, types, entryKey) {
     '</div></div></div>',
     [{ text: '확인', cls: 'primary', action: function() { closeModal(); goHome(); }}]
   );
+  startAutoHome(AUTO_HOME_SEC, 'modalBtn0');   // ★ v5.6 10초 뒤 자동 복귀
   document.getElementById('regSubmitBtn').disabled = false;
 }
 
+/* ★ v5.6 추가 등록이 진행되는 동안 '확인' 버튼 잠금
+   (등록 중에 창이 닫혀 결과를 놓치는 것을 막습니다) */
+function _lockConfirmBtn(lock) {
+  try {
+    var b = document.getElementById('modalBtn0');
+    if (!b) return;
+    if (lock) {
+      b.disabled = true;
+      b.style.opacity = '0.45';
+      b.dataset.lockLabel = b.textContent;
+      b.textContent = '등록 중...';
+    } else {
+      b.disabled = false;
+      b.style.opacity = '';
+      if (b.dataset.lockLabel) { b.textContent = b.dataset.lockLabel; delete b.dataset.lockLabel; }
+    }
+  } catch(e) {}
+}
+
 function addExtraDiscount(typeId, addMin) {
+  cancelAutoHome();   // ★ v5.6 추가 등록 중엔 자동 복귀 안 함
   if (checkAuthExpired()) return;
   var ctx = window._lastRegCtx;
   if (!ctx || !ctx.carId) { toast('차량 정보가 없습니다. 다시 등록해주세요.', 'error'); return; }
 
   var btns = document.querySelectorAll('.extra-dc-btn');
   btns.forEach(function(b) { b.disabled = true; b.style.opacity = '0.5'; });
+  _lockConfirmBtn(true);   // ★ v5.6
 
   var typeName = DSCNT_NAMES[typeId] || typeId;
   toast(typeName + ' 추가 등록중...', 'info');
 
   google.script.run
     .withSuccessHandler(function(res) {
-      btns.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+      btns.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; }); _lockConfirmBtn(false); startAutoHome(AUTO_HOME_SEC, 'modalBtn0');   // ★ v5.6 끝나면 다시 카운트
 
       if (!res.ok && !res.results) {
         toast('추가 등록 실패: ' + (res.msg || ''), 'error');
@@ -2322,10 +2514,12 @@ function addExtraDiscount(typeId, addMin) {
         });
     })
     .withFailureHandler(function(err) {
-      btns.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+      btns.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; }); _lockConfirmBtn(false); startAutoHome(AUTO_HOME_SEC, 'modalBtn0');   // ★ v5.6 끝나면 다시 카운트
       toast('추가 등록 오류: ' + err.message, 'error');
     })
-    .uspaceRegisterDiscountBatch(ctx.carId, [typeId], '1A-605');
+    // ★ v5.4: 위와 동일 — 추가 등록도 주차시간/담당자 전달
+    .uspaceRegisterDiscountBatch(ctx.carId, [typeId], '1A-605', '',
+        (ctx && ctx.incarMin) || 0, authedPhone);
 }
 
 /* ============================================================
@@ -2767,16 +2961,19 @@ function renderStatus() {
                 '<span class="d-price">' + esc(priceStr) + '</span>';
         if (g.isParking && d.tckttrnsId) {
           deletableDiscounts.push({ tckttrnsId: d.tckttrnsId, idno: d.idno });
+          // ★ v5.5: 어제 입차 차량(야근)도 시트가 정확히 지워지도록 그 기록의 날짜를 함께 전달
           html += '<button class="d-del-btn" onclick="event.stopPropagation();deleteDiscount(\'' +
                   esc(d.tckttrnsId) + '\',\'' + esc(d.idno) + '\',\'' +
-                  esc(g.plate) + '\',' + (Number(d.price)||0) + ')">삭제</button>';
+                  esc(g.plate) + '\',' + (Number(d.price)||0) + ',\'' +
+                  esc(_recDate(g.entryDate)) + '\',\'' + _dcKind(d.name) + '\')">삭제</button>';
         }
         html += '</div>';
       }
       if (deletableDiscounts.length >= 2) {
         html += '<button class="sv-del-all-btn" ' +
                 'onclick="event.stopPropagation();deleteAllDiscounts(\'' + esc(g.plate) + '\',' +
-                JSON.stringify(deletableDiscounts).replace(/"/g, '&quot;') + ')">' +
+                JSON.stringify(deletableDiscounts).replace(/"/g, '&quot;') +
+                ',\'' + esc(_recDate(g.entryDate)) + '\')">' +   // ★ v5.5 날짜 전달
                 '<span class="material-symbols-rounded">delete_sweep</span>' +
                 '전체 삭제 (' + deletableDiscounts.length + '건)</button>';
       }
@@ -2847,7 +3044,29 @@ function onNavDatePick(val) {
 }
 
 /* Delete discount */
-function deleteDiscount(tckttrnsId, idno, plate, price) {
+/* ★ v5.6 삭제한 사람 — 번호 인증으로 들어온 담당자 */
+function _whoDeleted() {
+  try { return (authedDept ? authedDept + ' ' : '') + (authedName || ''); } catch(e) { return ''; }
+}
+
+/* ★ v5.5 할인 이름 → 시트에서 줄여야 할 칸
+   (가격으로 추정하면 기본할인이 1시간 칸을 줄여버리는 문제가 있었음) */
+function _dcKind(name) {
+  var n = String(name || '');
+  if (n.indexOf('6시간') >= 0 || n.indexOf('2시간') >= 0) return 'thd';
+  if (n.indexOf('1시간') >= 0) return 'hd';
+  if (n.indexOf('30분') >= 0) return 'md';
+  return '';
+}
+
+/* ★ v5.5 기록의 입차일(yyyyMMddHHmmss) → 'yyyy-MM-dd' */
+function _recDate(entryDate) {
+  var d = String(entryDate || '').replace(/\D/g, '');
+  if (d.length < 8) return '';
+  return d.substring(0,4) + '-' + d.substring(4,6) + '-' + d.substring(6,8);
+}
+
+function deleteDiscount(tckttrnsId, idno, plate, price, recDate, dcKind) {
   showModal('warn', '할인 삭제',
     '차량 <b>' + esc(plate) + '</b>의 할인을 삭제하시겠습니까?',
     [
@@ -2879,21 +3098,21 @@ function deleteDiscount(tckttrnsId, idno, plate, price) {
                 if (r && !r.deleted) toast('시트: 해당 기록 없음', 'info');
               })
               .withFailureHandler(function(e) { toast('시트 삭제 오류: ' + e.message, 'error'); })
-              .deleteFromSheet(plate, price, 1);
+              .deleteFromSheet(plate, price, 1, recDate, dcKind);   // ★ v5.5 날짜 + 할인 종류 전달
             _statusCache.time = 0;
           })
           .withFailureHandler(function(err) {
             showLoading(false);
             toast('삭제 실패: ' + err.message, 'error');
           })
-          .uspaceDeleteDiscount(tckttrnsId, idno, plate);   // ★ v5.2: 슬랙 스레드 캐시 정리용
+          .uspaceDeleteDiscount(tckttrnsId, idno, plate, recDate, _whoDeleted());   // ★ v5.6
       }},
       { text: '취소', cls: 'secondary', action: closeModal }
     ]
   );
 }
 
-function deleteAllDiscounts(plate, discounts) {
+function deleteAllDiscounts(plate, discounts, recDate) {
   if (typeof discounts === 'string') discounts = JSON.parse(discounts);
   if (!discounts || discounts.length === 0) return;
   showModal('warn', '전체 삭제',
@@ -2901,14 +3120,14 @@ function deleteAllDiscounts(plate, discounts) {
     [
       { text: '전체 삭제 (' + discounts.length + '건)', cls: 'danger', action: function() {
         closeModal();
-        deleteAllBatch(plate, discounts);
+        deleteAllBatch(plate, discounts, recDate);
       }},
       { text: '취소', cls: 'secondary', action: closeModal }
     ]
   );
 }
 
-function deleteAllBatch(plate, discounts) {
+function deleteAllBatch(plate, discounts, recDate) {
   showLoading(true, '할인 ' + discounts.length + '건 삭제중...');
   google.script.run
     .withSuccessHandler(function(res) {
@@ -2929,7 +3148,7 @@ function deleteAllBatch(plate, discounts) {
             else if (r && r.deleted) toast('시트 기록도 삭제됨', 'success');
           })
           .withFailureHandler(function(e) { toast('시트 전체삭제 오류: ' + e.message, 'error'); })
-          .deleteAllFromSheet(plate);
+          .deleteAllFromSheet(plate, recDate);   // ★ v5.5 날짜 전달
       } else {
         // ★ v5.2: 부분 실패 — 시트를 전량 0으로 밀면 실제와 어긋남
         toast((res ? res.success : 0) + '건 삭제, ' + (res ? res.failed : '?') + '건 실패 — 현황을 다시 불러옵니다', 'error');
@@ -2943,7 +3162,7 @@ function deleteAllBatch(plate, discounts) {
       showLoading(false);
       toast('삭제 실패: ' + err.message, 'error');
     })
-    .uspaceDeleteDiscountBatch(discounts, plate);   // ★ v5.2: 슬랙 스레드 캐시 정리용
+    .uspaceDeleteDiscountBatch(discounts, plate, recDate, _whoDeleted());   // ★ v5.6
 }
 
 /**
@@ -3039,10 +3258,92 @@ function showModal(type, title, body, buttons) {
 }
 
 function closeModal() {
+  cancelAutoHome();   // ★ v5.6
   var overlay = document.getElementById('modalOverlay');
   overlay.classList.remove('show');
   // ★ 더블탭 방지: 모달 내용 즉시 제거
   document.getElementById('modalBox').innerHTML = '';
+}
+
+/* ★ v5.6 등록 완료 후 자동으로 첫 화면 복귀
+   (등록만 하고 그대로 가시는 경우, 다음 사람이 앞사람 화면을 보게 되는 문제)
+   화면을 건드리면 타이머는 즉시 멈춥니다. */
+var AUTO_HOME_SEC = 20;   // ★ v5.6 등록 완료 후 자동 복귀까지 (초)
+var _drainBump = null;    // 화면 터치 시 타이머를 되감는 핸들러
+var _autoHomeTimer = null, _autoHomeLeft = 0, _autoHomeLabel = '';
+function cancelAutoHome() {
+  if (_autoHomeTimer) { clearInterval(_autoHomeTimer); _autoHomeTimer = null; }
+  _autoHomeLeft = 0;
+  try {
+    var b = document.querySelector('.modal-btn.draining');
+    if (b) { b.classList.remove('draining'); b.textContent = _autoHomeLabel || b.textContent; }
+  } catch(e) {}
+}
+function startAutoHome(seconds, btnId) {
+  cancelAutoHome();
+  return _startDrain(seconds, btnId);
+}
+
+/* ★ v5.6 게이지 방식 자동 복귀 */
+function _startDrain(seconds, btnId) {
+  // ★ v5.6: 값이 안 넘어와도(선언 순서 등) 20초로 동작하게 — 예전엔 NaN 이 되어
+  //   게이지가 100% 에서 멈추고 자동 복귀도 안 됐습니다
+  seconds = Number(seconds) > 0 ? Number(seconds) : 20;
+  var id = btnId || 'modalBtn0';
+  var btn = document.getElementById(id);
+  if (!btn) return;
+
+  _autoHomeLabel = btn.textContent;
+  // 글자는 그대로 두고, 뒤에 줄어드는 주황 게이지를 깔아줍니다
+  btn.classList.add('draining');
+  btn.innerHTML = '<span class="btn-drain"></span>' +
+                  '<span class="btn-label">' + esc(_autoHomeLabel) + '</span>';
+  var bar = btn.querySelector('.btn-drain');
+  if (!bar) return;
+
+  // ★ v5.6: CSS 애니메이션에 맡기지 않고 직접 줄입니다.
+  //   일부 태블릿 웹뷰가 '동작 줄이기'나 절전 설정으로 긴 전환을 건너뛰어
+  //   게이지가 멈춘 것처럼 보이는 경우가 있었습니다.
+  bar.style.transition = 'none';
+  bar.style.width = '100%';
+
+  var startAt = Date.now();
+  var totalMs = Math.max(1, seconds) * 1000;
+
+  // ★ v5.6: 화면을 건드리면 '멈춤'이 아니라 '처음부터 다시'.
+  //   완전히 멈춰버리면 화면이 영영 안 닫혀서
+  //   다음 사람이 앞사람 화면을 보게 되는 원래 문제로 돌아갑니다.
+  //   (추가 할인 등록 중에는 addExtraDiscount 가 따로 완전히 멈춥니다)
+  var box = document.getElementById('modalBox');
+  if (box) {
+    // 이전 모달에서 붙여둔 핸들러는 떼어냅니다 (쌓이면 엉뚱한 타이머를 늘림)
+    if (_drainBump) {
+      box.removeEventListener('touchstart', _drainBump);
+      box.removeEventListener('mousedown', _drainBump);
+    }
+    _drainBump = function(e) {
+      if (!_autoHomeTimer) return;                                   // 이미 멈춰있으면 그대로
+      if (e && e.target && e.target.closest && e.target.closest('#' + id)) return;  // 확인 버튼은 예외
+      startAt = Date.now();                                          // 남은 시간 리셋
+      var bb = document.querySelector('.modal-btn.draining .btn-drain');
+      if (bb) bb.style.width = '100%';
+    };
+    box.addEventListener('touchstart', _drainBump, { passive: true });
+    box.addEventListener('mousedown', _drainBump);
+  }
+
+  _autoHomeTimer = setInterval(function() {
+    var b = document.querySelector('.modal-btn.draining .btn-drain');
+    if (!b) { cancelAutoHome(); return; }
+    var left = 1 - (Date.now() - startAt) / totalMs;
+    if (left <= 0) {
+      cancelAutoHome();
+      closeModal();
+      goHome();
+      return;
+    }
+    b.style.width = (left * 100).toFixed(1) + '%';
+  }, 80);
 }
 
 /* ============================================================
@@ -3308,7 +3609,8 @@ function esc(s) {
   if (savedPhone && cacheValid) {
     // ── 캐시 유효: 즉시 홈 화면 (서버 대기 없음!) ──
     authedPhone = savedPhone;
-    showScreen('homeScreen');
+    restoreAuthedWho();      // ★ v5.4 저장해둔 담당자 정보로 먼저 그림
+    goRegister();            // ★ v5.4 홈 건너뛰고 바로 등록 화면
     setTimeout(function() { loadBalance(); }, 800); // ★ 잔액 프리로드
     setTimeout(function() { loadEmployeeCarNumbers(); }, 1000); // ★ 자차목록 프리로드
 
@@ -3318,6 +3620,7 @@ function esc(s) {
         if (res && res.authorized) {
           // 아직 유효 → 타임스탬프 갱신
           try { localStorage.setItem(AUTH_TS_KEY, String(Date.now())); } catch(e) {}
+          setAuthedWho(res.name, res.dept);   // ★ v5.4 (시트에서 부서가 바뀌었을 수도)
         } else {
           // 관리자가 삭제함 → 즉시 차단
           try {
@@ -3325,6 +3628,8 @@ function esc(s) {
             localStorage.removeItem(AUTH_TS_KEY);
           } catch(e) {}
           authedPhone = '';
+          authedName = ''; authedDept = '';   // ★ v5.4
+          try { localStorage.removeItem(WHO_NAME_KEY); localStorage.removeItem(WHO_DEPT_KEY); } catch(e) {}
           showScreen('phoneScreen');
           showModal('warn', '접근 차단',
             '등록된 권한이 없습니다.<br>관리자에게 문의해주세요.',
@@ -3361,7 +3666,8 @@ function esc(s) {
         if (res && res.authorized) {
           authedPhone = savedPhone;
           try { localStorage.setItem(AUTH_TS_KEY, String(Date.now())); } catch(e) {}
-          showScreen('homeScreen');
+          setAuthedWho(res.name, res.dept);   // ★ v5.4
+          goRegister();                        // ★ v5.4 홈 건너뛰고 바로 등록 화면
           setTimeout(function() { loadBalance(); }, 800); // ★ 잔액 프리로드
           setTimeout(function() { loadEmployeeCarNumbers(); }, 1000); // ★ 자차목록 프리로드
           showSessionBanner('인증됨: ' + savedPhone, 'ok', 3000);
@@ -3377,6 +3683,8 @@ function esc(s) {
             localStorage.removeItem(AUTH_TS_KEY);
           } catch(e) {}
           authedPhone = '';
+          authedName = ''; authedDept = '';   // ★ v5.4
+          try { localStorage.removeItem(WHO_NAME_KEY); localStorage.removeItem(WHO_DEPT_KEY); } catch(e) {}
           showScreen('phoneScreen');
           showModal('warn', '접근 차단',
             '등록된 권한이 없습니다.<br>관리자에게 문의해주세요.',
@@ -3387,7 +3695,8 @@ function esc(s) {
       .withFailureHandler(function(err) {
         showLoading(false);
         authedPhone = savedPhone;
-        showScreen('homeScreen');
+        restoreAuthedWho();   // ★ v5.4
+        goRegister();         // ★ v5.4
         showSessionBanner('오프라인 모드 (권한 확인 불가)', 'warn', 5000);
       })
       .guestCheckAuth(savedPhone);
@@ -3554,7 +3863,7 @@ function hideSessionBanner() {
    ============================================================ */
 // ★ HTML에 하드코딩된 버전 (서버 버전과 비교하여 업데이트 감지)
 // → localStorage가 비어있어도, 삭제 후 재설치해도, 이 값으로 비교하므로 확실히 감지됨
-var APP_LOCAL_VERSION = '5.3';
+var APP_LOCAL_VERSION = '5.6';
 // ★ v5.2: 버전 표기를 자동화 (기존엔 3곳에 수동 기입돼 서로 달랐음)
 (function() {
   var a = document.getElementById('phoneVersion');  if (a) a.textContent = 'v' + APP_LOCAL_VERSION;
