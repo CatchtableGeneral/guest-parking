@@ -486,8 +486,12 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
    ============================================================ */
 /* ★ v5.4 등록화면 상단 (홈 / 등록현황) */
 .reg-top-row { display:flex; align-items:center; gap:8px; }
+.reg-ver {
+  margin-right:auto; font-size:11px; color:var(--text-tertiary);
+  letter-spacing:-.2px; cursor:pointer; white-space:nowrap;
+}
 .reg-status-btn {
-  margin-left:auto; display:inline-flex; align-items:center; gap:4px;
+  display:inline-flex; align-items:center; gap:4px;
   padding:7px 14px; border-radius:var(--radius-full);
   background:var(--bg-card); color:var(--text-secondary);
   border:1px solid var(--border-default);
@@ -500,18 +504,19 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   white-space:nowrap;
 }
 
-/* ★ v5.4 메모 추천 버튼 */
-.memo-chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
-.memo-chips button {
-  padding:8px 14px; border-radius:var(--radius-full);
-  background:var(--bg-card); color:var(--text-secondary);
-  border:1px solid var(--border-default);
-  font-size:13px; font-weight:700; white-space:nowrap;
+/* ★ v5.6 메모 — 요청대로 드롭다운 */
+.memo-pick-row { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.memo-pick-label {
+  font-size:12.5px; font-weight:700; color:var(--text-tertiary);
+  white-space:nowrap; flex-shrink:0;
 }
-.memo-chips button:active { transform:scale(.94); }
-.memo-chips button.on {
-  background:var(--accent-soft); color:var(--accent);
-  border-color:rgba(255,61,0,.4);
+.memo-pick {
+  flex:1; height:44px; padding:0 12px;
+  border-radius:var(--radius-md);
+  background:var(--bg-card); color:var(--text-primary);
+  border:1px solid var(--border-default);
+  font-size:14px; font-weight:700;
+  color-scheme:dark;
 }
 
 .reg-info-bar {
@@ -1346,29 +1351,33 @@ if ('serviceWorker' in navigator) {
         <span class="material-symbols-rounded">help</span>
         <span class="btn-label">문의하기</span>
       </button>
-      <button class="reg-changelog-hint" id="homeChangelogHint" onclick="showChangelog()" style="display:none;align-self:center;margin-top:4px">
-        <span class="material-symbols-rounded" style="font-size:16px;color:var(--accent)">update</span>
-        <span style="font-size:11px;font-weight:700;color:var(--accent)">최근 업데이트된 내역이 있어요!</span>
-      </button>
+
     </div>
     <div class="home-footer">
-      사내 주차정산시스템 <span id="footerVersion"></span>
-      <span onclick="manualCheckUpdate()" style="margin-left:8px;color:var(--accent);cursor:pointer;text-decoration:underline">업데이트 확인</span>
+      사내 주차정산시스템
     </div>
   </div>
 
   <!-- ========== REGISTER SCREEN ========== -->
   <div class="screen" id="regScreen">
     <div class="step-container" id="regScrollArea">
-      <!-- ★ v5.4: 인증 후 바로 이 화면으로 오므로, 등록현황을 여기에 둠 -->
+      <!-- ★ v5.6: 홈 화면을 없애고 이 화면이 첫 화면입니다 -->
       <div class="reg-top-row">
-        <button class="back-btn" onclick="goHome()">
-          <span class="material-symbols-rounded">arrow_back</span> 홈
-        </button>
+        <!-- ★ v5.6: 홈에 있던 버전/업데이트 확인을 여기로 옮겼습니다 -->
+        <span class="reg-ver" onclick="manualCheckUpdate()">
+          사내 주차정산시스템 <span id="footerVersion"></span> · 업데이트 확인
+        </span>
         <button class="reg-status-btn" onclick="goStatus()">
           <span class="material-symbols-rounded">assignment</span> 등록현황
         </button>
+        <button class="reg-status-btn" onclick="showHelpModal()">
+          <span class="material-symbols-rounded">help</span> 문의
+        </button>
       </div>
+      <button class="reg-changelog-hint" id="homeChangelogHint" onclick="showChangelog()" style="display:none;margin:6px 0 0">
+        <span class="material-symbols-rounded" style="font-size:16px;color:var(--accent)">update</span>
+        <span style="font-size:11px;font-weight:700;color:var(--accent)">최근 업데이트된 내역이 있어요!</span>
+      </button>
 
       <!-- Info bar -->
       <div class="reg-info-bar" id="regInfoBar">
@@ -1394,8 +1403,11 @@ if ('serviceWorker' in navigator) {
 
     <!-- Bottom bar: memo + submit -->
     <div class="reg-bottom-bar">
-      <!-- ★ v5.4: 자주 쓰는 사유를 눌러서 채우기 (부서에 맞춰 자동으로 바뀜) -->
-      <div class="memo-chips" id="memoChips"></div>
+      <!-- ★ v5.6: 요청대로 드롭다운으로. 한 줄 안내도 함께 -->
+      <div class="memo-pick-row">
+        <label class="memo-pick-label" for="memoPreset">자주 쓰는 문구</label>
+        <select class="memo-pick" id="memoPreset" onchange="pickMemo(this.value)"></select>
+      </div>
       <textarea class="reg-memo" id="memoInput" rows="2" required
                 placeholder="메모 (필수) ex) TA - 인터뷰 OOO님 , HR - OO업체 미팅 등 간단하게 작성해주세요."></textarea>
       <button class="reg-submit-btn" id="regSubmitBtn"
@@ -1584,36 +1596,40 @@ function renderWhoTags() {
 }
 
 function renderMemoChips() {
-  var box = document.getElementById('memoChips');
-  if (!box) return;
+  var sel = document.getElementById('memoPreset');
+  if (!sel) return;
   var list = MEMO_PRESETS[authedDept] || MEMO_PRESETS[''];
   var prefix = authedDept ? (authedDept + ' - ') : '';
-  var html = '';
+  var html = '<option value="">선택하세요</option>';
   for (var i = 0; i < list.length; i++) {
-    html += '<button type="button" onclick="pickMemo(\'' + list[i] + '\')">' + list[i] + '</button>';
+    html += '<option value="' + esc(list[i]) + '">' + esc(list[i]) + '</option>';
   }
-  html += '<button type="button" onclick="pickMemo(\'\')">직접입력</button>';
-  box.innerHTML = html;
-  box.setAttribute('data-prefix', prefix);
+  html += '<option value="__direct__">직접 입력</option>';
+  sel.innerHTML = html;
+  sel.value = '';
+  sel.setAttribute('data-prefix', prefix);
 }
 
 function pickMemo(word) {
-  var box = document.getElementById('memoChips');
+  var box = document.getElementById('memoPreset');
   var input = document.getElementById('memoInput');
   if (!input) return;
   var prefix = (box && box.getAttribute('data-prefix')) || '';
-  input.value = word ? (prefix + word + ' ') : prefix;
-  // 눌린 버튼만 강조
-  if (box) {
-    var btns = box.querySelectorAll('button');
-    for (var i = 0; i < btns.length; i++) {
-      if (btns[i].textContent === (word || '직접입력')) btns[i].classList.add('on');
-      else btns[i].classList.remove('on');
-    }
+
+  if (!word) { return; }                       // '선택하세요' → 아무것도 안 함
+
+  if (word === '__direct__') {
+    // ★ v5.6: 직접 입력을 고를 때만 키보드를 띄웁니다
+    input.value = prefix;
+    input.focus();
+    try { input.setSelectionRange(input.value.length, input.value.length); } catch(e) {}
+    return;
   }
-  input.focus();
-  // 커서를 맨 뒤로 (이름만 바로 이어서 칠 수 있게)
-  try { input.setSelectionRange(input.value.length, input.value.length); } catch(e) {}
+
+  // ★ v5.6: 목록에서 고른 경우엔 키보드를 띄우지 않습니다.
+  //   예전에는 고를 때마다 키패드가 올라오면서 화면이 들썩였습니다.
+  input.value = prefix + word + ' ';
+  try { input.blur(); } catch(e) {}
 }
 
 var selectedMember = { dept: 'HR', name: 'HR' };
@@ -1845,14 +1861,16 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
+/* ★ v5.6 홈 화면을 없앴습니다.
+   첫 실행은 등록 화면인데 앱을 다시 켜면 홈이 나와 순서가 뒤죽박죽이었고,
+   홈에는 버튼 두 개뿐이라 한 단계가 통째로 낭비였습니다.
+   → '홈' = 등록 화면. 홈에 있던 문의/버전은 등록 화면 아래로 옮겼습니다. */
 function goHome() {
   resetRegister();
-  showScreen('homeScreen');
-  // 인증된 번호 표시
-  var timerEl = document.getElementById('authTimer');
-  if (timerEl && authedPhone) {
-    timerEl.textContent = '인증됨: ' + authedPhone;
-  }
+  showScreen('regScreen');
+  renderWhoTags();
+  renderMemoChips();
+  // 차량번호 칸은 자동으로 포커스하지 않습니다 (키패드가 멋대로 올라오지 않도록)
 }
 
 function goRegister() {
@@ -1867,7 +1885,7 @@ function resetRegister() {
   carResults = [];
   document.getElementById('carNoInput').value = '';
   document.getElementById('memoInput').value = '';
-  renderMemoChips();   // ★ v5.4: 버튼 선택 상태 초기화
+  renderMemoChips();   // ★ v5.4: 선택 상태 초기화
   document.getElementById('carResults').style.display = 'none';
   document.getElementById('carResults').innerHTML = '';
   document.getElementById('regSubmitBtn').disabled = true;
@@ -2161,6 +2179,29 @@ function submitRegistration() {
   }
 
   // Weekday logic
+  /* ★ v5.7 중요
+     예전에는 '이 앱이 기억하는 것(appliedDiscounts)' 만 보고 판단했습니다.
+     그래서 등록이 실제로는 성공했는데 화면엔 실패로 떴을 때,
+     사용자가 다시 누르면 기억이 비어 있어 처음부터 전부 다시 등록 → 중복.
+     → 누르기 전에 uspace 실제 보유를 확인하고, 그 값으로 판단합니다. */
+  showLoading(true, '기존 할인 확인 중...');
+  google.script.run
+    .withSuccessHandler(function(live) {
+      showLoading(false);
+      if (live && live.ok && Number(live.coverMin) > 0) {
+        appliedDiscounts[entryKey] = {
+          coverMin: Number(live.coverMin) || 0,
+          name: (appliedDiscounts[entryKey] || {}).name || '',
+          dept: '', isGuest: true
+        };
+      }
+      _weekdayRegister();
+    })
+    .withFailureHandler(function() { showLoading(false); _weekdayRegister(); })
+    .uspaceGetCarDiscounts(carNo, '1A-605', '');
+  return;
+
+  function _weekdayRegister() {
   var prevData = appliedDiscounts[entryKey];
   var base = getBaseDiscount(entryDateRaw);
 
@@ -2247,6 +2288,7 @@ function submitRegistration() {
       { text: '취소', cls: 'secondary', action: closeModal }
     ]
   );
+  }   // ← _weekdayRegister 끝
 }
 
 function applyDiscountsBatch(carId, types, calc, base, entryKey) {
@@ -2260,10 +2302,23 @@ function applyDiscountsBatch(carId, types, calc, base, entryKey) {
       showLoading(false);
       // ★ v4.6: ok=false면 무조건 실패 처리 (부분 실패 포함)
       if (!res.ok) {
-        var errMsg = '등록 실패';
-        if (res.msg) errMsg += ': ' + res.msg;
-        if (res.results && res.results.length > 0) errMsg = '일부만 등록됨 — 등록현황 확인 후 재시도해주세요';
-        toast(errMsg, 'error');
+        /* ★ v5.7: '몇 건 중 몇 건이 실제로 들어갔는지' 를 그대로 알려줍니다.
+           예전 문구는 아무것도 안 들어간 것처럼 읽혀서, 사용자가 처음부터
+           다시 등록 → 중복 등록으로 이어졌습니다. */
+        var _w = Number(res.want) || 0, _g = Number(res.got);
+        var errMsg;
+        if (_g > 0 && _w > 0) {
+          errMsg = _w + '건 중 ' + _g + '건 등록됨 — 다시 누르면 부족한 만큼만 추가됩니다';
+        } else if (_g === 0) {
+          errMsg = '등록되지 않았습니다 — 다시 시도해주세요';
+        } else {
+          errMsg = '등록 결과를 확인하지 못했습니다 — 등록현황을 먼저 확인해주세요';
+        }
+        if (res.msg) errMsg += ' (' + res.msg + ')';
+        showModal('warn', '등록 확인 필요',
+          '<div style="line-height:1.9">' + esc(errMsg) + '</div>',
+          [{ text: '등록현황 보기', cls: 'primary', action: function(){ closeModal(); goStatus(); } },
+           { text: '닫기', cls: 'secondary', action: closeModal }]);
         document.getElementById('regSubmitBtn').disabled = false;
         return;
       }
@@ -3728,10 +3783,17 @@ var INACTIVITY_TIMEOUT = 5 * 60 * 1000; // 5분
 
 setInterval(function() {
   if (Date.now() - _lastActivity < INACTIVITY_TIMEOUT) return;
-  // 이미 홈/인증 화면이면 무시
-  var home = document.getElementById('homeScreen');
+  // ★ v5.6: 홈 화면이 없어졌습니다.
+  //   인증 화면이거나, 등록 화면에서 아무것도 입력 안 한 상태면 그대로 둡니다.
   var phone = document.getElementById('phoneScreen');
-  if ((home && home.classList.contains('active')) || (phone && phone.classList.contains('active'))) return;
+  if (phone && phone.classList.contains('active')) return;
+  var reg = document.getElementById('regScreen');
+  if (reg && reg.classList.contains('active')) {
+    var ci = document.getElementById('carNoInput');
+    var mi = document.getElementById('memoInput');
+    var idle = (!selectedCar) && (!ci || !ci.value) && (!mi || !mi.value);
+    if (idle) return;   // 빈 등록 화면 → 되돌릴 게 없음
+  }
   // 로딩 중이면 무시
   var loadEl = document.getElementById('loadingOverlay');
   if (loadEl && loadEl.classList.contains('show')) return;
@@ -3863,7 +3925,7 @@ function hideSessionBanner() {
    ============================================================ */
 // ★ HTML에 하드코딩된 버전 (서버 버전과 비교하여 업데이트 감지)
 // → localStorage가 비어있어도, 삭제 후 재설치해도, 이 값으로 비교하므로 확실히 감지됨
-var APP_LOCAL_VERSION = '5.6';
+var APP_LOCAL_VERSION = '5.7';
 // ★ v5.2: 버전 표기를 자동화 (기존엔 3곳에 수동 기입돼 서로 달랐음)
 (function() {
   var a = document.getElementById('phoneVersion');  if (a) a.textContent = 'v' + APP_LOCAL_VERSION;
