@@ -131,7 +131,9 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   padding-top:var(--sat);
 }
 .screen {
-  display:none; flex-direction:column; flex:1;
+  /* ★ v5.8 min-height:0 — 이게 없으면 화면이 '내용 높이'보다 작아지지 못해
+     아래쪽(등록 버튼 줄)이 화면 밖으로 조금씩 밀려났습니다 */
+  display:none; flex-direction:column; flex:1; min-height:0;
   overflow:hidden; position:relative;
 }
 .screen.active {
@@ -165,6 +167,15 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   flex-shrink:0; z-index:10;
 }
 .k-header-left { display:flex; align-items:center; gap:10px; }
+.hdr-icon {
+  width:34px; height:34px; border-radius:11px; flex-shrink:0;
+  background:var(--bg-card); border:1px solid var(--border-default);
+  color:var(--text-secondary); display:flex; align-items:center; justify-content:center;
+}
+.hdr-icon:active { transform:scale(.92) }
+.hdr-icon .material-symbols-rounded { font-size:19px }
+.k-header-right { gap:7px }
+.reg-info-bar { padding:10px 14px!important; margin-bottom:14px!important }
 .k-logo {
   width:36px; height:36px; border-radius:10px;
   background:linear-gradient(135deg,#ff3d00 0%,#ff6e40 100%);
@@ -441,7 +452,7 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
 .back-btn .material-symbols-rounded { font-size:20px; }
 
 .step-container {
-  flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
   padding:var(--space-xl) var(--space-xl) calc(var(--space-xl) + var(--sab));
 }
 
@@ -534,14 +545,16 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
 .reg-info-tag.guest { background:var(--blue-soft); color:var(--blue); }
 
 .car-input-row {
-  display:flex; gap:var(--space-md); margin-bottom:var(--space-xl);
+  display:flex; gap:var(--space-md); margin-bottom:var(--space-lg);
 }
 .car-input {
-  flex:1; padding:20px 16px; border-radius:var(--radius-lg);
+  /* ★ v5.8 min-width:0 이 없으면 입력칸이 글자 수만큼 자리를 차지해
+     좁은 화면에서 옆의 검색 버튼을 화면 밖으로 밀어냅니다 */
+  flex:1; min-width:0; padding:13px 14px; border-radius:var(--radius-lg);
   border:2px solid var(--border-default);
   background:var(--bg-input); color:var(--text-primary);
-  font-size:32px!important; font-weight:800;
-  text-align:center; letter-spacing:4px; outline:none;
+  font-size:27px!important; font-weight:800;
+  text-align:center; letter-spacing:3px; outline:none;
   transition:border-color var(--duration-fast), box-shadow var(--duration-fast);
 }
 .car-input:focus {
@@ -549,7 +562,7 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   box-shadow:0 0 0 4px var(--accent-soft);
 }
 .car-search-btn {
-  width:72px; border-radius:var(--radius-lg);
+  width:72px; flex-shrink:0; border-radius:var(--radius-lg);
   background:var(--accent); color:#fff;
   display:flex; align-items:center; justify-content:center;
   transition:transform var(--duration-fast) var(--ease-spring);
@@ -589,11 +602,12 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
 
 .car-card-photo {
   width:100%; display:block;
-  object-fit:contain; background:var(--bg-elevated);
+  aspect-ratio:16/10; max-height:180px;
+  object-fit:cover; background:var(--bg-elevated);
 }
 .car-card-photo.loading {
   display:flex; align-items:center; justify-content:center;
-  color:var(--text-tertiary); font-size:12px; min-height:200px;
+  color:var(--text-tertiary); font-size:12px; min-height:150px; max-height:180px;
   background:linear-gradient(90deg,var(--bg-elevated) 25%,var(--bg-card-hover) 50%,var(--bg-elevated) 75%);
   background-size:200% 100%;
   animation:shimmer 1.5s infinite;
@@ -672,7 +686,14 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   padding:var(--space-sm) var(--space-xl) calc(var(--space-xl) + var(--sab));
   width:100%; max-width:500px;
   animation:slideUp var(--duration-normal) var(--ease-out);
+  /* ★ v6.0 내용이 길어도 화면 위로 잘리지 않게 — 제목과 버튼은 고정, 본문만 스크롤 */
+  max-height:calc(100% - 16px);
+  display:flex; flex-direction:column;
 }
+.modal-box > .modal-handle,
+.modal-box > .modal-icon-wrap,
+.modal-box > .modal-title,
+.modal-box > .modal-actions { flex-shrink:0; }
 .modal-handle {
   width:36px; height:4px; border-radius:2px;
   background:var(--text-tertiary);
@@ -696,6 +717,7 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   font-size:15px; color:var(--text-secondary); line-height:1.7;
   text-align:center; margin-bottom:var(--space-xl); font-weight:500;
 }
+.modal-body { flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 .modal-actions {
   display:flex; flex-direction:column; gap:var(--space-sm);
 }
@@ -812,7 +834,7 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
 
 .date-nav {
   display:flex; align-items:center; gap:2px;
-  margin-left:auto; flex-shrink:0;
+  margin-left:auto; flex-shrink:1; min-width:0;
 }
 .date-nav-arrow {
   width:36px; height:36px; border-radius:var(--radius-md);
@@ -829,21 +851,28 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
   border:1px solid var(--border-default); border-radius:var(--radius-md);
   font-size:15px; font-weight:700; white-space:nowrap;
   cursor:pointer; transition:all var(--duration-fast);
-  min-width:130px; text-align:center;
+  min-width:0; flex:1; text-align:center;
+  overflow:hidden; text-overflow:ellipsis;
 }
 .date-nav-label:active { background:var(--bg-card-hover); }
 .date-nav-label .today-dot {
   display:inline-block; width:6px; height:6px;
   border-radius:50%; background:var(--accent); margin-left:6px; vertical-align:middle;
 }
+/* ★ v5.9: 날짜 입력칸(네이티브)이 167px나 차지해 화면 밖으로 밀려났습니다.
+   → 달력 아이콘 버튼 위에 투명하게 겹쳐서 36px로 줄였습니다. 동작은 그대로입니다. */
+.date-nav-cal {
+  position:relative; width:36px; height:36px; flex-shrink:0; margin-left:2px;
+  border-radius:var(--radius-md); background:var(--bg-card);
+  border:1px solid var(--border-subtle); color:var(--text-secondary);
+  display:flex; align-items:center; justify-content:center;
+}
+.date-nav-cal:active { background:var(--bg-card-hover); transform:scale(.93); }
+.date-nav-cal .material-symbols-rounded { font-size:19px; }
 .date-nav-picker {
-  height:36px; padding:0 10px;
-  background:var(--bg-card); color:var(--text-primary);
-  border:1px solid var(--border-subtle); border-radius:var(--radius-md);
-  font-size:13px; font-weight:600;
-  -webkit-appearance:none; appearance:none;
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  opacity:0; border:0; padding:0; margin:0; background:transparent;
   color-scheme:dark;
-  margin-left:2px;
 }
 
 .status-info-bar {
@@ -1027,132 +1056,36 @@ body > *:not(#app):not(script):not(style):not(link):not(noscript) {
   position:absolute!important;
 }
 
-/* ── 기본: GitHub Pages / 직접 호스팅 (스케일 없음, 풀스크린) ── */
+/* ============================================================
+   ★ v5.8 한 가지 기준 폭으로 통일
+   ─────────────────────────────────────────────────
+   예전에는 GAS iframe용 크기와 휴대폰용 크기를 따로 적어두고
+   휴대폰 쪽만 값을 하나하나 줄여놨습니다(64군데). 그 값들이
+   0.75~0.92배로 제각각이라, 화면 폭이 조금만 달라져도
+   버튼 글자가 두 줄로 쪼개지거나 화면 밖으로 밀려났습니다.
+
+   이제는 기준 폭 470px 한 가지로만 그리고,
+   실제 화면 폭에 맞춰 앱 전체를 비례로 줄이거나 늘립니다.
+   → 어떤 기기에서든 보이는 비율이 똑같습니다.
+   ============================================================ */
 #app {
-  width:100vw; height:100vh; height:100dvh;
-  -webkit-text-size-adjust:100%; text-size-adjust:100%;
+  width:470px;                 /* 설계 기준 폭 — JS가 화면에 맞춰 배율을 정함 */
+  transform-origin:top left;
+  -webkit-transform-origin:top left;
   display:flex; flex-direction:column;
   overflow:hidden; position:relative;
   padding-top:var(--sat);
 }
 
-/* ── GAS iframe 모드: JS가 감지 시 .gas-mode 추가 → 2x 확대 ── */
-#app.gas-mode {
-  width:50vw; height:50vh; height:50dvh;
-  -webkit-transform:scale(2); transform:scale(2);
-  -webkit-transform-origin:top left; transform-origin:top left;
-}
+/* 긴 글자가 줄바꿈되거나 잘려 나가지 않도록 */
+.k-header-left { flex-shrink:1; min-width:0; overflow:hidden }
+.k-header-right { flex-shrink:0 }
+.k-header-title { white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.k-header-time, .k-badge, .reg-status-btn, .range-btn { white-space:nowrap }
+.reg-status-btn { flex-shrink:0 }
+.reg-ver { min-width:0; overflow:hidden; text-overflow:ellipsis }
 
-/* ============================================================
-   ★ 자연스러운 모바일 앱 비율 (직접 호스팅 전용)
-   ─────────────────────────────────────────────────
-   GAS iframe(.gas-mode)에서는 원래 크기 유지 (2x 스케일 적용)
-   GitHub Pages에서는 일반 모바일 앱 기준으로 축소 조정
-   참고: 카카오톡/네이버 등 한국 앱 기준 사이즈
-   ============================================================ */
-
-/* ── 헤더 ── */
-#app:not(.gas-mode) .k-header { padding:10px 16px; gap:8px; }
-#app:not(.gas-mode) .k-header-left { flex-shrink:1; min-width:0; overflow:hidden; }
-#app:not(.gas-mode) .k-header-right { flex-shrink:0; }
-#app:not(.gas-mode) .k-logo { width:28px; height:28px; border-radius:8px; font-size:14px; }
-#app:not(.gas-mode) .k-header-title {
-  font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-#app:not(.gas-mode) .k-header-time { font-size:13px; white-space:nowrap; }
-#app:not(.gas-mode) .k-balance-bar { padding:4px 16px 3px; }
-#app:not(.gas-mode) .k-balance { font-size:10px; padding:2px 7px; }
-#app:not(.gas-mode) .k-badge {
-  font-size:11px; padding:3px 8px; white-space:nowrap;
-}
-
-/* ── 홈 화면 ── */
-#app:not(.gas-mode) #homeScreen .home-body {
-  gap:20px; padding:20px 16px;
-}
-#app:not(.gas-mode) .home-greeting { font-size:18px; }
-#app:not(.gas-mode) .home-greeting strong { font-size:22px; }
-#app:not(.gas-mode) .home-greeting .sub { font-size:13px; margin-top:6px; }
-#app:not(.gas-mode) .home-register-btn {
-  max-width:240px; padding:20px; gap:10px;
-  border-radius:20px; box-shadow:0 4px 20px rgba(255,61,0,.25);
-}
-#app:not(.gas-mode) .home-register-btn .material-symbols-rounded { font-size:36px; }
-#app:not(.gas-mode) .home-register-btn .btn-label { font-size:16px; }
-#app:not(.gas-mode) .home-status-btn {
-  max-width:240px; padding:12px; gap:8px;
-}
-#app:not(.gas-mode) .home-status-btn .material-symbols-rounded { font-size:20px; }
-#app:not(.gas-mode) .home-status-btn .btn-label { font-size:14px; }
-#app:not(.gas-mode) .home-help-btn { padding:6px 16px; font-size:12px; }
-#app:not(.gas-mode) .home-help-btn .material-symbols-rounded { font-size:16px; }
-#app:not(.gas-mode) .home-help-btn .btn-label { font-size:12px; }
-#app:not(.gas-mode) .home-footer { font-size:11px; padding:12px; }
-
-/* ── 인증 화면 ── */
-#app:not(.gas-mode) #phoneScreen .phone-body {
-  gap:20px; padding:32px 20px;
-}
-#app:not(.gas-mode) .phone-card {
-  padding:20px 16px; gap:12px;
-}
-#app:not(.gas-mode) .phone-card h2 { font-size:18px; }
-#app:not(.gas-mode) .phone-card p { font-size:13px; }
-#app:not(.gas-mode) .phone-status { font-size:11px; }
-#app:not(.gas-mode) .k-input { padding:12px 14px; font-size:15px!important; }
-#app:not(.gas-mode) .k-btn { padding:12px 20px; font-size:14px; }
-
-/* ── 등록 화면 ── */
-#app:not(.gas-mode) .step-container { padding:16px 16px calc(16px + var(--sab)); }
-#app:not(.gas-mode) .back-btn {
-  padding:8px 14px 8px 10px; font-size:13px; margin-bottom:16px;
-}
-#app:not(.gas-mode) .back-btn .material-symbols-rounded { font-size:18px; }
-#app:not(.gas-mode) .reg-info-bar { padding:8px 12px; margin-bottom:16px; }
-#app:not(.gas-mode) .reg-info-tag { padding:4px 10px; font-size:12px; }
-#app:not(.gas-mode) .car-input-row { gap:8px; margin-bottom:16px; }
-#app:not(.gas-mode) .car-input {
-  font-size:24px!important; padding:14px 12px; letter-spacing:6px;
-}
-#app:not(.gas-mode) .car-search-btn { width:56px; }
-#app:not(.gas-mode) .car-search-btn .material-symbols-rounded { font-size:24px; }
-#app:not(.gas-mode) .car-card-plate { font-size:20px; letter-spacing:.5px; }
-#app:not(.gas-mode) .car-card-info { font-size:13px; }
-#app:not(.gas-mode) .car-card-body { padding:12px 16px; }
-#app:not(.gas-mode) .badge { padding:4px 10px; font-size:11px; }
-#app:not(.gas-mode) .reg-memo { padding:12px; font-size:14px!important; }
-#app:not(.gas-mode) .reg-bottom-bar { padding:10px 16px calc(10px + var(--sab)); }
-#app:not(.gas-mode) .reg-submit-btn {
-  padding:14px; font-size:15px; border-radius:12px;
-}
-
-/* ── 모달 ── */
-#app:not(.gas-mode) .modal-box { padding:8px 20px calc(20px + var(--sab)); }
-#app:not(.gas-mode) .modal-icon-wrap { width:44px; height:44px; margin-bottom:12px; }
-#app:not(.gas-mode) .modal-icon-wrap .material-symbols-rounded { font-size:22px; }
-#app:not(.gas-mode) .modal-title { font-size:17px; }
-#app:not(.gas-mode) .modal-body { font-size:14px; margin-bottom:16px; }
-#app:not(.gas-mode) .modal-actions .modal-btn { padding:14px; font-size:15px; }
-
-/* ── 상태(현황) 화면 ── */
-#app:not(.gas-mode) .status-top-bar { padding:8px 16px; gap:6px; flex-wrap:nowrap; }
-#app:not(.gas-mode) .status-icon-btn { width:36px; height:36px; }
-#app:not(.gas-mode) .status-icon-btn .material-symbols-rounded { font-size:18px; }
-#app:not(.gas-mode) .date-nav-arrow { width:32px; height:32px; }
-#app:not(.gas-mode) .date-nav-arrow .material-symbols-rounded { font-size:18px; }
-#app:not(.gas-mode) .date-nav-label {
-  font-size:13px; padding:8px 12px; min-width:auto; white-space:nowrap;
-}
-#app:not(.gas-mode) .status-info-bar {
-  padding:8px 16px; gap:8px; flex-wrap:nowrap;
-}
-#app:not(.gas-mode) .status-search { padding:10px 12px; font-size:14px!important; }
-#app:not(.gas-mode) .status-summary-inline { gap:12px; }
-#app:not(.gas-mode) .status-stat .stat-num { font-size:17px; }
-#app:not(.gas-mode) .status-stat .stat-label { font-size:11px; }
-
-/* ── 토스트 ── */
-#app:not(.gas-mode) .toast { padding:10px 14px; font-size:13px; }
+.toast { padding:10px 14px; font-size:13px; }
 
 /* 홈 화면: 스크롤 금지 + 세로 가운데 */
 #homeScreen { overflow:hidden!important; }
@@ -1251,24 +1184,48 @@ if ('serviceWorker' in navigator) {
 </script>
 
 <script>
-/* ── 환경 자동 감지: GAS iframe ↔ GitHub Pages ── */
-(function detectEnvironment() {
+/* ★ v5.8 화면 맞춤
+   기종마다 화면 폭이 달라도 보이는 비율이 같도록, 앱을 기준 폭(470)으로
+   그린 다음 실제 화면 폭에 맞춰 통째로 줄이거나 늘립니다.
+   세로는 남는 만큼 그대로 쓰므로 길쭉한 화면에서도 빈칸이 생기지 않습니다.
+   GAS 안에서 열리든 주소로 바로 열리든 같은 식으로 동작합니다. */
+var DESIGN_W = 470;
+(function fitToScreen() {
   var isInsideIframe = false;
   try { isInsideIframe = window.self !== window.top; } catch(e) { isInsideIframe = true; }
-
-  // 전역 플래그 설정 (protectScale 등에서 참조)
   window.__GAS_MODE = isInsideIframe;
 
-  if (isInsideIframe) {
-    // GAS iframe → 2x 확대 필요
-    document.addEventListener('DOMContentLoaded', function() {
-      var app = document.getElementById('app');
-      if (app) app.classList.add('gas-mode');
-    });
-    console.log('[Env] GAS iframe 모드 (2x 확대 적용)');
-  } else {
-    console.log('[Env] GitHub Pages 직접 호스팅 모드 (1x, 풀스크린)');
+  var MAX_SCALE   = 1.25;   // 가로로 눕히거나 PC에서 열어도 글자가 커지지 않도록
+  var MIN_DESIGN_H = 830;   // 세로로 짧은 화면(폴더블 펼침 등)에서 내용이 눌리지 않게
+  var fullVH = 0;           // 키보드가 올라와도 배율이 흔들리지 않도록 '원래 높이'를 기억
+
+  function fit() {
+    var app = document.getElementById('app');
+    if (!app) return;
+    var vw = window.innerWidth || DESIGN_W;
+    var vh = window.innerHeight || 800;
+    if (vh > fullVH) fullVH = vh;            // 키보드는 높이를 줄이기만 하므로 최대값이 전체 높이
+
+    var s = vw / DESIGN_W;
+    if (!(s > 0) || !isFinite(s)) s = 1;
+    var sH = fullVH / MIN_DESIGN_H;          // 세로가 모자라면 그만큼만 키운다
+    if (sH > 0 && isFinite(sH) && s > sH) s = sH;
+    if (s > MAX_SCALE) s = MAX_SCALE;        // 너무 커지지 않게
+    app.style.position = 'absolute';
+    app.style.top = '0';
+    app.style.left = Math.round((vw - DESIGN_W * s) / 2) + 'px';   // 넓은 화면에선 가운데
+    app.style.width = DESIGN_W + 'px';
+    app.style.height = (vh / s) + 'px';
+    app.style.transform = 'scale(' + s + ')';
   }
+  window.__fitApp = fit;
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fit);
+  else fit();
+  window.addEventListener('resize', fit);
+  window.addEventListener('orientationchange', function () { fullVH = 0; setTimeout(fit, 120); });
+  // 키보드가 올라오면 보이는 높이가 바뀜
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
 })();
 </script>
 
@@ -1284,8 +1241,11 @@ if ('serviceWorker' in navigator) {
       <div class="k-header-title">손님 주차할인</div>
     </div>
     <div class="k-header-right">
-      <span class="k-header-time" id="headerTime"></span>
       <span class="k-badge" id="baseBadge">기본 2시간 할인</span>
+      <button class="hdr-icon" onclick="goStatus()" aria-label="등록현황">
+        <span class="material-symbols-rounded">assignment</span></button>
+      <button class="hdr-icon" onclick="showHelpModal()" aria-label="문의">
+        <span class="material-symbols-rounded">help</span></button>
     </div>
   </div>
   <div class="k-balance-bar">
@@ -1362,29 +1322,16 @@ if ('serviceWorker' in navigator) {
   <div class="screen" id="regScreen">
     <div class="step-container" id="regScrollArea">
       <!-- ★ v5.6: 홈 화면을 없애고 이 화면이 첫 화면입니다 -->
-      <div class="reg-top-row">
-        <!-- ★ v5.6: 홈에 있던 버전/업데이트 확인을 여기로 옮겼습니다 -->
-        <span class="reg-ver" onclick="manualCheckUpdate()">
-          사내 주차정산시스템 <span id="footerVersion"></span> · 업데이트 확인
-        </span>
-        <button class="reg-status-btn" onclick="goStatus()">
-          <span class="material-symbols-rounded">assignment</span> 등록현황
-        </button>
-        <button class="reg-status-btn" onclick="showHelpModal()">
-          <span class="material-symbols-rounded">help</span> 문의
-        </button>
-      </div>
-      <button class="reg-changelog-hint" id="homeChangelogHint" onclick="showChangelog()" style="display:none;margin:6px 0 0">
-        <span class="material-symbols-rounded" style="font-size:16px;color:var(--accent)">update</span>
-        <span style="font-size:11px;font-weight:700;color:var(--accent)">최근 업데이트된 내역이 있어요!</span>
-      </button>
-
-      <!-- Info bar -->
+      <!-- 담당자 한 줄만 남김 -->
       <div class="reg-info-bar" id="regInfoBar">
         <span class="reg-info-tag dept" id="regDeptTag">HR</span>
         <span class="reg-info-tag guest">손님용</span>
         <span class="reg-who" id="regWho"></span>
+        <button class="reg-changelog-hint" id="homeChangelogHint" onclick="showChangelog()" style="display:none">
+          <span class="material-symbols-rounded" style="font-size:15px;color:var(--accent)">update</span>
+        </button>
       </div>
+      <span id="footerVersion" hidden></span>
 
       <!-- Car number input -->
       <div class="car-input-row">
@@ -1408,8 +1355,8 @@ if ('serviceWorker' in navigator) {
         <label class="memo-pick-label" for="memoPreset">자주 쓰는 문구</label>
         <select class="memo-pick" id="memoPreset" onchange="pickMemo(this.value)"></select>
       </div>
-      <textarea class="reg-memo" id="memoInput" rows="2" required
-                placeholder="메모 (필수) ex) TA - 인터뷰 OOO님 , HR - OO업체 미팅 등 간단하게 작성해주세요."></textarea>
+      <textarea class="reg-memo" id="memoInput" rows="1" required
+                placeholder="메모 (필수)  예) TA - 면접 홍길동님"></textarea>
       <button class="reg-submit-btn" id="regSubmitBtn"
               onclick="submitRegistration()" disabled>
         주차 할인권 등록
@@ -1437,7 +1384,10 @@ if ('serviceWorker' in navigator) {
         <button class="date-nav-arrow" onclick="navDate(1)">
           <span class="material-symbols-rounded">chevron_right</span>
         </button>
-        <input type="date" id="dateNavInput" class="date-nav-picker" onchange="onNavDatePick(this.value)">
+        <label class="date-nav-cal" aria-label="날짜 선택">
+          <span class="material-symbols-rounded">calendar_month</span>
+          <input type="date" id="dateNavInput" class="date-nav-picker" onchange="onNavDatePick(this.value)">
+        </label>
       </div>
     </div>
 
@@ -1847,7 +1797,11 @@ function showHelpModal() {
     '<div style="font-size:15px;color:var(--text-secondary);margin-bottom:6px">HR팀</div>' +
     '<div style="font-size:22px;font-weight:800;color:var(--text-primary);margin-bottom:8px">유동현</div>' +
     '<a href="tel:01052710382" style="font-size:20px;font-weight:700;color:var(--blue);text-decoration:none">010-5271-0382</a>' +
-    '</div></div>',
+    '</div>' +
+    '<div onclick="closeModal();manualCheckUpdate()" ' +
+    'style="margin-top:14px;font-size:12px;color:var(--text-tertiary);cursor:pointer">' +
+    '사내 주차정산시스템 v' + APP_LOCAL_VERSION + ' · 업데이트 확인</div>' +
+    '</div>',
     [{ text: '닫기', cls: 'secondary', action: closeModal }]
   );
 }
@@ -2111,70 +2065,10 @@ function submitRegistration() {
   var entryKey = carNo + '_' + (selectedCar.entryDateToString || '').replace(/\D/g, '');
   var entryDateRaw = selectedCar.entryDateToString || '';
 
-  // Weekend logic
+  // ★ v6.0 주말 — 유스페이스 실제 보유 할인을 확인한 뒤 안내 (재입차 대응)
   if (isWeekend(entryDateRaw)) {
-    var weekendMemo = document.getElementById('memoInput').value.trim();
-    var safeRemain = WEEKEND_FREE_MIN - (incarMin + EXIT_BUFFER);
-
-    if (safeRemain >= 0) {
-      // Under 10hr — no discount needed
-      showModal('success', '주말 무료 주차',
-        '<div style="line-height:1.9">' +
-        '차량: <b>' + esc(carNo) + '</b><br>' +
-        '주차시간: <b>' + formatMinutes(incarMin) + '</b><br>' +
-        '<div style="background:var(--green-soft);border-radius:var(--radius-md);padding:12px;margin-top:8px">' +
-        '<span style="color:var(--green);font-weight:800">주말 10시간 기본무료 적용 중</span><br>' +
-        '<span style="color:var(--green);font-size:13px">남은 무료 시간: <b>' + formatMinutes(safeRemain) + '</b></span>' +
-        '</div></div>',
-        [{ text: '확인', cls: 'primary', action: function() { closeModal(); goHome(); }}]
-      );
-
-      google.script.run
-        .withSuccessHandler(function() {})
-        .withFailureHandler(function() {})
-        .recordToSheet({
-          action: 'new', name: 'HR', number: carNo, dept: 'HR',
-          memo: weekendMemo || '주말 10시간 무료',
-          isGuest: true, thd: 0, hd: 0, md: 0, payType: '손님용'
-        });
-      return;
-    }
-
-    // Over 10hr — calculate excess
-    var excessMin = incarMin + EXIT_BUFFER - WEEKEND_FREE_MIN;
-    var exHd = Math.floor(excessMin / 60);
-    var exLeftover = excessMin % 60;
-    var exMd = 0;
-    if (exLeftover > 0) {
-      if (exLeftover > 30) { exHd++; } else { exMd = 1; }
-    }
-    var weekendTypes = [];
-    for (var wi = 0; wi < exHd; wi++) weekendTypes.push('3');
-    for (var wi2 = 0; wi2 < exMd; wi2++) weekendTypes.push('2');
-    var weekendBase = getBaseDiscount(entryDateRaw);
-    var weekendCalc = { thd: 0, hd: exHd, md: exMd };
-    var weekendDiscountSummary = weekendTypes.map(function(t) { return DSCNT_NAMES[t] || t; }).join(', ');
-    var weekendCost = (exHd * 1500) + (exMd * 750);
-
-    showModal('info', '주말 초과 주차 할인',
-      '<div style="line-height:1.9;text-align:left">' +
-      '차량: <b>' + esc(carNo) + '</b><br>' +
-      '주차시간: <b>' + formatMinutes(incarMin) + '</b><br>' +
-      '<div style="background:var(--blue-soft);border-radius:var(--radius-md);padding:10px;margin-top:8px;font-size:13px">' +
-      '주말 <b>10시간 기본무료는 유지</b>됩니다.<br>' +
-      '초과분 <b>' + formatMinutes(excessMin) + '</b>에 대해서만 유료 할인권을 등록합니다.' +
-      '</div><br>' +
-      '할인권: <b>' + weekendTypes.length + '장</b> (' + esc(weekendDiscountSummary) + ')<br>' +
-      (weekendCost > 0 ? '공제금액: <b style="color:var(--red)">' + weekendCost.toLocaleString() + '원</b>' : '') +
-      '</div>',
-      [
-        { text: '등록', cls: 'primary', action: function() {
-          closeModal();
-          applyDiscountsBatch(carId, weekendTypes, weekendCalc, weekendBase, entryKey);
-        }},
-        { text: '취소', cls: 'secondary', action: closeModal }
-      ]
-    );
+    _weekendCheck({ carId: carId, carNo: carNo, incarMin: incarMin,
+                    entryDateRaw: entryDateRaw, entryKey: entryKey });
     return;
   }
 
@@ -2188,9 +2082,17 @@ function submitRegistration() {
   google.script.run
     .withSuccessHandler(function(live) {
       showLoading(false);
-      if (live && live.ok && Number(live.coverMin) > 0) {
+      /* ★ v6.0 보유 커버는 '이번 입차 건' 기준입니다.
+         그리고 오늘 기본 무료(2/6시간)를 이미 썼으면 — 재입차라는 뜻이라 —
+         이번 건에는 무료가 없습니다. 그대로 두면 기본 무료를 또 요청했다가
+         서버가 유료 2시간으로 통째 바꿔 필요보다 많이 사게 됩니다.
+         → 커버 0 으로 시작하는 '추가 등록' 경로로 보내 필요한 만큼만 삽니다. */
+      var _cover    = (live && live.ok) ? (Number(live.coverMin) || 0) : 0;
+      var _baseGone = !!(live && live.ok && live.baseUsedToday);
+      if (_cover > 0 || _baseGone) {
         appliedDiscounts[entryKey] = {
-          coverMin: Number(live.coverMin) || 0,
+          coverMin: _cover,
+          baseGone: _baseGone,
           name: (appliedDiscounts[entryKey] || {}).name || '',
           dept: '', isGuest: true
         };
@@ -2198,7 +2100,7 @@ function submitRegistration() {
       _weekdayRegister();
     })
     .withFailureHandler(function() { showLoading(false); _weekdayRegister(); })
-    .uspaceGetCarDiscounts(carNo, '1A-605', '');
+    .uspaceGetCarDiscounts(carNo, '1A-605', '', selectedCar ? selectedCar.entryDateToString : '');
   return;
 
   function _weekdayRegister() {
@@ -2247,7 +2149,11 @@ function submitRegistration() {
       '<div style="line-height:1.9;text-align:left">' +
       '차량: <b>' + esc(carNo) + '</b><br>' +
       '주차시간: <b>' + formatMinutes(incarMin) + '</b><br>' +
-      '기존 할인: <b>' + formatMinutes(prevCoverMin) + '</b> 커버 중<br>' +
+      (prevCoverMin > 0
+        ? '기존 할인: <b>' + formatMinutes(prevCoverMin) + '</b> 커버 중<br>'
+        : (prevData.baseGone
+            ? '<span style="color:var(--yellow)">오늘 기본 무료는 이미 사용됐습니다 (다시 들어온 주차)</span><br>'
+            : '')) +
       '추가 필요: <b>' + formatMinutes(additionalNeeded) + '</b><br>' +
       '추가 할인권: <b>' + addTypes.length + '장</b>' +
       '</div>',
@@ -2291,7 +2197,201 @@ function submitRegistration() {
   }   // ← _weekdayRegister 끝
 }
 
+/* ============================================================
+   ★ v6.0 주말 처리
+   주말은 주차장 요금정책으로 10시간이 자동 무료입니다(별도 등록 불필요).
+   다만 이 무료는 '하루에 한 번'이라, 아래 두 경우엔 등록이 필요합니다.
+     ① 오늘 나갔다가 다시 들어온 경우 → 이번 주차는 무료가 없습니다
+     ② 10시간을 넘기는 경우          → 넘는 만큼만 등록하면 됩니다
+   앱은 어느 쪽인지 알 수 없으므로(유스페이스에 흔적이 남지 않습니다)
+   사실만 안내하고 사용자가 고르게 합니다.
+   ============================================================ */
+var _weekendNoFree    = false;   // 이번 등록에서 10시간 무료를 더하지 않음
+var _weekendPrevCover = -1;      // 이번 등록에서 쓸 '이미 보유한 커버(분)' (-1이면 사용 안 함)
+var _wkCtx = null, _wkPaid = 0;  // 무료 안내 모달에서 고른 선택지로 넘기기 위한 보관
+
+/* 필요한 분을 1시간/30분 할인권으로 채우는 계산 */
+function _weekendPlan(needMin) {
+  var hd = Math.floor(needMin / 60), left = needMin % 60, md = 0;
+  if (left > 0) { if (left > 30) hd++; else md = 1; }
+  var types = [];
+  for (var i = 0; i < hd; i++) types.push('3');
+  for (var j = 0; j < md; j++) types.push('2');
+  return {
+    hd: hd, md: md, types: types,
+    cost: (hd * 1500) + (md * 750),
+    summary: types.map(function(t) { return DSCNT_NAMES[t] || t; }).join(', ')
+  };
+}
+
+/* 입차시각 + 10시간 = 무료가 끝나는 시각 */
+function _weekendFreeUntil(entryDateRaw) {
+  try {
+    var c = String(entryDateRaw).replace(/\D/g, '');
+    if (c.length < 12) return '';
+    var dt = new Date(parseInt(c.substring(0,4),10), parseInt(c.substring(4,6),10) - 1,
+                      parseInt(c.substring(6,8),10), parseInt(c.substring(8,10),10),
+                      parseInt(c.substring(10,12),10));
+    dt.setMinutes(dt.getMinutes() + WEEKEND_FREE_MIN);
+    return dt.getHours() + '시 ' + String(dt.getMinutes()).padStart(2, '0') + '분';
+  } catch(e) { return ''; }
+}
+
+/* 이미 등록된 할인을 확인한 뒤 안내 (중복 등록 방지용) */
+function _weekendCheck(ctx) {
+  showLoading(true, '주말 무료 확인 중...');
+  google.script.run
+    .withSuccessHandler(function(live) { showLoading(false); _weekendDecide(live, ctx); })
+    .withFailureHandler(function()     { showLoading(false); _weekendDecide(null, ctx); })
+    .uspaceGetCarDiscounts(ctx.carNo, '1A-605', '', ctx.entryDateRaw);
+}
+
+function _weekendDecide(live, ctx) {
+  var ok = !!(live && live.ok);
+  // 이미 붙어 있는 유료 할인 (10시간 무료는 할인권이 아니라 요금정책이라 여기 안 잡힙니다)
+  /* ★ v6.0 서버가 계산한 커버(coverMin)를 그대로 씁니다.
+     종류를 하나씩 더하면 2시간 할인권 같은 걸 빠뜨릴 수 있습니다. */
+  var paidMin = ok ? (Number(live.coverMin) || 0) : 0;
+  var needMin = ctx.incarMin + EXIT_BUFFER;
+
+  _wkCtx = ctx; _wkPaid = paidMin;
+
+  // 이미 10시간을 넘겼으면 안내가 아니라 바로 초과 등록으로
+  if (needMin > WEEKEND_FREE_MIN + paidMin) { _weekendOver(ctx, paidMin); return; }
+
+  var freeUntil = _weekendFreeUntil(ctx.entryDateRaw);
+  var safeRemain = (WEEKEND_FREE_MIN + paidMin) - needMin;
+  var paidLine = paidMin > 0
+    ? '<div style="font-size:13px;color:var(--blue);margin-top:6px">이미 등록된 할인: <b>' +
+      esc(formatMinutes(paidMin)) + '</b></div>' : '';
+
+  showModal('success', '주말 무료 주차',
+    '<div style="line-height:1.9">' +
+    '차량: <b>' + esc(ctx.carNo) + '</b><br>' +
+    '주차시간: <b>' + esc(formatMinutes(ctx.incarMin)) + '</b>' + paidLine +
+    '<div style="background:var(--green-soft);border-radius:var(--radius-md);padding:12px;margin-top:8px">' +
+    '<span style="color:var(--green);font-weight:800">주말 10시간 기본무료 — 별도 등록 필요 없습니다</span>' +
+    (freeUntil ? '<div style="margin-top:4px;font-size:22px;font-weight:900;color:var(--green);letter-spacing:.5px">' +
+                 esc(freeUntil) + ' 까지</div>' : '') +
+    /* ★ v6.0 이미 유료 할인이 붙어 있는 차량은 '초과' 또는 '재입차'로 한 번 등록한 차량입니다.
+       둘 중 어느 쪽인지 앱이 알 수 없어 남은 시간을 단정하면 틀릴 수 있으므로,
+       그 경우엔 숫자 대신 '아래에서 다시 확인'하도록 안내합니다. */
+    (paidMin > 0
+      ? '<div style="color:var(--text-secondary);font-size:12.5px;margin-top:4px">' +
+        '이 차량엔 이미 할인이 등록돼 있습니다 — 남은 시간은 아래에서 확인해주세요</div>'
+      : '<span style="color:var(--green);font-size:13px">남은 무료 시간: <b>' +
+        esc(formatMinutes(Math.max(0, safeRemain))) + '</b></span>') +
+    '</div>' +
+    '<div style="margin-top:14px;text-align:left">' +
+    '<div style="font-size:13px;color:var(--text-secondary);font-weight:700;margin-bottom:8px">' +
+    '아래에 해당하면 눌러서 직접 등록해주세요</div>' +
+    '<div onclick="_wkPickReentry()" style="border:1.5px solid var(--yellow);background:rgba(251,191,36,.1);' +
+    'border-radius:var(--radius-md);padding:12px 14px;margin-bottom:8px;cursor:pointer">' +
+    '<div style="font-size:14px;font-weight:800;color:var(--yellow)">아까 나갔다가 다시 들어왔어요</div>' +
+    '<div style="font-size:12px;color:var(--text-secondary);margin-top:3px">' +
+    '10시간 무료는 하루에 한 번이라, 이번 주차는 무료가 없습니다</div></div>' +
+    '<div onclick="_wkPickOver()" style="border:1.5px solid var(--blue);background:var(--blue-soft);' +
+    'border-radius:var(--radius-md);padding:12px 14px;cursor:pointer">' +
+    '<div style="font-size:14px;font-weight:800;color:var(--blue)">10시간보다 오래 있을 거예요</div>' +
+    '<div style="font-size:12px;color:var(--text-secondary);margin-top:3px">' +
+    '10시간을 뺀 나머지 시간만 등록합니다</div></div>' +
+    '</div></div>',
+    [{ text: '확인', cls: 'primary', action: function() { closeModal(); goHome(); }}]
+  );
+
+  _weekendRecordFree(ctx);
+}
+
+/* 선택지는 바로 앞에서 띄운 모달 안에만 있어 _wkCtx 가 비어 있을 일은 없지만,
+   비어 있으면 아무 일도 안 하도록 막아둡니다 (잘못된 금액으로 진행되는 것보다 나음) */
+function _wkPickReentry() {
+  if (!_wkCtx) { closeModal(); toast('차량 정보가 없습니다. 다시 검색해주세요.', 'error'); return; }
+  closeModal(); _weekendReentry(_wkCtx, _wkPaid);
+}
+function _wkPickOver() {
+  if (!_wkCtx) { closeModal(); toast('차량 정보가 없습니다. 다시 검색해주세요.', 'error'); return; }
+  closeModal(); _weekendOver(_wkCtx, _wkPaid);
+}
+
+/* ① 다시 들어온 주차 — 10시간 무료가 없으므로 체류 전체를 채웁니다 */
+function _weekendReentry(ctx, paidMin) {
+  var needMin = (ctx.incarMin + EXIT_BUFFER) - paidMin;
+  if (needMin <= 0) {
+    showModal('success', '추가 등록 불필요',
+      '이미 등록된 할인(<b>' + esc(formatMinutes(paidMin)) + '</b>)으로 충분합니다.',
+      [{ text: '확인', cls: 'primary', action: function() { closeModal(); goHome(); }}]
+    );
+    return;
+  }
+  _weekendAskRegister(ctx, paidMin, needMin, '주말 재입차 할인 등록',
+    '주말 10시간 무료는 <b>하루에 한 번</b>이라, 다시 들어온 이번 주차는 ' +
+    '<b>무료가 없습니다.</b><br>주차시간 전체를 할인권으로 채웁니다.',
+    paidMin);
+}
+
+/* ② 10시간을 넘기는 주차 — 10시간을 뺀 나머지만 채웁니다 */
+function _weekendOver(ctx, paidMin) {
+  var needMin = (ctx.incarMin + EXIT_BUFFER) - WEEKEND_FREE_MIN - paidMin;
+  if (needMin <= 0) {
+    var left = (WEEKEND_FREE_MIN + paidMin) - (ctx.incarMin + EXIT_BUFFER);
+    showModal('info', '아직 등록하지 않으셔도 됩니다',
+      '무료 시간이 <b>' + esc(formatMinutes(left)) + '</b> 남아 있습니다.<br>' +
+      '10시간이 가까워지면 그때 다시 등록해주세요.',
+      [{ text: '확인', cls: 'primary', action: function() { closeModal(); goHome(); }}]
+    );
+    return;
+  }
+  _weekendAskRegister(ctx, paidMin, needMin, '주말 초과 주차 할인',
+    '주말 <b>10시간 기본무료는 유지</b>됩니다.<br>' +
+    '넘는 만큼인 <b>' + esc(formatMinutes(needMin)) + '</b> 에 대해서만 등록합니다.',
+    WEEKEND_FREE_MIN + paidMin);
+}
+
+/* 두 경우 공통 — 계산 결과를 보여주고 확인받아 등록 */
+function _weekendAskRegister(ctx, paidMin, needMin, title, noteHtml, prevCover) {
+  var plan = _weekendPlan(needMin);
+  showModal('info', title,
+    '<div style="line-height:1.9;text-align:left">' +
+    '차량: <b>' + esc(ctx.carNo) + '</b><br>' +
+    '현재 주차: <b>' + esc(formatMinutes(ctx.incarMin)) + '</b><br>' +
+    (paidMin > 0 ? '이미 등록된 할인: <b>' + esc(formatMinutes(paidMin)) + '</b><br>' : '') +
+    '<div style="background:var(--blue-soft);border-radius:var(--radius-md);padding:10px;margin-top:8px;font-size:13px">' +
+    noteHtml + '</div><br>' +
+    '할인권: <b>' + plan.types.length + '장</b> (' + esc(plan.summary) + ')<br>' +
+    (plan.cost > 0 ? '공제금액: <b style="color:var(--red)">' + plan.cost.toLocaleString() + '원</b>' : '') +
+    '</div>',
+    [
+      { text: '등록', cls: 'primary', action: function() {
+          closeModal();
+          _weekendNoFree = true;
+          _weekendPrevCover = prevCover;
+          applyDiscountsBatch(ctx.carId, plan.types, { thd: 0, hd: plan.hd, md: plan.md },
+                              getBaseDiscount(ctx.entryDateRaw), ctx.entryKey);
+      }},
+      { text: '취소', cls: 'secondary', action: closeModal }
+    ]
+  );
+}
+
+/* 주말 무료 확인 기록 */
+function _weekendRecordFree(ctx) {
+  google.script.run
+    .withSuccessHandler(function() {})
+    .withFailureHandler(function() {})
+    .recordToSheet({
+      action: 'new', name: 'HR', number: ctx.carNo, dept: 'HR',
+      memo: document.getElementById('memoInput').value.trim() || '주말 10시간 무료',
+      isGuest: true, thd: 0, hd: 0, md: 0, payType: '손님용'
+    });
+}
+
 function applyDiscountsBatch(carId, types, calc, base, entryKey) {
+  /* ★ v6.0 주말 플래그는 '이번 등록 한 번'에만 적용됩니다.
+     여기서 받아두고 즉시 비웁니다 — 등록이 실패해 finishRegistration 까지
+     못 가더라도 다음 등록에 값이 남지 않도록. */
+  var _wk = { noFree: _weekendNoFree, prevCover: _weekendPrevCover };
+  _weekendNoFree = false; _weekendPrevCover = -1;
+
   if (checkAuthExpired()) return;
 
   showLoading(true, '할인 ' + types.length + '건 등록중...');
@@ -2358,7 +2458,7 @@ function applyDiscountsBatch(carId, types, calc, base, entryKey) {
       if (failTypes.length > 0) {
         toast(failTypes.join(', ') + ' 실패', 'error');
       }
-      finishRegistration(calc.hd, calc.md, base, types, entryKey);
+      finishRegistration(calc.hd, calc.md, base, types, entryKey, _wk);
     })
     .withFailureHandler(function(err) {
       showLoading(false);
@@ -2367,10 +2467,11 @@ function applyDiscountsBatch(carId, types, calc, base, entryKey) {
     })
     // ★ v5.4: 주차시간을 넘겨야 알림의 '출차 마감'이 정확해짐 + 인증 담당자 표시
     .uspaceRegisterDiscountBatch(carId, types, '1A-605', '',
-        (selectedCar && selectedCar.incar_min) || 0, authedPhone);
+        (selectedCar && selectedCar.incar_min) || 0, authedPhone,
+        selectedCar ? selectedCar.entryDateToString : '');
 }
 
-function finishRegistration(hd, md, base, types, entryKey) {
+function finishRegistration(hd, md, base, types, entryKey, wk) {
   showLoading(false);
   closeModal();
 
@@ -2392,9 +2493,13 @@ function finishRegistration(hd, md, base, types, entryKey) {
 
   var prevCover = appliedDiscounts[entryKey];
   var prevCoverMin = prevCover ? (prevCover.coverMin || 0) : 0;
+  // ★ v6.0 주말 흐름이 서버에서 확인한 보유분을 넘겨준 경우 그 값을 씁니다 (1회성)
+  if (wk && wk.prevCover >= 0) prevCoverMin = wk.prevCover;
   var thisCoverMin = (thd * baseFreeMin) + (hd * 60) + (md * 30);
+  // ★ v6.0 재입차처럼 10시간이 붙지 않은 건이면 무료분을 더하지 않습니다
   var weekendBonus = 0;
-  if (isWeekend(selectedCar ? selectedCar.entryDateToString : '') && prevCoverMin === 0 && thd === 0) {
+  if (!(wk && wk.noFree) && isWeekend(selectedCar ? selectedCar.entryDateToString : '') &&
+      prevCoverMin === 0 && thd === 0) {
     weekendBonus = WEEKEND_FREE_MIN;
   }
   var coverMin = prevCoverMin + thisCoverMin + weekendBonus;
@@ -2441,7 +2546,9 @@ function finishRegistration(hd, md, base, types, entryKey) {
     plate: plate,
     entryKey: entryKey,
     coverMin: coverMin,
-    incarMin: incarMin
+    incarMin: incarMin,
+    // ★ v6.0 추가 등록 때도 '이번 입차 건' 을 정확히 지정하기 위해 함께 보관
+    entryDateRaw: (selectedCar && selectedCar.entryDateToString) || '',
   };
 
   // ★ 등록 완료 → 잔액 갱신
@@ -2574,7 +2681,8 @@ function addExtraDiscount(typeId, addMin) {
     })
     // ★ v5.4: 위와 동일 — 추가 등록도 주차시간/담당자 전달
     .uspaceRegisterDiscountBatch(ctx.carId, [typeId], '1A-605', '',
-        (ctx && ctx.incarMin) || 0, authedPhone);
+        (ctx && ctx.incarMin) || 0, authedPhone,
+        ctx.entryDateRaw || (selectedCar ? selectedCar.entryDateToString : ''));
 }
 
 /* ============================================================
@@ -3925,7 +4033,7 @@ function hideSessionBanner() {
    ============================================================ */
 // ★ HTML에 하드코딩된 버전 (서버 버전과 비교하여 업데이트 감지)
 // → localStorage가 비어있어도, 삭제 후 재설치해도, 이 값으로 비교하므로 확실히 감지됨
-var APP_LOCAL_VERSION = '5.7';
+var APP_LOCAL_VERSION = '6.0';
 // ★ v5.2: 버전 표기를 자동화 (기존엔 3곳에 수동 기입돼 서로 달랐음)
 (function() {
   var a = document.getElementById('phoneVersion');  if (a) a.textContent = 'v' + APP_LOCAL_VERSION;
@@ -4008,7 +4116,7 @@ function checkAppVersion() {
     .withFailureHandler(function(err) {
       console.log('버전 체크 실패 (무시):', err);
     })
-    .getAppVersion();
+    .getAppVersion('guest');
 }
 
 function manualCheckUpdate() {
@@ -4042,7 +4150,7 @@ function manualCheckUpdate() {
     .withFailureHandler(function(err) {
       toast('서버 연결 실패: ' + (err.message || ''), 'error');
     })
-    .getAppVersion();
+    .getAppVersion('guest');
 }
 
 function showChangelog() {
@@ -4066,7 +4174,7 @@ function showChangelog() {
       .withFailureHandler(function() {
         toast('서버 연결 실패', 'error');
       })
-      .getAppVersion();
+      .getAppVersion('guest');
     return;
   }
   _showChangelogModal();
