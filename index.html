@@ -945,8 +945,24 @@ button { cursor:pointer; border:none; background:none; color:inherit; }
 .sv-paytype.type-corp { background:rgba(255,255,255,.06); color:var(--text-secondary); }
 .sv-paytype.type-weekend { background:var(--green-soft); color:var(--green); }
 .sv-times {
-  display:flex; gap:var(--space-xl); margin-bottom:var(--space-md);
+  /* ★ v6.1 날짜칩이 하나 늘어서, 좁은 화면에서는 글자가 쪼개지는 대신
+     줄이 깔끔하게 넘어가도록 합니다 */
+  display:flex; flex-wrap:wrap; align-items:center;
+  gap:var(--space-xl); row-gap:6px; margin-bottom:var(--space-md);
   font-size:14px; color:var(--text-secondary); font-weight:500;
+}
+.sv-times > span { white-space:nowrap; }
+/* ★ v6.1 어느 날 건인지 / 자정을 넘겨 출차한 건 표시 */
+.sv-daychip {
+  background:var(--blue-soft); color:var(--blue);
+  font-size:12px; font-weight:700; padding:2px 8px; border-radius:var(--radius-full);
+  white-space:nowrap;
+}
+.sv-nextday {
+  background:rgba(245,158,11,.14); color:#f59e0b;
+  font-size:11px; font-weight:800; padding:1px 6px; border-radius:var(--radius-full);
+  margin-left:4px; vertical-align:middle;
+  white-space:nowrap;
 }
 .sv-times .time-label { color:var(--text-tertiary); margin-right:4px; }
 .sv-times .time-value { font-weight:600; color:var(--text-primary); font-variant-numeric:tabular-nums; }
@@ -2746,6 +2762,36 @@ function calcParkDuration(entryStr, exitStr) {
   return (h > 0 ? h + '시간 ' : '') + m + '분';
 }
 
+/* ★ v6.1 영업일 — 새벽 0~6시는 전날 야근의 연장으로 봅니다.
+   백엔드 _bizDayDash 와 같은 기준입니다. 'yyyyMMddHHmm…' → 'yyyy-MM-dd' */
+function _bizDayOf(str14) {
+  var c = String(str14 || '').replace(/\D/g, '');
+  if (c.length < 8) return '';
+  var d = new Date(+c.substring(0,4), +c.substring(4,6) - 1, +c.substring(6,8),
+                   +(c.substring(8,10) || 0), +(c.substring(10,12) || 0));
+  if (d.getHours() < 6) d.setDate(d.getDate() - 1);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') +
+         '-' + String(d.getDate()).padStart(2, '0');
+}
+/* ★ v6.1 입차일과 출차일이 며칠 차이인지 (달력 날짜 기준) */
+function _dayGap(entryStr, exitStr) {
+  var a = String(entryStr || '').replace(/\D/g, '');
+  var b = String(exitStr || '').replace(/\D/g, '');
+  if (a.length < 8 || b.length < 8) return 0;
+  var d1 = new Date(+a.substring(0,4), +a.substring(4,6) - 1, +a.substring(6,8));
+  var d2 = new Date(+b.substring(0,4), +b.substring(4,6) - 1, +b.substring(6,8));
+  var n = Math.round((d2 - d1) / 86400000);
+  return (isFinite(n) && n > 0) ? n : 0;
+}
+/* ★ v6.1 'yyyy-MM-dd' 를 n일 옮깁니다 */
+function _shiftDay(ds, n) {
+  var d = new Date(String(ds) + 'T00:00:00');
+  if (isNaN(d.getTime())) return ds;
+  d.setDate(d.getDate() + n);
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') +
+         '-' + String(d.getDate()).padStart(2, '0');
+}
+
 function getDiscountCoverMin(discountName) {
   if (!discountName) return 0;
   if (discountName.indexOf('6시간') >= 0) return 360;
@@ -2841,7 +2887,15 @@ function groupStatusRecords(data) {
   var groups = [];
   for (var k in map) {
     if (map.hasOwnProperty(k)) {
-      groups.push(map[k]);
+      // ★ v6.1 '입차한 영업일' 이 조회 기간 안인 건만 남깁니다.
+      //   유스페이스가 전날 밤 입차 건을 다음 날 목록에도 끼워 주기 때문입니다.
+      //   단, 아직 '출차 기록이 없는' 차는 어제 들어왔더라도 오늘 화면에
+      //   남겨 둡니다 (실제로 주차장에 서 있을 수 있어서 숨기면 위험합니다).
+      var _g = map[k];
+      var _bd = _bizDayOf(_g.entryDate);
+      var _stillIn = !_g.exitDate && statusEndDate >= todayStr();
+      if (_bd && !_stillIn && (_bd < statusStartDate || _bd > statusEndDate)) continue;
+      groups.push(_g);
     }
   }
   groups.sort(function(a, b) {
@@ -2854,7 +2908,16 @@ function _mergeSheetPayTypes() {
   for (var i = 0; i < statusRecords.length; i++) {
     var g = statusRecords[i];
     var plateClean = g.plate.replace(/\s/g, '');
-    var info = sheetPayTypes[plateClean] || sheetPayTypes[g.plate];
+    // ★ v6.1 '날짜_차량번호' 로 찾습니다 — ① 입차 영업일 ② 그 다음 날(자정 넘겨 등록)
+    //   ③ 못 찾으면 날짜 없는 키
+    var _biz = _bizDayOf(g.entryDate);
+    var _keys = [];
+    if (_biz) { _keys.push(_biz + '_'); _keys.push(_shiftDay(_biz, 1) + '_'); }
+    var info = null;
+    for (var _ki = 0; _ki < _keys.length && !info; _ki++) {
+      info = sheetPayTypes[_keys[_ki] + plateClean] || sheetPayTypes[_keys[_ki] + g.plate];
+    }
+    if (!info) info = sheetPayTypes[plateClean] || sheetPayTypes[g.plate];
     if (info) {
       g.payType = info.payType || '';
       if (info.regName) g.sheetRegName = info.regName;
@@ -2875,7 +2938,9 @@ function _mergeSheetPayTypes() {
       var exitClean = String(g.exitDate).replace(/\D/g, '');
       if (exitClean.length >= 10) {
         var exitHH = parseInt(exitClean.substring(8, 10), 10);
-        if (exitHH >= 23 && (g.payType === '할인권 구매' || !g.payType)) {
+        // ★ v6.1 새벽 출차(0~5시)도 야근입니다. 예전에는 23시대만 봐서
+        //   00시 12분에 나간 분이 '급여공제'로 표시됐습니다.
+        if ((exitHH >= 23 || exitHH < 6) && (g.payType === '할인권 구매' || !g.payType)) {
           g.payType = '추가근무 (23시 퇴근)';
         }
       }
@@ -2980,7 +3045,8 @@ function loadStatus(callback, forceRefresh) {
       sheetPayTypes = {};
       tryFinish();
     })
-    .getSheetPayTypes(statusStartDate);
+    // ★ v6.1 앞뒤 하루를 더 읽습니다 (전날 밤 입차 → 새벽 출차 건 때문)
+    .getSheetPayTypes(_shiftDay(statusStartDate, -1), _shiftDay(statusEndDate, 1), statusEndDate);
 
   google.script.run
     .withSuccessHandler(function(res) {
@@ -2991,7 +3057,7 @@ function loadStatus(callback, forceRefresh) {
       loadError = '오류: ' + (err.message || '데이터 로드 실패');
       tryFinish();
     })
-    .uspaceGetStatus(statusStartDate, statusEndDate, '1A-605');
+    .uspaceGetStatus(statusStartDate, statusEndDate, '1A-605', 1);   // ★ v6.1 앞뒤 하루 더
 }
 
 function renderStatus() {
@@ -3085,10 +3151,23 @@ function renderStatus() {
     }
 
     // time info
-    html += '<div class="sv-times">' +
+    // ★ v6.1 어느 날 건인지 항상 보여줍니다 (영업일 기준 — 새벽은 전날)
+    var _dayNames = ['일','월','화','수','목','금','토'];
+    var _bdc = _bizDayOf(g.entryDate);
+    var _chip = '';
+    if (_bdc) {
+      var _bp = _bdc.split('-');
+      var _bdt = new Date(+_bp[0], +_bp[1] - 1, +_bp[2]);
+      _chip = '<span class="sv-daychip">' + (+_bp[1]) + '/' + (+_bp[2]) +
+              ' (' + _dayNames[_bdt.getDay()] + ')</span>';
+    }
+    html += '<div class="sv-times">' + _chip +
             '<span><span class="time-label">입차</span><span class="time-value">' + esc(entryFmt) + '</span></span>';
     if (exitFmt) {
-      html += '<span><span class="time-label">출차</span><span class="time-value">' + esc(exitFmt) + '</span></span>';
+      // ★ v6.1 출차가 다음 날이면 '+1일'을 붙입니다
+      var _nd = _dayGap(g.entryDate, g.exitDate);
+      html += '<span><span class="time-label">출차</span><span class="time-value">' + esc(exitFmt) + '</span>' +
+              (_nd > 0 ? '<span class="sv-nextday">+' + _nd + '일</span>' : '') + '</span>';
     }
     if (parkDur) {
       html += '<span class="time-duration">' + esc(parkDur) + '</span>';
@@ -4033,7 +4112,7 @@ function hideSessionBanner() {
    ============================================================ */
 // ★ HTML에 하드코딩된 버전 (서버 버전과 비교하여 업데이트 감지)
 // → localStorage가 비어있어도, 삭제 후 재설치해도, 이 값으로 비교하므로 확실히 감지됨
-var APP_LOCAL_VERSION = '6.0';
+var APP_LOCAL_VERSION = '6.1';
 // ★ v5.2: 버전 표기를 자동화 (기존엔 3곳에 수동 기입돼 서로 달랐음)
 (function() {
   var a = document.getElementById('phoneVersion');  if (a) a.textContent = 'v' + APP_LOCAL_VERSION;
