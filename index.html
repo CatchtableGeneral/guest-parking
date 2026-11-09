@@ -1140,61 +1140,90 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
-<!-- ★ v6.3 구글 로그인 (문자 인증 대체) -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<!-- ★ v6.3 구글 로그인 — 팝업 없이 화면 전체가 구글로 갔다 옵니다 -->
 <script>
 /* ============================================================
-   구글 로그인 — 문자 인증을 대체합니다.
-   토큰은 메모리에만 두고, 서버 호출마다 주소에 실어 보냅니다.
-   서버는 이 토큰을 구글에 직접 물어서 "누구인지"를 확인합니다.
+   왜 팝업을 안 쓰나
+     팝업 차단기, 아이폰 Safari, 주소창 없는 앱 아이콘에서
+     구글 로그인 팝업이 열리지 않는 경우가 많습니다.
+     그래서 화면 전체를 구글로 보냈다가 토큰을 들고 돌아옵니다.
+     토큰은 주소 뒤 #뒤에 담겨 오고, 읽는 즉시 주소에서 지웁니다.
    ============================================================ */
-var GA_CLIENT_ID = '980658564661-3hb6be0miq6r0r8lg2qjtbht875b8835.apps.googleusercontent.com';
-var GA_SCOPES    = 'https://www.googleapis.com/auth/drive.readonly email';
-var GA_TOKEN     = { value: '', expiresAt: 0 };
-var _gaClient = null, _gaPending = null;
+var GA_CLIENT_ID   = '980658564661-3hb6be0miq6r0r8lg2qjtbht875b8835.apps.googleusercontent.com';
+var GA_REDIRECT_URI = 'https://catchtablegeneral.github.io/guest-parking/';
+var GA_SCOPES      = 'https://www.googleapis.com/auth/drive.readonly email';
+var GA_TOKEN       = { value: '', expiresAt: 0 };
+var GA_TOK_KEY = 'guest_ga_token', GA_EXP_KEY = 'guest_ga_exp';
+var GA_STATE_KEY = 'guest_ga_state', GA_TRIED_KEY = 'guest_ga_tried';
 
-function _gaReady() {
-  return !!(window.google && window.google.accounts && window.google.accounts.oauth2);
+function _gaSaveToken(tok, expiresIn) {
+  GA_TOKEN.value = tok;
+  GA_TOKEN.expiresAt = Date.now() + ((Number(expiresIn) || 3600) - 300) * 1000;
+  try {
+    sessionStorage.setItem(GA_TOK_KEY, tok);
+    sessionStorage.setItem(GA_EXP_KEY, String(GA_TOKEN.expiresAt));
+  } catch (e) {}
 }
 
-function _gaInitClient() {
-  if (_gaClient) return _gaClient;
-  if (!_gaReady()) return null;
-  _gaClient = window.google.accounts.oauth2.initTokenClient({
-    client_id: GA_CLIENT_ID,
-    scope: GA_SCOPES,
-    callback: function(resp) {
-      var cb = _gaPending; _gaPending = null;
-      if (resp && resp.access_token) {
-        GA_TOKEN.value = resp.access_token;
-        // 만료 5분 전에 미리 갱신하도록 여유를 둡니다
-        GA_TOKEN.expiresAt = Date.now() + ((Number(resp.expires_in) || 3600) - 300) * 1000;
-        if (cb) cb(GA_TOKEN.value);
-      } else if (cb) cb('');
-    },
-    error_callback: function() {
-      var cb = _gaPending; _gaPending = null;
-      if (cb) cb('');
-    }
+function _gaLoadToken() {
+  try {
+    var t = sessionStorage.getItem(GA_TOK_KEY) || '';
+    var e = parseInt(sessionStorage.getItem(GA_EXP_KEY) || '0', 10);
+    if (t && e > Date.now()) { GA_TOKEN.value = t; GA_TOKEN.expiresAt = e; return true; }
+  } catch (e2) {}
+  return false;
+}
+
+function gaForgetToken() {
+  GA_TOKEN.value = ''; GA_TOKEN.expiresAt = 0;
+  try { sessionStorage.removeItem(GA_TOK_KEY); sessionStorage.removeItem(GA_EXP_KEY); } catch (e) {}
+}
+
+function gaHasToken() { return !!(GA_TOKEN.value && GA_TOKEN.expiresAt > Date.now()); }
+
+/** 구글 로그인 화면으로 이동. silent=true 면 이미 로그인돼 있을 때만 조용히 다녀옵니다. */
+function gaRedirectToLogin(silent) {
+  var st = String(Math.random()).slice(2) + String(Date.now());
+  try { sessionStorage.setItem(GA_STATE_KEY, st); } catch (e) {}
+  var u = 'https://accounts.google.com/o/oauth2/v2/auth' +
+          '?client_id=' + encodeURIComponent(GA_CLIENT_ID) +
+          '&redirect_uri=' + encodeURIComponent(GA_REDIRECT_URI) +
+          '&response_type=token' +
+          '&scope=' + encodeURIComponent(GA_SCOPES) +
+          '&include_granted_scopes=true' +
+          '&state=' + encodeURIComponent(st) +
+          (silent ? '&prompt=none' : '');
+  location.href = u;
+}
+
+/** 돌아왔을 때 주소에 실려온 토큰을 거둬들입니다. */
+function _gaReadHash() {
+  var h = String(location.hash || '').replace(/^#/, '');
+  if (!h) return null;
+  var q = {};
+  h.split('&').forEach(function(kv) {
+    var i = kv.indexOf('=');
+    if (i > 0) q[decodeURIComponent(kv.slice(0, i))] = decodeURIComponent(kv.slice(i + 1));
   });
-  return _gaClient;
+  if (!q.access_token && !q.error) return null;
+
+  // 주소에서 토큰을 즉시 지웁니다 (기록에 남지 않도록)
+  try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+
+  var want = '';
+  try { want = sessionStorage.getItem(GA_STATE_KEY) || ''; } catch (e2) {}
+  try { sessionStorage.removeItem(GA_STATE_KEY); } catch (e3) {}
+  if (q.state && want && q.state !== want) return { error: 'state_mismatch' };
+  return q;
 }
 
-/** 토큰 확보. silent=true 면 화면을 띄우지 않고 조용히 시도합니다. */
+/** 호출부가 쓰는 함수 — 리디렉션 방식에서는 '있으면 주고 없으면 빈값' 입니다 */
 function gaEnsureToken(silent, cb) {
   cb = cb || function(){};
-  if (GA_TOKEN.value && GA_TOKEN.expiresAt > Date.now()) { cb(GA_TOKEN.value); return; }
-  var c = _gaInitClient();
-  if (!c) { cb(''); return; }
-  if (_gaPending) { cb(''); return; }     // 이미 진행 중
-  _gaPending = cb;
-  try {
-    if (silent) c.requestAccessToken({ prompt: '' });
-    else        c.requestAccessToken();
-  } catch (e) { _gaPending = null; cb(''); }
+  if (gaHasToken()) { cb(GA_TOKEN.value); return; }
+  if (_gaLoadToken()) { cb(GA_TOKEN.value); return; }
+  cb('');
 }
-
-function gaForgetToken() { GA_TOKEN.value = ''; GA_TOKEN.expiresAt = 0; }
 </script>
 
 <!-- ★ GAS API Bridge: GAS iframe 밖에서도 google.script.run 호환 동작 -->
@@ -1247,11 +1276,11 @@ function gaForgetToken() { GA_TOKEN.value = ''; GA_TOKEN.expiresAt = 0; }
           .then(function(txt) {
             // 로그인 페이지가 돌아오면 토큰이 만료된 것 → 조용히 갱신 후 한 번만 재시도
             if (!isRetry && /^\s*<(!doctype|html)/i.test(txt)) {
+              // 로그인 페이지가 돌아왔다 = 토큰이 죽었다
               if (window.gaForgetToken) gaForgetToken();
-              if (window.gaEnsureToken) {
-                gaEnsureToken(true, function(t2) { fire(t2, true); });
-                return;
-              }
+              onFail({ message: '로그인이 만료되었습니다. 다시 로그인해주세요.' });
+              if (window.gaSessionLost) gaSessionLost();
+              return;
             }
             try { onOk(JSON.parse(txt)); }
             catch(e) { onFail({ message: 'Invalid server response' }); }
@@ -1260,10 +1289,18 @@ function gaForgetToken() { GA_TOKEN.value = ''; GA_TOKEN.expiresAt = 0; }
             onFail({ message: err.message || 'Network error' });
           });
       }
-      var _cur = (window.GA_TOKEN && GA_TOKEN.value && GA_TOKEN.expiresAt > Date.now())
-                 ? GA_TOKEN.value : '';
-      if (!_cur && window.gaEnsureToken) gaEnsureToken(true, function(t) { fire(t, false); });
-      else fire(_cur, false);
+      var _cur = (window.gaHasToken && gaHasToken()) ? GA_TOKEN.value : '';
+      if (_cur) { fire(_cur, false); return; }
+      if (window.gaEnsureToken) {
+        gaEnsureToken(true, function(t) {
+          if (t) { fire(t, false); return; }
+          // 토큰이 없으면 어차피 거부당합니다 — 헛호출 대신 바로 안내
+          onFail({ message: '로그인이 만료되었습니다. 다시 로그인해주세요.' });
+          if (window.gaSessionLost) gaSessionLost();
+        });
+        return;
+      }
+      fire('', false);
     };
   });
 
@@ -1757,37 +1794,55 @@ function _gaShowLoginBtn(show) {
   if (b) b.style.display = show ? '' : 'none';
 }
 
-/** 앱 시작 — 조용히 로그인 시도 → 되면 바로 입장, 안 되면 버튼을 보여줍니다 */
+/** 앱 시작 — 구글에서 돌아온 토큰을 거두거나, 조용히 한 번 다녀옵니다 */
 function gaBootstrap() {
   showScreen('phoneScreen');
   _gaShowLoginBtn(false);
-  setPhoneStatus('구글 계정 확인 중...', '');
+  setPhoneStatus('로그인 확인 중...', '');
 
-  var tries = 0;
-  (function waitGis() {
-    if (_gaReady()) {
-      gaEnsureToken(true, function(tok) {
-        if (tok) gaVerifyAndEnter();
-        else { setPhoneStatus('', ''); _gaShowLoginBtn(true); }
-      });
-      return;
-    }
-    if (++tries > 40) {                       // 약 6초 기다립니다
-      setPhoneStatus('구글 로그인을 불러오지 못했습니다. 새로고침 해주세요.', 'err');
-      _gaShowLoginBtn(true);
-      return;
-    }
-    setTimeout(waitGis, 150);
-  })();
+  var back = _gaReadHash();
+
+  if (back && back.access_token) {              // 구글에서 토큰을 들고 돌아온 경우
+    try { sessionStorage.removeItem(GA_TRIED_KEY); } catch(e) {}
+    _gaSaveToken(back.access_token, back.expires_in);
+    gaVerifyAndEnter();
+    return;
+  }
+  if (back && back.error) {                     // 조용한 시도 실패 (로그인 안 돼 있음 등)
+    setPhoneStatus('', '');
+    _gaShowLoginBtn(true);
+    return;
+  }
+  if (_gaLoadToken()) { gaVerifyAndEnter(); return; }   // 이 탭에 살아있는 토큰이 있으면
+
+  // 아직 조용히 시도해보지 않았다면 딱 한 번만 다녀옵니다 (무한 왕복 방지)
+  var tried = '';
+  try { tried = sessionStorage.getItem(GA_TRIED_KEY) || ''; } catch(e) {}
+  if (!tried) {
+    try { sessionStorage.setItem(GA_TRIED_KEY, '1'); } catch(e) {}
+    gaRedirectToLogin(true);
+    return;
+  }
+
+  setPhoneStatus('', '');
+  _gaShowLoginBtn(true);
 }
 
-/** 로그인 버튼 — 팝업은 사용자가 누를 때만 열 수 있습니다 */
+/** 로그인 버튼 — 화면 전체가 구글로 이동합니다 (팝업 없음) */
 function gaLoginClick() {
-  setPhoneStatus('로그인 창을 여는 중...', '');
-  gaEnsureToken(false, function(tok) {
-    if (!tok) { setPhoneStatus('로그인이 취소되었습니다', 'err'); return; }
-    gaVerifyAndEnter();
-  });
+  setPhoneStatus('구글로 이동합니다...', '');
+  try { sessionStorage.removeItem(GA_TRIED_KEY); } catch(e) {}
+  gaRedirectToLogin(false);
+}
+
+/** 토큰이 끊겼을 때 — 로그인 화면으로 되돌립니다 */
+function gaSessionLost() {
+  if (gaHasToken()) return;
+  gaForgetToken();
+  try { sessionStorage.setItem(GA_TRIED_KEY, '1'); } catch(e) {}
+  showScreen('phoneScreen');
+  _gaShowLoginBtn(true);
+  setPhoneStatus('로그인이 만료되었습니다. 다시 로그인해주세요.', 'err');
 }
 
 /** 서버에 담당자 권한을 확인하고 입장 */
@@ -1836,6 +1891,7 @@ function gaVerifyAndEnter() {
 /** 이 기기에 남은 로그인 흔적을 지웁니다 (구글 계정 자체는 로그아웃하지 않습니다) */
 function gaSignOutLocal() {
   authedUser = ''; authedName = ''; authedDept = '';
+  try { sessionStorage.setItem(GA_TRIED_KEY, '1'); } catch(e) {}   // 자동 재이동 방지
   if (window.gaForgetToken) gaForgetToken();
   try {
     localStorage.removeItem(AUTH_STORAGE_KEY);
