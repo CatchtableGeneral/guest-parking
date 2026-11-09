@@ -1140,6 +1140,63 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
+<!-- ★ v6.3 구글 로그인 (문자 인증 대체) -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+/* ============================================================
+   구글 로그인 — 문자 인증을 대체합니다.
+   토큰은 메모리에만 두고, 서버 호출마다 주소에 실어 보냅니다.
+   서버는 이 토큰을 구글에 직접 물어서 "누구인지"를 확인합니다.
+   ============================================================ */
+var GA_CLIENT_ID = '980658564661-3hb6be0miq6r0r8lg2qjtbht875b8835.apps.googleusercontent.com';
+var GA_SCOPES    = 'https://www.googleapis.com/auth/drive.readonly email';
+var GA_TOKEN     = { value: '', expiresAt: 0 };
+var _gaClient = null, _gaPending = null;
+
+function _gaReady() {
+  return !!(window.google && window.google.accounts && window.google.accounts.oauth2);
+}
+
+function _gaInitClient() {
+  if (_gaClient) return _gaClient;
+  if (!_gaReady()) return null;
+  _gaClient = window.google.accounts.oauth2.initTokenClient({
+    client_id: GA_CLIENT_ID,
+    scope: GA_SCOPES,
+    callback: function(resp) {
+      var cb = _gaPending; _gaPending = null;
+      if (resp && resp.access_token) {
+        GA_TOKEN.value = resp.access_token;
+        // 만료 5분 전에 미리 갱신하도록 여유를 둡니다
+        GA_TOKEN.expiresAt = Date.now() + ((Number(resp.expires_in) || 3600) - 300) * 1000;
+        if (cb) cb(GA_TOKEN.value);
+      } else if (cb) cb('');
+    },
+    error_callback: function() {
+      var cb = _gaPending; _gaPending = null;
+      if (cb) cb('');
+    }
+  });
+  return _gaClient;
+}
+
+/** 토큰 확보. silent=true 면 화면을 띄우지 않고 조용히 시도합니다. */
+function gaEnsureToken(silent, cb) {
+  cb = cb || function(){};
+  if (GA_TOKEN.value && GA_TOKEN.expiresAt > Date.now()) { cb(GA_TOKEN.value); return; }
+  var c = _gaInitClient();
+  if (!c) { cb(''); return; }
+  if (_gaPending) { cb(''); return; }     // 이미 진행 중
+  _gaPending = cb;
+  try {
+    if (silent) c.requestAccessToken({ prompt: '' });
+    else        c.requestAccessToken();
+  } catch (e) { _gaPending = null; cb(''); }
+}
+
+function gaForgetToken() { GA_TOKEN.value = ''; GA_TOKEN.expiresAt = 0; }
+</script>
+
 <!-- ★ GAS API Bridge: GAS iframe 밖에서도 google.script.run 호환 동작 -->
 <script>
 (function() {
@@ -1163,7 +1220,7 @@ if ('serviceWorker' in navigator) {
   };
 
   var FN_NAMES = [
-    'guestSendSms','guestVerifySms','guestCheckAuth',
+    'guestSendSms','guestVerifySms','guestCheckAuth','guestCheckAuthByToken',
     'uspaceSearchCars','uspaceGetPhoto','recordToSheet',
     'uspaceRegisterDiscountBatch','getSheetPayTypes',
     'uspaceGetStatus','uspaceDeleteDiscount',
@@ -1176,25 +1233,43 @@ if ('serviceWorker' in navigator) {
     Runner.prototype[name] = function() {
       var args = Array.prototype.slice.call(arguments);
       var onOk = this._ok, onFail = this._fail;
-      var url = GAS_API + '?fn=' + encodeURIComponent(name) +
-                '&args=' + encodeURIComponent(JSON.stringify(args)) +
-                '&_=' + Date.now();
-      fetch(url, { redirect:'follow', cache:'no-store' })
-        .then(function(r) {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.text();
-        })
-        .then(function(txt) {
-          try { onOk(JSON.parse(txt)); }
-          catch(e) { onFail({ message: 'Invalid server response' }); }
-        })
-        .catch(function(err) {
-          onFail({ message: err.message || 'Network error' });
-        });
+      // ★ v6.3 구글 토큰을 함께 보냅니다 (헤더 대신 주소에 — 헤더로 보내면 브라우저가 막습니다)
+      function fire(tok, isRetry) {
+        var url = GAS_API + '?fn=' + encodeURIComponent(name) +
+                  '&args=' + encodeURIComponent(JSON.stringify(args)) +
+                  (tok ? '&access_token=' + encodeURIComponent(tok) : '') +
+                  '&_=' + Date.now();
+        fetch(url, { redirect:'follow', cache:'no-store' })
+          .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.text();
+          })
+          .then(function(txt) {
+            // 로그인 페이지가 돌아오면 토큰이 만료된 것 → 조용히 갱신 후 한 번만 재시도
+            if (!isRetry && /^\s*<(!doctype|html)/i.test(txt)) {
+              if (window.gaForgetToken) gaForgetToken();
+              if (window.gaEnsureToken) {
+                gaEnsureToken(true, function(t2) { fire(t2, true); });
+                return;
+              }
+            }
+            try { onOk(JSON.parse(txt)); }
+            catch(e) { onFail({ message: 'Invalid server response' }); }
+          })
+          .catch(function(err) {
+            onFail({ message: err.message || 'Network error' });
+          });
+      }
+      var _cur = (window.GA_TOKEN && GA_TOKEN.value && GA_TOKEN.expiresAt > Date.now())
+                 ? GA_TOKEN.value : '';
+      if (!_cur && window.gaEnsureToken) gaEnsureToken(true, function(t) { fire(t, false); });
+      else fire(_cur, false);
     };
   });
 
-  window.google = { script: { run: new Runner() } };
+  // ★ v6.3 google.accounts(구글 로그인)를 지우지 않도록 합쳐서 넣습니다
+  window.google = window.google || {};
+  window.google.script = { run: new Runner() };
   console.log('[GAS Bridge] 외부 호스팅 모드 활성화');
 })();
 </script>
@@ -1276,29 +1351,14 @@ var DESIGN_W = 470;
     <div class="phone-body">
       <div class="phone-card">
         <div style="text-align:right;font-size:11px;color:#ccc;margin-bottom:-8px" id="phoneVersion"></div>
-        <h2>손님 주차할인 인증</h2>
-        <p>등록된 휴대폰 번호로<br>인증 후 이용할 수 있습니다.</p>
+        <h2>손님 주차할인</h2>
+        <p>회사 구글 계정으로 로그인하면<br>바로 이용할 수 있습니다.</p>
 
-        <input type="tel" class="k-input" id="phoneInput"
-               placeholder="010-0000-0000" maxlength="13"
-               oninput="formatPhone(this)"
-               style="font-size:24px!important;height:68px;padding:20px 18px">
-        <button class="k-btn k-btn-primary k-btn-block" id="sendCodeBtn"
-                onclick="sendSmsCode()">
-          <span class="material-symbols-rounded" style="font-size:20px">sms</span>
-          인증코드 발송
+        <button class="k-btn k-btn-primary k-btn-block" id="gaLoginBtn"
+                onclick="gaLoginClick()" style="display:none">
+          <span class="material-symbols-rounded" style="font-size:20px">login</span>
+          구글 계정으로 로그인
         </button>
-
-        <div id="codeSection">
-          <input type="tel" class="k-input" id="codeInput"
-                 placeholder="인증코드 6자리" maxlength="6"
-                 onkeydown="if(event.key==='Enter')verifySmsCode()"
-                 style="font-size:24px!important;height:68px;padding:20px 18px">
-          <button class="k-btn k-btn-primary k-btn-block" onclick="verifySmsCode()">
-            <span class="material-symbols-rounded" style="font-size:20px">verified</span>
-            인증 확인
-          </button>
-        </div>
 
         <div class="phone-status" id="phoneStatus"></div>
       </div>
@@ -1512,10 +1572,10 @@ var DESIGN_W = 470;
 /* ============================================================
    STATE
    ============================================================ */
-var AUTH_STORAGE_KEY = 'guest_auth_phone';       // localStorage 키
+var AUTH_STORAGE_KEY = 'guest_auth_email';       // localStorage 키 (v6.3: 번호 → 이메일)
 var AUTH_TS_KEY      = 'guest_auth_timestamp';   // 마지막 인증 성공 시각
 var AUTH_CACHE_MS    = 24 * 60 * 60 * 1000;      // 24시간 캐시
-var authedPhone = '';  // 인증된 전화번호
+var authedUser  = '';  // 로그인한 회사 이메일 (v6.3: 전화번호 → 이메일)
 
 /* ════════════════════════════════════════════════
    ★ v5.4 담당자 정보 (관리자 시트 D=이름 / G=부서)
@@ -1688,79 +1748,108 @@ function setPhoneStatus(msg, cls) {
   el.className = 'phone-status' + (cls ? ' ' + cls : '');
 }
 
-function sendSmsCode() {
-  var phone = document.getElementById('phoneInput').value.trim();
-  if (!/^010-\d{4}-\d{4}$/.test(phone)) {
-    setPhoneStatus('올바른 휴대폰 번호를 입력해주세요', 'err');
-    return;
-  }
+/* ============================================================
+   구글 로그인 흐름  (v6.3 — 문자 인증을 대체합니다)
+   ============================================================ */
 
-  showLoading(true, '인증코드 발송 중...');
-  document.getElementById('sendCodeBtn').disabled = true;
-
-  google.script.run
-    .withSuccessHandler(function(res) {
-      showLoading(false);
-      document.getElementById('sendCodeBtn').disabled = false;
-      if (res && res.sent) {
-        setPhoneStatus('인증코드가 발송되었습니다', 'ok');
-        document.getElementById('codeSection').classList.add('show');
-        setTimeout(function() { document.getElementById('codeInput').focus(); }, 200);
-      } else {
-        setPhoneStatus(res.msg || '발송 실패', 'err');
-      }
-    })
-    .withFailureHandler(function(err) {
-      showLoading(false);
-      document.getElementById('sendCodeBtn').disabled = false;
-      setPhoneStatus('오류: ' + err.message, 'err');
-    })
-    .guestSendSms(phone);
+function _gaShowLoginBtn(show) {
+  var b = document.getElementById('gaLoginBtn');
+  if (b) b.style.display = show ? '' : 'none';
 }
 
-function verifySmsCode() {
-  var phone = document.getElementById('phoneInput').value.trim();
-  var code = document.getElementById('codeInput').value.trim();
-  if (!code || code.length < 4) {
-    setPhoneStatus('인증코드를 입력해주세요', 'err');
-    return;
-  }
+/** 앱 시작 — 조용히 로그인 시도 → 되면 바로 입장, 안 되면 버튼을 보여줍니다 */
+function gaBootstrap() {
+  showScreen('phoneScreen');
+  _gaShowLoginBtn(false);
+  setPhoneStatus('구글 계정 확인 중...', '');
 
-  showLoading(true, '인증 확인 중...');
+  var tries = 0;
+  (function waitGis() {
+    if (_gaReady()) {
+      gaEnsureToken(true, function(tok) {
+        if (tok) gaVerifyAndEnter();
+        else { setPhoneStatus('', ''); _gaShowLoginBtn(true); }
+      });
+      return;
+    }
+    if (++tries > 40) {                       // 약 6초 기다립니다
+      setPhoneStatus('구글 로그인을 불러오지 못했습니다. 새로고침 해주세요.', 'err');
+      _gaShowLoginBtn(true);
+      return;
+    }
+    setTimeout(waitGis, 150);
+  })();
+}
 
+/** 로그인 버튼 — 팝업은 사용자가 누를 때만 열 수 있습니다 */
+function gaLoginClick() {
+  setPhoneStatus('로그인 창을 여는 중...', '');
+  gaEnsureToken(false, function(tok) {
+    if (!tok) { setPhoneStatus('로그인이 취소되었습니다', 'err'); return; }
+    gaVerifyAndEnter();
+  });
+}
+
+/** 서버에 담당자 권한을 확인하고 입장 */
+function gaVerifyAndEnter() {
+  setPhoneStatus('권한 확인 중...', '');
   google.script.run
     .withSuccessHandler(function(res) {
-      showLoading(false);
-      if (res && res.verified) {
-        setPhoneStatus('인증 성공!', 'ok');
-        // ★ localStorage에 영구 저장 + 인증 시각 기록
-        authedPhone = phone;
+      if (res && res.authorized) {
+        authedUser = res.email || '';
         try {
-          localStorage.setItem(AUTH_STORAGE_KEY, phone);
+          localStorage.setItem(AUTH_STORAGE_KEY, authedUser);
           localStorage.setItem(AUTH_TS_KEY, String(Date.now()));
         } catch(e) {}
-        setAuthedWho(res.name, res.dept);                 // ★ v5.4 담당자 정보
-        // ★ v5.4: 홈을 거치지 않고 바로 등록 화면 (대부분 주차등록이 목적)
-        setTimeout(function() { goRegister(); }, 500);
-        setTimeout(function() { loadBalance(); }, 1000); // ★ 잔액 프리로드
-        setTimeout(function() { loadEmployeeCarNumbers(); }, 1200); // ★ 자차목록 프리로드
+        setAuthedWho(res.name, res.dept);
+        setPhoneStatus('', '');
+        goRegister();
+        setTimeout(function() { loadBalance(); }, 800);
+        setTimeout(function() { loadEmployeeCarNumbers(); }, 1000);
+        google.script.run
+          .withSuccessHandler(function(r) {
+            if (r && (r.loggedIn || r.hasCreds)) showSessionBanner('uspace 연결됨', 'ok', 2000);
+          })
+          .withFailureHandler(function() {})
+          .checkLoginStatus();
+        setTimeout(function() {
+          google.script.run
+            .withSuccessHandler(function() {})
+            .withFailureHandler(function() {})
+            .uspaceSessionWarmup();
+        }, 500);
+        // ★ v6.3 버전 확인은 로그인 뒤에 다시 — 로그인 전에는 토큰이 없어 실패합니다
+        setTimeout(function() { try { checkAppVersion(); } catch(e) {} }, 1500);
       } else {
-        setPhoneStatus(res.msg || '인증 실패', 'err');
+        gaSignOutLocal();
+        _gaShowLoginBtn(true);
+        setPhoneStatus((res && res.msg) || '사용 권한이 없습니다', 'err');
       }
     })
     .withFailureHandler(function(err) {
-      showLoading(false);
-      setPhoneStatus('오류: ' + err.message, 'err');
+      _gaShowLoginBtn(true);
+      setPhoneStatus('확인 실패: ' + ((err && err.message) || '네트워크 오류'), 'err');
     })
-    .guestVerifySms(phone, code);
+    .guestCheckAuthByToken();
+}
+
+/** 이 기기에 남은 로그인 흔적을 지웁니다 (구글 계정 자체는 로그아웃하지 않습니다) */
+function gaSignOutLocal() {
+  authedUser = ''; authedName = ''; authedDept = '';
+  if (window.gaForgetToken) gaForgetToken();
+  try {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+    localStorage.removeItem(AUTH_TS_KEY);
+    localStorage.removeItem(WHO_NAME_KEY);
+    localStorage.removeItem(WHO_DEPT_KEY);
+  } catch(e) {}
 }
 
 function checkAuthExpired() {
-  // localStorage에 저장된 번호가 없으면 인증 만료
-  if (!authedPhone) {
-    showModal('warn', '인증 필요',
-      '본인인증이 필요합니다.',
-      [{ text: '인증 화면으로', cls: 'primary', action: function() { closeModal(); resetToPhone(); }}]
+  if (!authedUser) {
+    showModal('warn', '로그인 필요',
+      '회사 구글 계정으로 로그인해주세요.',
+      [{ text: '로그인 화면으로', cls: 'primary', action: function() { closeModal(); resetToPhone(); }}]
     );
     return true;
   }
@@ -1768,10 +1857,9 @@ function checkAuthExpired() {
 }
 
 function resetToPhone() {
-  document.getElementById('phoneInput').value = '';
-  document.getElementById('codeInput').value = '';
-  document.getElementById('codeSection').classList.remove('show');
+  gaSignOutLocal();
   setPhoneStatus('', '');
+  _gaShowLoginBtn(true);
   showScreen('phoneScreen');
 }
 
@@ -1779,18 +1867,11 @@ function resetToPhone() {
  * 관리자가 시트에서 삭제했는지 확인 (앱 사용 중 주기적 체크 가능)
  */
 function recheckAuth() {
-  if (!authedPhone) return;
+  if (!authedUser) return;
   google.script.run
     .withSuccessHandler(function(res) {
       if (res && !res.authorized) {
-        // 권한 삭제됨 → 차단
-        try {
-          localStorage.removeItem(AUTH_STORAGE_KEY);
-          localStorage.removeItem(AUTH_TS_KEY);
-        } catch(e) {}
-        authedPhone = '';
-        authedName = ''; authedDept = '';   // ★ v5.4
-        try { localStorage.removeItem(WHO_NAME_KEY); localStorage.removeItem(WHO_DEPT_KEY); } catch(e) {}
+        gaSignOutLocal();
         showModal('warn', '접근 차단',
           '관리자에 의해 권한이 제거되었습니다.<br>더 이상 이 앱을 사용할 수 없습니다.',
           [{ text: '확인', cls: 'primary', action: function() { closeModal(); resetToPhone(); }}]
@@ -1798,7 +1879,7 @@ function recheckAuth() {
       }
     })
     .withFailureHandler(function() { /* 네트워크 오류 시 무시 */ })
-    .guestCheckAuth(authedPhone);
+    .guestCheckAuthByToken();
 }
 
 /* ============================================================
@@ -2482,8 +2563,8 @@ function applyDiscountsBatch(carId, types, calc, base, entryKey) {
       document.getElementById('regSubmitBtn').disabled = false;
     })
     // ★ v5.4: 주차시간을 넘겨야 알림의 '출차 마감'이 정확해짐 + 인증 담당자 표시
-    .uspaceRegisterDiscountBatch(carId, types, '1A-605', '',
-        (selectedCar && selectedCar.incar_min) || 0, authedPhone,
+    .uspaceRegisterDiscountBatch(carId, types, '1A-605', _whoDeleted(),
+        (selectedCar && selectedCar.incar_min) || 0, '',
         selectedCar ? selectedCar.entryDateToString : '');
 }
 
@@ -2696,8 +2777,8 @@ function addExtraDiscount(typeId, addMin) {
       toast('추가 등록 오류: ' + err.message, 'error');
     })
     // ★ v5.4: 위와 동일 — 추가 등록도 주차시간/담당자 전달
-    .uspaceRegisterDiscountBatch(ctx.carId, [typeId], '1A-605', '',
-        (ctx && ctx.incarMin) || 0, authedPhone,
+    .uspaceRegisterDiscountBatch(ctx.carId, [typeId], '1A-605', _whoDeleted(),
+        (ctx && ctx.incarMin) || 0, '',
         ctx.entryDateRaw || (selectedCar ? selectedCar.entryDateToString : ''));
 }
 
@@ -3838,121 +3919,12 @@ function esc(s) {
     if (e.target === this) closeModal();
   });
 
-  // ★ 최초 인증 확인: 캐시 유효(24h)면 즉시 진입, 백그라운드에서 권한 재확인
-  var savedPhone = '';
-  var savedTs = 0;
-  try {
-    savedPhone = localStorage.getItem(AUTH_STORAGE_KEY) || '';
-    savedTs = parseInt(localStorage.getItem(AUTH_TS_KEY) || '0', 10);
-  } catch(e) {}
-
-  var cacheValid = savedPhone && (Date.now() - savedTs < AUTH_CACHE_MS);
-
-  if (savedPhone && cacheValid) {
-    // ── 캐시 유효: 즉시 홈 화면 (서버 대기 없음!) ──
-    authedPhone = savedPhone;
-    restoreAuthedWho();      // ★ v5.4 저장해둔 담당자 정보로 먼저 그림
-    goRegister();            // ★ v5.4 홈 건너뛰고 바로 등록 화면
-    setTimeout(function() { loadBalance(); }, 800); // ★ 잔액 프리로드
-    setTimeout(function() { loadEmployeeCarNumbers(); }, 1000); // ★ 자차목록 프리로드
-
-    // 백그라운드에서 권한 재확인 (UI 블로킹 없음)
-    google.script.run
-      .withSuccessHandler(function(res) {
-        if (res && res.authorized) {
-          // 아직 유효 → 타임스탬프 갱신
-          try { localStorage.setItem(AUTH_TS_KEY, String(Date.now())); } catch(e) {}
-          setAuthedWho(res.name, res.dept);   // ★ v5.4 (시트에서 부서가 바뀌었을 수도)
-        } else {
-          // 관리자가 삭제함 → 즉시 차단
-          try {
-            localStorage.removeItem(AUTH_STORAGE_KEY);
-            localStorage.removeItem(AUTH_TS_KEY);
-          } catch(e) {}
-          authedPhone = '';
-          authedName = ''; authedDept = '';   // ★ v5.4
-          try { localStorage.removeItem(WHO_NAME_KEY); localStorage.removeItem(WHO_DEPT_KEY); } catch(e) {}
-          showScreen('phoneScreen');
-          showModal('warn', '접근 차단',
-            '등록된 권한이 없습니다.<br>관리자에게 문의해주세요.',
-            [{ text: '확인', cls: 'primary', action: closeModal }]
-          );
-        }
-      })
-      .withFailureHandler(function() {
-        // 네트워크 오류 → 캐시 믿고 계속 사용
-      })
-      .guestCheckAuth(savedPhone);
-
-    // uspace 연결 확인 (백그라운드)
-    google.script.run
-      .withSuccessHandler(function(r) {
-        if (r.loggedIn || r.hasCreds) showSessionBanner('uspace 연결됨', 'ok', 2000);
-      })
-      .withFailureHandler(function() {})
-      .checkLoginStatus();
-    // ★ v5.0: 세션 워밍업 — 만료된 세션 미리 재로그인
-    setTimeout(function() {
-      google.script.run
-        .withSuccessHandler(function(r) { if (r && r.ok) console.log('warmup: ' + r.reason); })
-        .withFailureHandler(function() {})
-        .uspaceSessionWarmup();
-    }, 500);
-
-  } else if (savedPhone && !cacheValid) {
-    // ── 캐시 만료(24h 초과): 서버 확인 필수 ──
-    showLoading(true, '권한 확인 중...');
-    google.script.run
-      .withSuccessHandler(function(res) {
-        showLoading(false);
-        if (res && res.authorized) {
-          authedPhone = savedPhone;
-          try { localStorage.setItem(AUTH_TS_KEY, String(Date.now())); } catch(e) {}
-          setAuthedWho(res.name, res.dept);   // ★ v5.4
-          goRegister();                        // ★ v5.4 홈 건너뛰고 바로 등록 화면
-          setTimeout(function() { loadBalance(); }, 800); // ★ 잔액 프리로드
-          setTimeout(function() { loadEmployeeCarNumbers(); }, 1000); // ★ 자차목록 프리로드
-          showSessionBanner('인증됨: ' + savedPhone, 'ok', 3000);
-          google.script.run
-            .withSuccessHandler(function(r) {
-              if (r.loggedIn || r.hasCreds) showSessionBanner('uspace 연결됨', 'ok', 2000);
-            })
-            .withFailureHandler(function() {})
-            .checkLoginStatus();
-        } else {
-          try {
-            localStorage.removeItem(AUTH_STORAGE_KEY);
-            localStorage.removeItem(AUTH_TS_KEY);
-          } catch(e) {}
-          authedPhone = '';
-          authedName = ''; authedDept = '';   // ★ v5.4
-          try { localStorage.removeItem(WHO_NAME_KEY); localStorage.removeItem(WHO_DEPT_KEY); } catch(e) {}
-          showScreen('phoneScreen');
-          showModal('warn', '접근 차단',
-            '등록된 권한이 없습니다.<br>관리자에게 문의해주세요.',
-            [{ text: '확인', cls: 'primary', action: closeModal }]
-          );
-        }
-      })
-      .withFailureHandler(function(err) {
-        showLoading(false);
-        authedPhone = savedPhone;
-        restoreAuthedWho();   // ★ v5.4
-        goRegister();         // ★ v5.4
-        showSessionBanner('오프라인 모드 (권한 확인 불가)', 'warn', 5000);
-      })
-      .guestCheckAuth(savedPhone);
-
-  } else {
-    // ── 저장된 번호 없음 → 인증 화면 ──
-    showScreen('phoneScreen');
-    google.script.run
-      .withSuccessHandler(function(res) {
-        if (res.loggedIn || res.hasCreds) showSessionBanner('uspace 연결됨', 'ok', 3000);
-      })
-      .withFailureHandler(function() {})
-      .checkLoginStatus();
-  }
+  // ★ v6.3 구글 로그인으로 시작합니다.
+  //   저장해둔 이름/부서를 먼저 그려 화면이 비어 보이지 않게 하고,
+  //   조용히 토큰을 얻어 서버에 "이 사람 써도 되나"를 묻습니다.
+  //   (예전처럼 캐시만 믿고 들어가지 않습니다 — 토큰이 없으면 어차피 서버를 못 부릅니다)
+  restoreAuthedWho();
+  gaBootstrap();
 })();
 
 /* ============================================================
@@ -4015,7 +3987,7 @@ setInterval(function() {
    시트에서 삭제된 사용자를 즉시 차단
    ============================================================ */
 document.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'visible' && authedPhone) {
+  if (document.visibilityState === 'visible' && authedUser) {
     recheckAuth();
   }
 });
@@ -4112,7 +4084,7 @@ function hideSessionBanner() {
    ============================================================ */
 // ★ HTML에 하드코딩된 버전 (서버 버전과 비교하여 업데이트 감지)
 // → localStorage가 비어있어도, 삭제 후 재설치해도, 이 값으로 비교하므로 확실히 감지됨
-var APP_LOCAL_VERSION = '6.1';
+var APP_LOCAL_VERSION = '6.3';
 // ★ v5.2: 버전 표기를 자동화 (기존엔 3곳에 수동 기입돼 서로 달랐음)
 (function() {
   var a = document.getElementById('phoneVersion');  if (a) a.textContent = 'v' + APP_LOCAL_VERSION;
